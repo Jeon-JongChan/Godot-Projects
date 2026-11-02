@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Eradel"
 config/description="영지의 군주 — 로그라이크 턴제 영지 경영 RPG"
-run/main_scene="res://scenes/ui/title.tscn"
+run/main_scene="res://scenes/flow/title.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -28,7 +28,6 @@ PauseManager="*res://scripts/autoload/pause_manager.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [physics]
 

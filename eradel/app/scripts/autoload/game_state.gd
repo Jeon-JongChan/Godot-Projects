@@ -12,29 +12,44 @@ signal game_over
 const MAX_PARTY := 5
 const MAX_STRESS := 100
 
-const SCENE_TITLE := "res://scenes/ui/title.tscn"
-const SCENE_ESTATE := "res://scenes/world/estate.tscn"
-const SCENE_GUILD := "res://scenes/ui/guild.tscn"
-const SCENE_PREP := "res://scenes/ui/expedition_prep.tscn"
-const SCENE_DUNGEON := "res://scenes/world/dungeon.tscn"
-const SCENE_RESULT := "res://scenes/ui/dungeon_result.tscn"
-const SCENE_BUILDING := "res://scenes/ui/building.tscn"
-const SCENE_TREATMENT := "res://scenes/ui/treatment.tscn"
-const SCENE_GAMEOVER := "res://scenes/ui/game_over.tscn"
+const SCENE_TITLE := "res://scenes/flow/title.tscn"
+const SCENE_ESTATE := "res://scenes/estate/estate.tscn"
+const SCENE_GUILD := "res://scenes/estate/guild.tscn"
+const SCENE_PREP := "res://scenes/expedition/expedition_prep.tscn"
+const SCENE_DUNGEON := "res://scenes/expedition/dungeon.tscn"
+const SCENE_RESULT := "res://scenes/expedition/dungeon_result.tscn"
+const SCENE_BUILDING := "res://scenes/estate/building.tscn"
+const SCENE_TREATMENT := "res://scenes/estate/treatment.tscn"
+const SCENE_GAMEOVER := "res://scenes/flow/game_over.tscn"
 
 const SEASONS := ["봄", "여름", "가을", "겨울"]
 
 # ── 자원 ──
 var gold: int = 300
 var manastone: int = 2
-var action_points: int = 3
 var max_action_points: int = 3
 var day: int = 1
 
+# [옵저버] 아래 지표는 어디서 바꾸든 세터가 범위를 보정하고 resources_changed 를 알린다.
+# UI 는 시그널만 구독하면 되며, 값을 바꾼 쪽이 화면 갱신을 직접 호출할 필요가 없다.
+var action_points: int = 3:
+	set(v):
+		action_points = maxi(0, v)
+		resources_changed.emit()
+
 # ── 영지 지표 ──
-var morale: int = 50          # 민심 0~100
-var dungeon_activity: int = 40 # 던전 활성도 0~100
-var monster_tier: int = 0      # 전멸 누적 시 몬스터 강화 단계
+var morale: int = 50:          # 민심 0~100
+	set(v):
+		morale = clampi(v, 0, 100)
+		resources_changed.emit()
+var dungeon_activity: int = 40: # 던전 활성도 0~100
+	set(v):
+		dungeon_activity = clampi(v, 0, 100)
+		resources_changed.emit()
+var monster_tier: int = 0:      # 전멸 누적 시 몬스터 강화 단계
+	set(v):
+		monster_tier = maxi(0, v)
+		resources_changed.emit()
 
 # ── 스트레스 (총합 100 → 게임오버) ──
 var stress_resolvable: int = 0
@@ -45,11 +60,8 @@ var roster: Array[Mercenary] = []
 var party: Array[Mercenary] = []
 var death_log: Array[Dictionary] = []
 
-# ── 영지 건물 (이름 -> 레벨) ──
-var buildings := {
-	"대장간": 1, "마탑": 1, "모험가 길드": 1, "주점": 1,
-	"영주 저택": 1, "잡화점": 1, "치료소": 1,
-}
+# ── 영지 건물 (이름 -> 레벨). 불변 데이터는 BuildingDb 가 공유한다. ──
+var buildings := BuildingDb.default_levels()
 
 # ── 마지막 원정 결과 (결과 화면에서 사용) ──
 var last_result: Dictionary = {}
@@ -75,10 +87,7 @@ func new_game() -> void:
 	roster.clear()
 	party.clear()
 	death_log.clear()
-	buildings = {
-		"대장간": 1, "마탑": 1, "모험가 길드": 1, "주점": 1,
-		"영주 저택": 1, "잡화점": 1, "치료소": 1,
-	}
+	buildings = BuildingDb.default_levels()
 	last_result = {}
 	# 시작 용병 3명 지급
 	for i in 3:
@@ -229,8 +238,6 @@ func upgrade_cost(building: String) -> Dictionary:
 
 
 func can_upgrade(building: String) -> bool:
-	if building in ["마탑", "모험가 길드", "영주 저택", "잡화점"]:
-		return false
 	var lv: int = buildings.get(building, 1)
 	if lv >= 5:
 		return false
@@ -244,7 +251,14 @@ func upgrade_building(building: String) -> bool:
 	var c := upgrade_cost(building)
 	if not spend(c.gold, c.mana):
 		return false
-	buildings[building] += 1
+	var next_lv: int = buildings.get(building, 1) + 1
+	buildings[building] = next_lv
+	# 구버전 명칭과 상호 동기화 (별칭 표는 BuildingDb 가 소유)
+	if BuildingDb.ALIASES.has(building):
+		buildings[BuildingDb.ALIASES[building]] = next_lv
+	if building == "영주저택" or building == "영주 저택":
+		max_action_points = 3 + int((next_lv - 1) / 2)
+	resources_changed.emit()
 	return true
 
 
@@ -451,7 +465,7 @@ func from_dict(data: Dictionary) -> void:
 	stress_resolvable = int(data.get("stress_resolvable", 0))
 	stress_permanent = int(data.get("stress_permanent", 0))
 
-	buildings.clear()
+	buildings = BuildingDb.default_levels()
 	var b_data: Dictionary = data.get("buildings", {})
 	for k in b_data:
 		buildings[k] = int(b_data[k])

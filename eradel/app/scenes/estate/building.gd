@@ -3,13 +3,20 @@ extends Control
 var _root: MarginContainer
 
 const EFFECTS := {
-	"대장간": "파티 공격력 +2 / 레벨",
-	"마탑": "마나 관련 연구 (예정)",
-	"모험가 길드": "모집 품질 향상 (예정)",
+	"용병모집소": "모집 용병 초기 최대 체력 +5 / 레벨",
+	"영웅숙소": "원정 귀환 시 일일 스트레스 자연 감소",
+	"치료소": "부상 및 패널티 완화 성공률 향상",
+	"영주저택": "최대 행동력 및 통치 결단 효율 증가",
+	"잡화점": "원정 보급품 구매 가격 할인",
+	"창고": "마나석 교역 환율 및 전리품 가치 증가",
+	"대장간": "파티 전체 공격력 +2 / 레벨",
+	"훈련장": "용병 특훈 성장 효율 증가",
+	"마법사학회": "차원 균열 억제 및 마나 연구 효율 증가",
+	"기념관": "영령 추모 시 민심 및 스트레스 완화 증가",
+	"마탑": "마나 관련 연구 효율 증가",
+	"모험가 길드": "모집 용병 품질 향상",
 	"주점": "매일 해소 스트레스 감소",
-	"영주 저택": "행동력 관련 (예정)",
-	"잡화점": "상점 (예정)",
-	"치료소": "패널티 완화 성공률 향상",
+	"영주 저택": "최대 행동력 및 통치 효율 증가",
 }
 
 
@@ -69,12 +76,7 @@ func _building_card(building: String) -> Control:
 
 	var right := VBoxContainer.new()
 	right.add_theme_constant_override("separation", 2)
-	if building in ["마탑", "모험가 길드", "영주 저택", "잡화점"]:
-		right.add_child(UiKit.label("미구현 (예정)", 12, UiKit.TEXT3))
-		var btn := UiKit.button("업그레이드 불가", UiKit.TEXT3)
-		btn.disabled = true
-		right.add_child(btn)
-	elif lv >= 5:
+	if lv >= 5:
 		right.add_child(UiKit.label("최대 레벨", 12, UiKit.GOLD))
 	else:
 		var c := GameState.upgrade_cost(building)

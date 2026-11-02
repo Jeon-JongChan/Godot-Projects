@@ -5,7 +5,11 @@ extends Control
 ## 좌측 아군 파티와 우측 적 몬스터들이 대치하며,
 ## 캐릭터별 턴 진행, 돌진 공격, 피격 넉백, 플로팅 텍스트 등의 역동적인 연출을 제공합니다.
 
-const BattleUnitScene = preload("res://scenes/entities/battle_unit.gd")
+const BattleUnitScene = preload("res://scenes/expedition/entities/battle_unit.gd")
+const FloatingTextScene = preload("res://scenes/expedition/entities/floating_text.gd")
+
+## [유한 상태 기계] 전투 진행 단계 정의
+enum BattleState { ROUND_START, ALLY_TURN, ALLY_ACTING, MONSTER_TURN, FINISHED }
 
 # ── 노드 및 데이터 ──
 var _root: MarginContainer
@@ -20,6 +24,12 @@ var _round: int = 0
 var _log: Array[String] = []
 var _finished: bool = false
 var _is_busy: bool = false
+
+# ── [유한 상태 기계 / 책임 연쇄 / 오브젝트 풀] ──
+var _fsm: StateMachine = StateMachine.new()
+var _dmg_pipeline: DamagePipeline = DamagePipeline.new()
+var _ft_pool: ObjectPool = null
+var _sfx_pool: ObjectPool = null
 
 # ── 턴 진행 변수 ──
 var _current_actor = null
@@ -51,8 +61,24 @@ func _ready() -> void:
 	_log.append("어둠의 균열에 들어섰다. 몬스터 %d마리가 모습을 드러낸다." % _monsters_data.size())
 
 	_build_scene_layout()
+	_setup_fsm_and_pools()
 	_spawn_units()
 	_start_next_round()
+
+
+## [유한 상태 기계 & 오브젝트 풀] 전투 상태 전이 표와 데미지 텍스트/효과음 풀을 초기화합니다.
+func _setup_fsm_and_pools() -> void:
+	_fsm.add(BattleState.ROUND_START, func(): _is_busy = false, Callable(), [BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.ALLY_TURN, func(): _is_busy = false, Callable(), [BattleState.ALLY_ACTING, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.ALLY_ACTING, func(): _is_busy = true; _set_controls_enabled(false), Callable(), [BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.MONSTER_TURN, func(): _is_busy = true; _set_controls_enabled(false), Callable(), [BattleState.ROUND_START, BattleState.FINISHED])
+	_fsm.add(BattleState.FINISHED, func(): _finished = true; _is_busy = false; _set_controls_enabled(false), Callable(), [BattleState.FINISHED])
+
+	_ft_pool = ObjectPool.new(func(): return FloatingTextScene.new(), _stage_content, 6)
+	_sfx_pool = ObjectPool.new(func():
+		var p := AudioStreamPlayer.new()
+		p.finished.connect(func(): _sfx_pool.release(p))
+		return p, self, 4)
 
 
 ## 전체 화면 레이아웃 (상단 바, 중앙 고딕 배틀 스테이지, 하단 커맨드 바)을 구성합니다.
@@ -278,6 +304,8 @@ func _spawn_units() -> void:
 		var slot_y: float = 175.0
 		unit.position = Vector2(slot_x, slot_y)
 		unit.base_position = unit.position
+		unit.floating_text_pool = _ft_pool
+		unit.sfx_pool = _sfx_pool
 		unit.setup_as_mercenary(m)
 		unit.clicked.connect(_on_unit_clicked)
 		_party_units.append(unit)
@@ -294,6 +322,8 @@ func _spawn_units() -> void:
 		var slot_y: float = 175.0
 		unit.position = Vector2(slot_x, slot_y)
 		unit.base_position = unit.position
+		unit.floating_text_pool = _ft_pool
+		unit.sfx_pool = _sfx_pool
 		unit.setup_as_monster(mon)
 		unit.clicked.connect(_on_unit_clicked)
 		_monster_units.append(unit)
@@ -329,7 +359,7 @@ func _on_unit_clicked(unit) -> void:
 
 ## 새로운 전투 라운드를 시작합니다.
 func _start_next_round() -> void:
-	if _finished:
+	if _finished or not _fsm.go(BattleState.ROUND_START):
 		return
 	_round += 1
 	_round_label.text = "제 %d 라운드" % _round
@@ -347,6 +377,7 @@ func _run_round_sequence() -> void:
 	# 살아있는 아군들 중 아직 행동하지 않은 유닛을 찾음
 	var actor = _get_next_alive_ally()
 	if actor != null:
+		_fsm.go(BattleState.ALLY_TURN)
 		_current_actor = actor
 		actor.set_active_turn(true)
 		_update_hero_panel(actor)
@@ -355,14 +386,13 @@ func _run_round_sequence() -> void:
 		if _auto_play:
 			_set_controls_enabled(false)
 			await get_tree().create_timer(0.2).timeout
-			if not _is_busy and _current_actor == actor:
+			if _fsm.is_in(BattleState.ALLY_TURN) and _current_actor == actor:
 				_execute_ally_attack(1.0)
 		else:
 			_set_controls_enabled(true)
 	else:
 		# 모든 아군 행동 완료 -> 적 몬스터들의 턴 진행
 		_current_actor = null
-		_set_controls_enabled(false)
 		_update_hero_panel(null)
 		await _run_monsters_turn()
 
@@ -415,12 +445,10 @@ func _on_auto_turn_pressed() -> void:
 		_run_round_sequence()
 
 
-## 아군 공격 애니메이션 및 데미지 적용
+## 아군 공격 애니메이션 및 데미지 적용 ([유한 상태 기계] + [책임 연쇄])
 func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> void:
-	if _current_actor == null or _is_busy:
+	if _current_actor == null or not _fsm.go(BattleState.ALLY_ACTING):
 		return
-	_is_busy = true
-	_set_controls_enabled(false)
 
 	var target = _selected_target
 	if target == null or target.is_dead:
@@ -435,13 +463,18 @@ func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> vo
 	var actor = _current_actor
 	actor.set_meta("acted", true)
 
-	var rng := GameState.rng()
-	var bonus := GameState.party_attack_bonus()
-	var base_dmg: int = int(actor.attack_power) + bonus + rng.randi_range(0, 6)
-	var final_dmg: int = int(base_dmg * multiplier)
-	var is_crit: bool = rng.randi_range(1, 100) <= (30 if is_skill else 12)
-	if is_crit:
-		final_dmg = int(final_dmg * 1.5)
+	# [책임 연쇄] 기본 공격력 → 대장간 보너스 → 스킬 배율 → 치명타 판정 파이프라인 통과
+	var eval := _dmg_pipeline.evaluate({
+		"rng": GameState.rng(),
+		"base_attack": int(actor.attack_power),
+		"spread": 6,
+		"is_ally": true,
+		"party_bonus": GameState.party_attack_bonus(),
+		"multiplier": multiplier,
+		"is_skill": is_skill,
+	})
+	var final_dmg: int = int(eval.get("damage", 1))
+	var is_crit: bool = eval.get("is_crit", false)
 
 	# 돌진 공격 연출
 	var skill_text := "강타!" if is_skill else "공격!"
@@ -475,9 +508,10 @@ func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> vo
 	_run_round_sequence()
 
 
-## 적 몬스터들의 연속 턴 실행
+## 적 몬스터들의 연속 턴 실행 ([유한 상태 기계] + [책임 연쇄])
 func _run_monsters_turn() -> void:
-	_is_busy = true
+	if not _fsm.go(BattleState.MONSTER_TURN):
+		return
 	_add_log("--- 몬스터들의 역습! ---")
 
 	var alive_allies: Array = []
@@ -505,10 +539,16 @@ func _run_monsters_turn() -> void:
 
 		var rng := GameState.rng()
 		var target = alive_allies[rng.randi_range(0, alive_allies.size() - 1)]
-		var dmg: int = mon.attack_power + rng.randi_range(0, 5)
-		var is_crit := rng.randi_range(1, 100) <= 10
-		if is_crit:
-			dmg = int(dmg * 1.4)
+		var eval := _dmg_pipeline.evaluate({
+			"rng": rng,
+			"base_attack": int(mon.attack_power),
+			"spread": 5,
+			"is_ally": false,
+			"multiplier": 1.0,
+			"is_skill": false,
+		})
+		var dmg: int = int(eval.get("damage", 1))
+		var is_crit: bool = eval.get("is_crit", false)
 
 		mon.set_active_turn(true)
 		await get_tree().create_timer(0.18).timeout
@@ -641,10 +681,8 @@ func trigger_screen_shake(amount: float = 6.0, duration: float = 0.22) -> void:
 
 ## 전투 종료 처리 및 결과 씬 전환
 func _end(outcome: String) -> void:
-	if _finished:
+	if _finished or not _fsm.go(BattleState.FINISHED):
 		return
-	_finished = true
-	_set_controls_enabled(false)
 	_btn_retreat.disabled = true
 
 	# 기존 게임 상태 정산 함수 호출

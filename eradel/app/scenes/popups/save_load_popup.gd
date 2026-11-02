@@ -204,7 +204,7 @@ func _on_v_pressed(slot_idx: int) -> void:
 	# 슬롯 데이터 로드
 	if sm != null and sm.load_slot(slot_idx):
 		game_started.emit()
-		var scene_path = gs.SCENE_ESTATE if gs != null else "res://scenes/world/estate.tscn"
+		var scene_path = gs.SCENE_ESTATE if gs != null else "res://scenes/estate/estate.tscn"
 		get_tree().change_scene_to_file(scene_path)
 	else:
 		_show_alert("오류", "데이터를 불러오는 데 실패했습니다.")

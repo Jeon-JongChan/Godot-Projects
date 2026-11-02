@@ -24,17 +24,32 @@ const AVATAR := "res://assets/avatar_default.png"
 const TITLE_ART := "res://assets/eradel_title.png"
 
 
-static func style(bg: Color, border: Color = BORDER, radius: int = 8, border_w: int = 1) -> StyleBoxFlat:
+## [경량화] 동일한 조합의 StyleBox 를 한 번만 만들어 모든 위젯이 공유한다.
+## 팝업을 다시 그릴 때마다 수백 개씩 새로 만들던 StyleBoxFlat 을 줄인다.
+## 반환값은 공유 인스턴스이므로 절대 직접 수정하지 말 것 (필요하면 duplicate()).
+static var _style_cache := {}
+
+
+static func style(bg: Color, border: Color = BORDER, radius: int = 8, border_w: int = 1, pad_h: int = 12, pad_v: int = 8) -> StyleBoxFlat:
+	var key := [bg, border, radius, border_w, pad_h, pad_v]
+	if _style_cache.has(key):
+		return _style_cache[key]
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg
 	sb.set_border_width_all(border_w)
 	sb.border_color = border
 	sb.set_corner_radius_all(radius)
-	sb.content_margin_left = 12
-	sb.content_margin_right = 12
-	sb.content_margin_top = 8
-	sb.content_margin_bottom = 8
+	sb.content_margin_left = pad_h
+	sb.content_margin_right = pad_h
+	sb.content_margin_top = pad_v
+	sb.content_margin_bottom = pad_v
+	_style_cache[key] = sb
 	return sb
+
+
+## 캐시된 StyleBox 개수 (경량화 검증용)
+static func style_cache_size() -> int:
+	return _style_cache.size()
 
 
 static func panel(bg: Color = BG2, border: Color = BORDER, radius: int = 10) -> PanelContainer:
@@ -168,7 +183,7 @@ static func top_bar(title_text: String, on_back = null, show_volume: bool = fals
 		var setting_btn := button("⚙", GOLD)
 		setting_btn.custom_minimum_size = Vector2(32, 28)
 		setting_btn.pressed.connect(func():
-			var scene := load("res://scenes/ui/settings_popup.tscn")
+			var scene := load("res://scenes/popups/settings_popup.tscn")
 			if scene:
 				var popup = scene.instantiate()
 				if bar.get_tree() and bar.get_tree().current_scene:

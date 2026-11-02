@@ -5,11 +5,13 @@ extends Control
 ## 아군(용병) 또는 적군(몬스터) 데이터를 바인딩하여 2D 사이드뷰 형태로 표시하며,
 ## 에셋 부족 시 절차적 도형 플레이스홀더를 렌더링하고 스프라이트 에셋이 제공되면 즉시 교체할 수 있습니다.
 
-const FloatingTextScene = preload("res://scenes/entities/floating_text.gd")
+const FloatingTextScene = preload("res://scenes/expedition/entities/floating_text.gd")
 
-# ── 효과음 에셋 ──
+# ── [경량화] 공유 효과음 에셋 & [오브젝트 풀] 데미지 텍스트/오디오 풀 참조 ──
 static var _sfx_normal_stream: AudioStream = null
 static var _sfx_crit_stream: AudioStream = null
+var floating_text_pool: ObjectPool = null
+var sfx_pool: ObjectPool = null
 
 signal clicked(unit: BattleUnit)
 
@@ -326,17 +328,14 @@ func _update_view() -> void:
 	_hp_bar.max_value = max(max_hp, 1)
 	_hp_bar.value = clamp(current_hp, 0, max_hp)
 
-	# HP 비율에 따른 체력바 색상 스타일
-	var fill_sb := StyleBoxFlat.new()
-	fill_sb.set_corner_radius_all(3)
+	# [경량화] HP 비율에 따른 체력바 색상 스타일을 UiKit 공유 캐시에서 재사용
 	var hp_ratio := float(current_hp) / float(max(max_hp, 1))
+	var fill_col: Color = UiKit.RED
 	if hp_ratio > 0.5:
-		fill_sb.bg_color = UiKit.GREEN if is_ally else Color("9a3838")
+		fill_col = UiKit.GREEN if is_ally else Color("9a3838")
 	elif hp_ratio > 0.2:
-		fill_sb.bg_color = UiKit.GOLD
-	else:
-		fill_sb.bg_color = UiKit.RED
-	_hp_bar.add_theme_stylebox_override("fill", fill_sb)
+		fill_col = UiKit.GOLD
+	_hp_bar.add_theme_stylebox_override("fill", UiKit.style(fill_col, fill_col, 3, 0, 0, 0))
 
 	if current_hp <= 0 and not is_dead:
 		_on_death()
@@ -423,9 +422,14 @@ func play_take_damage(dmg: int, is_crit: bool = false) -> void:
 	# 1. 타격 효과음 재생
 	_play_hit_sound(is_crit)
 
-	# 2. 플로팅 텍스트 팝업 (크리티컬 시 대형 강조 배너 및 폰트)
-	var ft = FloatingTextScene.new()
-	get_parent().add_child(ft)
+	# 2. [오브젝트 풀] 플로팅 텍스트 팝업 (풀이 연결되어 있으면 풀에서 꺼내 쓰고 완료 시 반환)
+	var ft: FloatingText = null
+	if floating_text_pool != null:
+		ft = floating_text_pool.acquire() as FloatingText
+		ft.on_finished = func(n: Node): floating_text_pool.release(n)
+	else:
+		ft = FloatingTextScene.new()
+		get_parent().add_child(ft)
 	var txt := "-%d" % dmg
 	var col := Color("ff3b30") if not is_crit else Color("ff4400")
 	ft.popup(txt, col, global_position + Vector2(size.x * 0.5, 10), is_crit)
@@ -461,14 +465,19 @@ func _play_hit_sound(is_crit: bool) -> void:
 	if stream == null:
 		return
 
-	var player := AudioStreamPlayer.new()
+	var player: AudioStreamPlayer = null
+	if sfx_pool != null:
+		player = sfx_pool.acquire() as AudioStreamPlayer
+	else:
+		player = AudioStreamPlayer.new()
+		get_tree().root.add_child(player)
 	player.stream = stream
 	# 자연스러운 타격 질감을 위해 미세한 피치 변동 적용
 	player.pitch_scale = randf_range(0.96, 1.04) if not is_crit else randf_range(0.98, 1.02)
 	player.volume_db = 2.0 if is_crit else 0.0
-	get_tree().root.add_child(player)
 	player.play()
-	player.finished.connect(player.queue_free)
+	if sfx_pool == null and not player.finished.is_connected(player.queue_free):
+		player.finished.connect(player.queue_free)
 
 
 ## 사망 시 연출을 실행합니다.

@@ -2,14 +2,30 @@ class_name FloatingText
 extends Control
 
 ## 피격 또는 회복 시 대상 머리 위에 데미지/상태 숫자를 띄우고 서서히 페이드아웃하는 컴포넌트.
-## 크리티컬 피격 시 대형 폰트, 외곽선 및 강조 배너와 강력한 바운스 연출을 제공합니다.
+## [오브젝트 풀] on_finished 콜백이 지정되면 queue_free() 대신 풀로 반환하여 노드를 재사용한다.
 
 var _container: Control
 var _label: Label
+var on_finished: Callable = Callable()
 
 
 func _init() -> void:
 	mouse_filter = MOUSE_FILTER_IGNORE
+
+
+## 이전 재사용 자식을 정리하고 알파값을 복원한다.
+func _reset_for_reuse() -> void:
+	modulate = Color.WHITE
+	scale = Vector2.ONE
+	for c in get_children():
+		c.queue_free()
+
+
+func _finish() -> void:
+	if on_finished.is_valid():
+		on_finished.call(self)
+	else:
+		queue_free()
 
 
 ## 플로팅 텍스트 초기 설정 및 상승 페이드 애니메이션 실행.
@@ -18,6 +34,7 @@ func _init() -> void:
 ## [param start_pos]: 시작 위치 (글로벌 좌표)
 ## [param is_crit]: 크리티컬 여부 (크기, 외곽선, 강조 배너 적용)
 func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false) -> void:
+	_reset_for_reuse()
 	global_position = start_pos
 	z_index = 60
 
@@ -26,19 +43,10 @@ func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false
 	add_child(_container)
 
 	if is_crit:
-		# 크리티컬 전용 강조 배경 배너
+		# 크리티컬 전용 강조 배경 배너 ([경량화] 공유 StyleBox 사용)
 		var banner := PanelContainer.new()
 		banner.mouse_filter = MOUSE_FILTER_IGNORE
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.18, 0.04, 0.04, 0.85)
-		sb.border_color = Color("ffcc00")
-		sb.set_border_width_all(2)
-		sb.set_corner_radius_all(6)
-		sb.content_margin_left = 14
-		sb.content_margin_right = 14
-		sb.content_margin_top = 4
-		sb.content_margin_bottom = 4
-		banner.add_theme_stylebox_override("panel", sb)
+		banner.add_theme_stylebox_override("panel", UiKit.style(Color(0.18, 0.04, 0.04, 0.85), Color("ffcc00"), 6, 2, 14, 4))
 
 		var vbox := VBoxContainer.new()
 		vbox.add_theme_constant_override("separation", 0)
@@ -71,7 +79,6 @@ func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false
 		# 크리티컬 펀치 스케일 & 바운스 애니메이션
 		_container.scale = Vector2(0.2, 0.2)
 		var tween := create_tween().set_parallel(true)
-		# 2.2배로 폭발적 팽창 후 탄성 수축
 		tween.tween_property(_container, "scale", Vector2(1.8, 1.8), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tween.chain().tween_property(_container, "scale", Vector2(1.1, 1.1), 0.15).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
@@ -79,11 +86,11 @@ func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false
 		var move_tween := create_tween()
 		move_tween.tween_property(self, "position:y", position.y - 65.0, 0.95).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
-		# 페이드아웃
+		# 페이드아웃 후 풀 반환
 		var fade_tween := create_tween()
 		fade_tween.tween_interval(0.55)
 		fade_tween.tween_property(self, "modulate:a", 0.0, 0.4)
-		fade_tween.tween_callback(queue_free)
+		fade_tween.tween_callback(_finish)
 	else:
 		# 일반 피격 데미지 텍스트
 		_label = Label.new()
@@ -99,7 +106,7 @@ func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false
 		_label.position = Vector2(-50, -15)
 		_container.add_child(_label)
 
-		# 팝업 바운스 및 상승 페이드아웃
+		# 팝업 바운스 및 상승 페이드아웃 후 풀 반환
 		_container.scale = Vector2(0.5, 0.5)
 		var tween := create_tween().set_parallel(true)
 		tween.tween_property(_container, "scale", Vector2(1.3, 1.3), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -111,6 +118,6 @@ func popup(text: String, color: Color, start_pos: Vector2, is_crit: bool = false
 		var fade_tween := create_tween()
 		fade_tween.tween_interval(0.35)
 		fade_tween.tween_property(self, "modulate:a", 0.0, 0.35)
-		fade_tween.tween_callback(queue_free)
+		fade_tween.tween_callback(_finish)
 
 

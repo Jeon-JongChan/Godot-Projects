@@ -152,7 +152,7 @@ func _on_load_pressed() -> void:
 	if _active_popup != null:
 		return
 
-	var popup_scene := load("res://scenes/ui/save_load_popup.tscn")
+	var popup_scene := load("res://scenes/popups/save_load_popup.tscn")
 	var popup = popup_scene.instantiate()
 	_active_popup = popup
 	popup.closed.connect(func():
@@ -168,7 +168,7 @@ func _on_setting_pressed() -> void:
 	if _active_popup != null:
 		return
 
-	var popup_scene := load("res://scenes/ui/settings_popup.tscn")
+	var popup_scene := load("res://scenes/popups/settings_popup.tscn")
 	var popup = popup_scene.instantiate()
 	_active_popup = popup
 	popup.closed.connect(func():
