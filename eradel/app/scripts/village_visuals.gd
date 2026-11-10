@@ -1,3 +1,4 @@
+class_name VillageVisuals
 extends RefCounted
 
 ## 클래시 오브 클랜 / 다키스트 던전 스타일의 2.5D 마을 지형, 건물 외관, 내부 일러스트, 영웅 초상화를
@@ -14,107 +15,106 @@ class VillageTerrainCanvas extends Control:
 		anim_time += delta
 		queue_redraw()
 
-	## 마을 배경과 도로망, 건물 터, 가로등, 자연물을 렌더링한다.
+	## 다키스트 던전 1 스타일의 황혼녘 고딕 영지(The Estate) 배경 지형을 렌더링한다.
 	func _draw() -> void:
 		var w := size.x
 		var h := size.y
 
-		# 1. 다단계 밤하늘/황혼 그라데이션 (상단 심연 남색 -> 지평선 호박빛 어둠)
+		# 1. 다키스트 던전 시그니처: 핏빛/호박빛 황혼 노을과 짙은 먹구름 하늘
 		var sky_bands := [
-			{"y0": 0.0, "y1": 70.0, "c": Color("070910")},
-			{"y0": 70.0, "y1": 140.0, "c": Color("0c101b")},
-			{"y0": 140.0, "y1": 210.0, "c": Color("141622")},
-			{"y0": 210.0, "y1": 270.0, "c": Color("1e1a18")},
+			{"y0": 0.0, "y1": 65.0, "c": Color("06060a")},
+			{"y0": 65.0, "y1": 125.0, "c": Color("140a12")},
+			{"y0": 125.0, "y1": 185.0, "c": Color("281014")},
+			{"y0": 185.0, "y1": 240.0, "c": Color("421a16")},
+			{"y0": 240.0, "y1": 275.0, "c": Color("582a1c")},
 		]
 		for b in sky_bands:
 			draw_rect(Rect2(0, b.y0, w, b.y1 - b.y0 + 2), b.c)
 
-		# 2. 반짝이는 별빛과 초승달
-		for i in range(55):
-			var sx := fmod(float(i * 197 + 43), w - 40.0) + 20.0
-			var sy := fmod(float(i * 73 + 19), 185.0) + 12.0
-			var twinkle := 0.45 + 0.45 * sin(anim_time * (1.5 + fmod(float(i), 3.0)) + float(i))
-			var r := 1.2 if (i % 3 != 0) else 2.0
-			draw_circle(Vector2(sx, sy), r, Color(0.95, 0.92, 0.80, twinkle))
+		# 2. 지평선 노을 속 붉은 태양빛 무리와 먹구름 띠
+		draw_circle(Vector2(w * 0.48, 255), 180.0, Color(0.95, 0.45, 0.15, 0.12))
+		draw_circle(Vector2(w * 0.48, 255), 110.0, Color(1.0, 0.65, 0.25, 0.18))
 
-		# 달무리와 달
-		var moon_pos := Vector2(1120, 62)
-		draw_circle(moon_pos, 54.0, Color(0.92, 0.84, 0.55, 0.05))
-		draw_circle(moon_pos, 34.0, Color(0.95, 0.88, 0.62, 0.12))
-		draw_circle(moon_pos, 18.0, Color(0.98, 0.93, 0.74, 0.92))
-		draw_circle(moon_pos + Vector2(6, -3), 15.0, Color("0c101b"))
-
-		# 3. 원경 설산 산맥 실루엣
-		var far_mtn := PackedVector2Array([
-			Vector2(0, 250), Vector2(140, 165), Vector2(290, 215), Vector2(460, 145),
-			Vector2(650, 205), Vector2(890, 130), Vector2(1120, 195), Vector2(1340, 150),
-			Vector2(1580, 210), Vector2(1820, 140), Vector2(2060, 190), Vector2(2280, 125),
-			Vector2(w, 190), Vector2(w, 290), Vector2(0, 290)
+		# 짙은 먹구름 실루엣
+		var cloud_pts := PackedVector2Array([
+			Vector2(0, 110), Vector2(180, 85), Vector2(380, 120), Vector2(620, 90),
+			Vector2(920, 130), Vector2(1250, 95), Vector2(1580, 135), Vector2(1920, 90),
+			Vector2(2240, 120), Vector2(w, 100), Vector2(w, 160), Vector2(0, 160)
 		])
-		draw_colored_polygon(far_mtn, Color("12151e"))
+		draw_colored_polygon(cloud_pts, Color(0.08, 0.05, 0.07, 0.75))
 
-		# 중경 침엽수림 능선 및 원경 성곽 실루엣
+		# 3. 원경 뾰족한 고딕 첨탑 성곽 & 톱니 산맥 실루엣 (다키스트 던전 1 1.webp)
+		var far_mtn := PackedVector2Array([
+			Vector2(0, 250), Vector2(110, 175), Vector2(190, 220), Vector2(340, 140),
+			Vector2(450, 195), Vector2(640, 130), Vector2(810, 185), Vector2(980, 110),
+			Vector2(1180, 175), Vector2(1390, 125), Vector2(1620, 180), Vector2(1850, 120),
+			Vector2(2120, 170), Vector2(2360, 115), Vector2(w, 180), Vector2(w, 290), Vector2(0, 290)
+		])
+		draw_colored_polygon(far_mtn, Color("100a10"))
+
+		# 중경 불길한 침엽수림 능선 & 원경 성곽 십자가 실루엣
 		var mid_hills := PackedVector2Array([
-			Vector2(0, 265), Vector2(220, 225), Vector2(520, 250), Vector2(910, 210),
-			Vector2(1280, 248), Vector2(1650, 220), Vector2(2020, 245), Vector2(w, 225),
+			Vector2(0, 265), Vector2(180, 230), Vector2(460, 252), Vector2(820, 215),
+			Vector2(1160, 250), Vector2(1540, 225), Vector2(1920, 248), Vector2(w, 225),
 			Vector2(w, 320), Vector2(0, 320)
 		])
-		draw_colored_polygon(mid_hills, Color("151914"))
+		draw_colored_polygon(mid_hills, Color("140e14"))
 
-		# 4. 마을 대지 (클래시 오브 클랜 스타일의 입체적인 녹색/암갈색 잔디 평원)
-		draw_rect(Rect2(0, 245, w, h - 245), Color("192014"))
+		# 4. 마을 대지 (황폐한 잿빛 흑토와 자갈, 다키스트 던전 고딕 톤)
+		draw_rect(Rect2(0, 255, w, h - 255), Color("121014"))
 
-		# 지형 음영 패치 (언덕과 분지 느낌 부여)
-		_draw_ellipse(Vector2(930, 195), Vector2(290, 85), Color("222a1b"))
-		_draw_ellipse(Vector2(500, 320), Vector2(340, 170), Color("1d2617"))
-		_draw_ellipse(Vector2(1450, 360), Vector2(380, 190), Color("1c2416"))
-		# 우측 어둠의 균열 주변 오염된 보랏빛/암적색 대지
-		_draw_ellipse(Vector2(2180, 350), Vector2(260, 165), Color("22131c"))
-		_draw_ellipse(Vector2(2180, 350), Vector2(185, 115), Color("2d1424"))
+		# 음산한 지형 음영 패치
+		_draw_ellipse(Vector2(930, 205), Vector2(320, 90), Color("18141a"))
+		_draw_ellipse(Vector2(500, 320), Vector2(360, 180), Color("151217"))
+		_draw_ellipse(Vector2(1450, 360), Vector2(400, 200), Color("161318"))
+		# 우측 어둠의 균열 주변 핏빛/보랏빛 오염 대지
+		_draw_ellipse(Vector2(2180, 350), Vector2(280, 175), Color("220c18"))
+		_draw_ellipse(Vector2(2180, 350), Vector2(190, 120), Color("340f22"))
 
-		# 5. 마을 건물들을 연결하는 입체 조약돌 도로망 (Cobblestone Roads)
+		# 5. 마을 건물들을 연결하는 비에 젖은 어두운 조약돌 도로망 (Cobblestone)
 		var road_paths := [
-			# 메인 가로 가도 (좌측 입구 -> 중앙 광장 -> 우측 기념관 -> 차원문)
 			[Vector2(40, 410), Vector2(230, 410), Vector2(500, 350), Vector2(840, 460), Vector2(1120, 460), Vector2(1480, 360), Vector2(1810, 440), Vector2(2180, 390)],
-			# 영웅숙소 & 영주저택 북측 연결로
 			[Vector2(500, 350), Vector2(500, 260), Vector2(935, 250), Vector2(1480, 290), Vector2(1480, 360)],
-			# 치료소 & 대장간 & 마법사학회 남측 연결로
 			[Vector2(500, 350), Vector2(500, 525), Vector2(850, 625), Vector2(1285, 625), Vector2(1480, 360)],
-			# 중앙 영주저택 광장 종단로
 			[Vector2(935, 250), Vector2(935, 460)],
 		]
 		for path in road_paths:
 			_draw_cobblestone_path(path, 34.0)
 
-		# 영주 저택 앞 중앙 원형 석조 광장
-		_draw_ellipse(Vector2(935, 275), Vector2(115, 36), Color("2c251d"))
-		_draw_ellipse(Vector2(935, 275), Vector2(102, 30), Color("383025"))
-		_draw_ellipse_outline(Vector2(935, 275), Vector2(102, 30), Color("524534"), 2.0)
+		# 중앙 석상 분수대 광장
+		_draw_ellipse(Vector2(935, 275), Vector2(115, 36), Color("1e1820"))
+		_draw_ellipse(Vector2(935, 275), Vector2(102, 30), Color("28202a"))
+		_draw_ellipse_outline(Vector2(935, 275), Vector2(102, 30), Color("44384a"), 2.0)
 
-		# 6. 각 건물 아래의 마을 터/기단 (Isometric Building Plot Pad)
+		# 6. 각 건물 터 고딕 기단 (Dark Inked Plot Base)
 		for def in building_defs:
 			var r: Rect2 = def.rect
 			var center_bottom := Vector2(r.position.x + r.size.x * 0.5, r.position.y + r.size.y - 12.0)
 			var pad_rx := r.size.x * 0.54
 			var pad_ry := 34.0
 			var is_dungeon: bool = (def.id == "dungeon_gate")
-			# 그림자 및 잔디/석조 테두리 기단
-			_draw_ellipse(center_bottom + Vector2(0, 6), Vector2(pad_rx + 8, pad_ry + 5), Color(0, 0, 0, 0.42))
-			_draw_ellipse(center_bottom, Vector2(pad_rx, pad_ry), Color("2e1828") if is_dungeon else Color("2a3321"))
-			_draw_ellipse(center_bottom, Vector2(pad_rx - 8, pad_ry - 5), Color("241220") if is_dungeon else Color("342c22"))
-			_draw_ellipse_outline(center_bottom, Vector2(pad_rx - 4, pad_ry - 2), Color("7a2848") if is_dungeon else Color("4d402e"), 2.0)
+			_draw_ellipse(center_bottom + Vector2(0, 6), Vector2(pad_rx + 8, pad_ry + 5), Color(0, 0, 0, 0.65))
+			_draw_ellipse(center_bottom, Vector2(pad_rx, pad_ry), Color("2e1220") if is_dungeon else Color("1e1a22"))
+			_draw_ellipse(center_bottom, Vector2(pad_rx - 8, pad_ry - 5), Color("220c16") if is_dungeon else Color("28222c"))
+			_draw_ellipse_outline(center_bottom, Vector2(pad_rx - 4, pad_ry - 2), Color("8a2542") if is_dungeon else Color("423846"), 2.0)
 
-		# 7. 마을 조경 소품 (소나무, 참나무, 울타리, 바위, 가로등 횃불)
-		var tree_positions := [
-			Vector2(55, 230), Vector2(295, 195), Vector2(335, 320), Vector2(280, 535),
-			Vector2(655, 175), Vector2(655, 465), Vector2(1165, 175), Vector2(1225, 250),
-			Vector2(1080, 560), Vector2(1505, 495), Vector2(1645, 195), Vector2(1635, 515),
-			Vector2(1955, 175), Vector2(1945, 520), Vector2(2360, 195), Vector2(2380, 500)
+		# 7. 다키스트 던전 풍 조경: 앙상한 가시나무(Dead Trees), 십자가 묘비(Tombstones), 호박빛 횃불 랜턴
+		var dead_trees := [
+			Vector2(55, 230), Vector2(295, 195), Vector2(655, 175), Vector2(1165, 175),
+			Vector2(1645, 195), Vector2(1955, 175), Vector2(2360, 195)
 		]
-		for tp in tree_positions:
-			_draw_village_tree(tp)
+		for dt in dead_trees:
+			_draw_gothic_dead_tree(dt)
 
-		# 가로등/화톳불 위치 (따스한 주황색 불빛 풀 연출)
+		# 묘지 십자가 비석들 (Cemetery Graves)
+		var graves := [
+			Vector2(320, 310), Vector2(350, 335), Vector2(640, 480), Vector2(1210, 245),
+			Vector2(1520, 510), Vector2(1930, 530), Vector2(2380, 520)
+		]
+		for g in graves:
+			_draw_cemetery_tombstone(g)
+
+		# 불타오르는 철제 가로등 횃불
 		var lamp_positions := [
 			Vector2(245, 420), Vector2(365, 275), Vector2(365, 515),
 			Vector2(685, 280), Vector2(825, 285), Vector2(1045, 285),
@@ -158,20 +158,30 @@ class VillageTerrainCanvas extends Control:
 				var off := Vector2(sin(float(s * 3 + i)) * 6.0, cos(float(s * 5 + i)) * 4.0)
 				_draw_ellipse(pos + off, Vector2(7, 4), Color("483d2e"))
 
-	## 마을 나무(침엽수/활엽수) 드로잉
-	func _draw_village_tree(pos: Vector2) -> void:
-		# 그림자
-		_draw_ellipse(pos + Vector2(0, 4), Vector2(22, 8), Color(0, 0, 0, 0.45))
-		# 기둥
-		draw_rect(Rect2(pos.x - 4, pos.y - 18, 8, 22), Color("3b2818"))
-		# 3단 잎사귀 레이어
-		var sway := sin(anim_time * 1.6 + pos.x * 0.05) * 2.0
-		var c1 := PackedVector2Array([Vector2(pos.x - 24, pos.y - 12), Vector2(pos.x + 24, pos.y - 12), Vector2(pos.x + sway, pos.y - 44)])
-		var c2 := PackedVector2Array([Vector2(pos.x - 20, pos.y - 26), Vector2(pos.x + 20, pos.y - 26), Vector2(pos.x + sway * 1.2, pos.y - 58)])
-		var c3 := PackedVector2Array([Vector2(pos.x - 14, pos.y - 40), Vector2(pos.x + 14, pos.y - 40), Vector2(pos.x + sway * 1.5, pos.y - 70)])
-		draw_colored_polygon(c1, Color("182c1b"))
-		draw_colored_polygon(c2, Color("203823"))
-		draw_colored_polygon(c3, Color("29452c"))
+	## 다키스트 던전 스타일 앙상한 가시나무(Dead Tree) 드로잉
+	func _draw_gothic_dead_tree(pos: Vector2) -> void:
+		_draw_ellipse(pos + Vector2(0, 4), Vector2(16, 6), Color(0, 0, 0, 0.55))
+		var trunk_c := Color("140f16")
+		# 뒤틀린 줄기
+		draw_line(pos, pos + Vector2(-3, -26), trunk_c, 5.0)
+		draw_line(pos + Vector2(-3, -26), pos + Vector2(4, -48), trunk_c, 4.0)
+		# 앙상한 가지들
+		draw_line(pos + Vector2(-3, -26), pos + Vector2(-16, -42), trunk_c, 2.5)
+		draw_line(pos + Vector2(-16, -42), pos + Vector2(-24, -50), trunk_c, 1.5)
+		draw_line(pos + Vector2(4, -48), pos + Vector2(18, -62), trunk_c, 2.0)
+		draw_line(pos + Vector2(4, -48), pos + Vector2(-8, -66), trunk_c, 2.0)
+		# 나뭇가지 끝에 앉은 불길한 까마귀 실루엣
+		draw_circle(pos + Vector2(18, -64), 2.5, Color("080608"))
+
+	## 공동묘지 십자가 묘비(Tombstone) 드로잉
+	func _draw_cemetery_tombstone(pos: Vector2) -> void:
+		_draw_ellipse(pos + Vector2(0, 2), Vector2(10, 4), Color(0, 0, 0, 0.45))
+		# 석조 비석 십자가
+		var stone_c := Color("302a34")
+		draw_rect(Rect2(pos.x - 2, pos.y - 18, 4, 18), stone_c)
+		draw_rect(Rect2(pos.x - 7, pos.y - 14, 14, 4), stone_c)
+		# 십자가 하이라이트
+		draw_line(Vector2(pos.x, pos.y - 18), Vector2(pos.x, pos.y), Color("4a4252"), 1.0)
 
 	## 마을 길가 횃불/가로등 드로잉
 	func _draw_street_lantern(pos: Vector2) -> void:
@@ -187,26 +197,67 @@ class VillageTerrainCanvas extends Control:
 		draw_circle(glow_pos, 4.5, Color(1.0, 0.88, 0.45, 0.95))
 
 
-## 개별 마을 건물을 2.5D 건축물 일러스트 형태로 그리는 캔버스
+## 개별 마을 건물을 2.5D 다키스트 던전 도트 스프라이트와 애니메이션으로 그리는 캔버스
 class VillageBuildingCanvas extends Control:
 	var def: Dictionary = {}
 	var is_hovered: bool = false
 	var anim_time: float = 0.0
+	static var _b_tex_cache: Dictionary = {}
+	static var _portal_tex: Texture2D = null
+
+	func _ready() -> void:
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 	## [업데이트 메서드] 개별 _process 대신 상위 월드의 단일 루프에서 일괄 호출된다.
 	func update_tick(delta: float) -> void:
 		anim_time += delta
 		queue_redraw()
 
+	func _get_building_texture(bid: String) -> Texture2D:
+		if _b_tex_cache.has(bid):
+			return _b_tex_cache[bid]
+		var path := "res://assets/sprites/buildings/%s.png" % bid
+		var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
+		_b_tex_cache[bid] = tex
+		return tex
+
 	func _draw() -> void:
 		var w := size.x
 		var h := size.y
+		var bid: String = def.get("id", "")
 		var btype: String = def.get("type", "guild")
 
 		# 호버 시 건물 바닥 황금빛 선택 오라 표시
 		if is_hovered:
 			_draw_ellipse(Vector2(w * 0.5, h - 18), Vector2(w * 0.48, 28), Color(0.95, 0.78, 0.32, 0.28))
 			_draw_ellipse_outline(Vector2(w * 0.5, h - 18), Vector2(w * 0.48, 28), UiKit.GOLD2, 3.0)
+
+		var tex := _get_building_texture(bid)
+		if tex != null:
+			var tw := float(tex.get_width())
+			var th := float(tex.get_height())
+			var fit_scale := minf((w * 0.96) / maxf(1.0, tw), (h * 0.96) / maxf(1.0, th))
+			var draw_w := tw * fit_scale
+			var draw_h := th * fit_scale
+			var draw_x := (w - draw_w) * 0.5
+			var draw_y := (h - 14.0) - draw_h
+			var tint := Color(1.16, 1.12, 1.04, 1.0) if is_hovered else Color.WHITE
+			draw_texture_rect(tex, Rect2(draw_x, draw_y, draw_w, draw_h), false, tint)
+
+			# 어둠의 균열(dungeon_gate) 위 pixelfx 차원문 에너지 애니메이션 합성
+			if bid == "dungeon_gate":
+				if _portal_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/portal/arcane/portal/portal.png"):
+					_portal_tex = load("res://assets/sprites/vfx/portal/arcane/portal/portal.png")
+				if _portal_tex != null:
+					var frame_idx := int(anim_time * 24.0) % 72
+					var src_rect := Rect2(frame_idx * 152, 0, 152, 116)
+					var p_dst := Rect2(w * 0.5 - 52, draw_y + draw_h * 0.30, 104, 80)
+					draw_texture_rect_region(_portal_tex, p_dst, src_rect, Color(1.0, 0.55, 0.75, 0.92))
+			# 대장간 화덕 따뜻한 점멸 글로우 & 굴뚝 도트 연기
+			elif bid == "blacksmith":
+				var pulse := 0.22 + 0.12 * sin(anim_time * 7.0)
+				draw_circle(Vector2(draw_x + draw_w * 0.65, draw_y + draw_h * 0.64), 24.0, Color(1.0, 0.42, 0.1, pulse))
+			return
 
 		match btype:
 			"guild":
@@ -620,10 +671,16 @@ class VillageBuildingCanvas extends Control:
 			draw_circle(p, 3.5, Color("ff7098"))
 
 
-## 대형 팝업 좌측에 표시되는 건물 내부 일러스트 쇼케이스 캔버스
+## 대형 팝업 좌측에 표시되는 건물 내부 도트 일러스트 및 NPC 쇼케이스 캔버스
 class BuildingInteriorCanvas extends Control:
 	var btype: String = "guild"
 	var anim_time: float = 0.0
+	static var _int_bg_cache: Dictionary = {}
+	static var _npc_cache: Dictionary = {}
+	static var _dungeon_portal_tex: Texture2D = null
+
+	func _ready() -> void:
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 	## [업데이트 메서드] 팝업이 열려 있을 때만 상위 월드 루프가 호출한다.
 	func update_tick(delta: float) -> void:
@@ -633,7 +690,52 @@ class BuildingInteriorCanvas extends Control:
 	func _draw() -> void:
 		var w := size.x
 		var h := size.y
-		# 내부 석조/목조 배경 액자
+
+		# 1. 건물별 도트 내부 배경 로드
+		var bg_path := "res://assets/sprites/interiors/%s_bg.png" % btype
+		if btype == "blacksmith":
+			bg_path = "res://assets/sprites/ui/blacksmith_interior_bg.png"
+		var bg_tex: Texture2D = null
+		if _int_bg_cache.has(bg_path):
+			bg_tex = _int_bg_cache[bg_path]
+		elif ResourceLoader.exists(bg_path):
+			bg_tex = load(bg_path)
+			_int_bg_cache[bg_path] = bg_tex
+
+		if bg_tex != null:
+			draw_texture_rect(bg_tex, Rect2(0, 0, w, h), false)
+
+			# 어둠의 균열일 경우 pixelfx 차원문 루프
+			if btype == "dungeon":
+				if _dungeon_portal_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/portal/arcane/portal/portal.png"):
+					_dungeon_portal_tex = load("res://assets/sprites/vfx/portal/arcane/portal/portal.png")
+				if _dungeon_portal_tex != null:
+					var f_idx := int(anim_time * 24.0) % 72
+					var src_r := Rect2(f_idx * 152, 0, 152, 116)
+					draw_texture_rect_region(_dungeon_portal_tex, Rect2(w * 0.28, h * 0.24, 152, 116), src_r, Color(1, 0.7, 0.9, 0.95))
+
+			# 2. 건물별 담당 NPC 도트 스프라이트 렌더링
+			var npc_path := "res://assets/sprites/npc/npc_%s.png" % btype
+			var npc_tex: Texture2D = null
+			if _npc_cache.has(npc_path):
+				npc_tex = _npc_cache[npc_path]
+			elif ResourceLoader.exists(npc_path):
+				npc_tex = load(npc_path)
+				_npc_cache[npc_path] = npc_tex
+
+			if npc_tex != null:
+				var nw := float(npc_tex.get_width()) * 1.35
+				var nh := float(npc_tex.get_height()) * 1.35
+				var bob := sin(anim_time * 2.8) * 2.0
+				var nx := w * 0.62
+				var ny := (h - 22.0) - nh + bob
+				draw_texture_rect(npc_tex, Rect2(nx, ny, nw, nh), false)
+
+			# 3. 고딕 황금 테두리 액자 프레임
+			draw_rect(Rect2(0, 0, w, h), UiKit.BORDER2, false, 2.0)
+			return
+
+		# 폴백: 내부 석조/목조 배경 액자
 		draw_rect(Rect2(0, 0, w, h), Color("120f0b"))
 		# 뒷벽 석조 타일 무늬
 		for row in range(5):
@@ -692,30 +794,550 @@ class BuildingInteriorCanvas extends Control:
 		draw_rect(Rect2(1, 1, w - 2, h - 2), UiKit.BORDER2, false, 2.0)
 
 
-## 용병 카드 및 파티 슬롯에 사용되는 직업별 고딕 캐릭터 실루엣 초상화 위젯
+## 다키스트 던전 스타일의 16비트 도트 초상화 및 등급 프레임 위젯
 class HeroPortraitCanvas extends Control:
 	var category: String = "전사"
 	var grade: String = "일반"
+	var hero_name: String = ""
+	static var _p_tex_cache: Dictionary = {}
+
+	func _ready() -> void:
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _get_portrait_texture(cat: String) -> Texture2D:
+		var key := "warrior"
+		match cat:
+			"마법사": key = "mage"
+			"레인저", "도적": key = "ranger"
+			"성직자": key = "cleric"
+			_: key = "warrior"
+		if _p_tex_cache.has(key):
+			return _p_tex_cache[key]
+		var path := "res://assets/sprites/characters/portrait_%s.png" % key
+		var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
+		_p_tex_cache[key] = tex
+		return tex
 
 	func _draw() -> void:
 		var w := size.x
 		var h := size.y
 		var accent := JobDb.category_color(category)
-		# 배경 메달리온
-		draw_rect(Rect2(0, 0, w, h), Color("16130e"))
-		draw_circle(Vector2(w * 0.5, h * 0.5), w * 0.42, Color(accent.r, accent.g, accent.b, 0.18))
-		# 망토/갑옷 어깨
+
+		var tex := _get_portrait_texture(category)
+		if tex != null:
+			draw_texture_rect(tex, Rect2(1, 1, w - 2, h - 2), false)
+			var frame_c := JobDb.grade_color(grade)
+			draw_rect(Rect2(1, 1, w - 2, h - 2), frame_c, false, 2.0)
+			return
+
+		# 폴백 벡터 드로잉
+		draw_rect(Rect2(0, 0, w, h), Color("0c0a0d"))
+		# 후면 은은한 직업 상징 메달리온 원형광채
+		draw_circle(Vector2(w * 0.5, h * 0.48), minf(w, h) * 0.44, Color(accent.r, accent.g, accent.b, 0.16))
+
 		var cx := w * 0.5
-		draw_colored_polygon(PackedVector2Array([
-			Vector2(cx - 16, h * 0.48), Vector2(cx + 16, h * 0.48),
-			Vector2(cx + 22, h - 4), Vector2(cx - 22, h - 4)
-		]), accent.darkened(0.45))
-		# 투구/후드/고깔모자 머리
-		if category == "마법사":
-			draw_colored_polygon(PackedVector2Array([
-				Vector2(cx, h * 0.14), Vector2(cx + 16, h * 0.48), Vector2(cx - 16, h * 0.48)
-			]), accent.lightened(0.15))
+		var cy := h * 0.42
+
+		# 2. 어깨 갑옷 / 가죽 코트 / 로브 실루엣 (깊은 먹선 및 다키스트 던전 스타일 섀도우)
+		var shoulder_poly := PackedVector2Array([
+			Vector2(cx - w * 0.38, h - 2),
+			Vector2(cx - w * 0.28, cy + h * 0.14),
+			Vector2(cx - w * 0.16, cy + h * 0.08),
+			Vector2(cx + w * 0.16, cy + h * 0.08),
+			Vector2(cx + w * 0.28, cy + h * 0.14),
+			Vector2(cx + w * 0.38, h - 2)
+		])
+		draw_colored_polygon(shoulder_poly, Color("14121a"))
+		# 옷깃/견갑 음영 하이라이트
+		draw_polyline(shoulder_poly, Color(accent.r * 0.8, accent.g * 0.8, accent.b * 0.8, 0.6), 1.5)
+
+		# 3. 직업별 다키스트 던전 고딕 페이스 & 헤어/장비 드로잉
+		match category:
+			"전사":
+				# 성전사/검사: 은빛 철제 투구, T자형 섀도우 슬릿 (눈이 깊은 그림자에 가려짐)
+				var helm_poly := PackedVector2Array([
+					Vector2(cx - w * 0.20, cy - h * 0.18),
+					Vector2(cx + w * 0.20, cy - h * 0.18),
+					Vector2(cx + w * 0.24, cy + h * 0.10),
+					Vector2(cx, cy + h * 0.22),
+					Vector2(cx - w * 0.24, cy + h * 0.10)
+				])
+				draw_colored_polygon(helm_poly, Color("323640"))
+				draw_polyline(helm_poly, Color("586070"), 1.5)
+				# 다키스트 던전 시그니처: 검은색 T자형 바이저 섀도우
+				draw_line(Vector2(cx - w * 0.16, cy - h * 0.02), Vector2(cx + w * 0.16, cy - h * 0.02), Color("08080a"), 4.0)
+				draw_line(Vector2(cx, cy - h * 0.02), Vector2(cx, cy + h * 0.16), Color("08080a"), 4.0)
+				# 황금빛 십자가 리벳
+				draw_circle(Vector2(cx, cy - h * 0.10), 3.0, Color("d4af37"))
+
+			"마법사", "성직자":
+				# 사제/수도사/마법사: 깊은 후드, 챙 그늘에 가려진 얼굴, 굳게 다문 입술
+				var hood_poly := PackedVector2Array([
+					Vector2(cx, cy - h * 0.26),
+					Vector2(cx + w * 0.26, cy + h * 0.14),
+					Vector2(cx - w * 0.26, cy + h * 0.14)
+				])
+				draw_colored_polygon(hood_poly, Color("20162a"))
+				# 얼굴 섀도우 (완전한 암흑)
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(cx, cy - h * 0.14),
+					Vector2(cx + w * 0.16, cy + h * 0.10),
+					Vector2(cx - w * 0.16, cy + h * 0.10)
+				]), Color("0a070e"))
+				# 후드 테두리 금빛 룬 장식
+				draw_line(Vector2(cx, cy - h * 0.26), Vector2(cx + w * 0.26, cy + h * 0.14), Color("9966cc"), 1.5)
+				draw_line(Vector2(cx, cy - h * 0.26), Vector2(cx - w * 0.26, cy + h * 0.14), Color("9966cc"), 1.5)
+
+			"레인저", "도적":
+				# 도굴꾼/현상금 사냥꾼: 비스듬히 눌러쓴 챙 넓은 모자, 입가를 가린 복면
+				var hat_brim := PackedVector2Array([
+					Vector2(cx - w * 0.32, cy - h * 0.04),
+					Vector2(cx + w * 0.32, cy - h * 0.12),
+					Vector2(cx + w * 0.18, cy - h * 0.26),
+					Vector2(cx - w * 0.18, cy - h * 0.20)
+				])
+				draw_colored_polygon(hat_brim, Color("2a2018"))
+				# 모자 아래 짙은 그림자
+				draw_rect(Rect2(cx - w * 0.20, cy - h * 0.06, w * 0.40, h * 0.12), Color("0a0806"))
+				# 입가를 가린 가죽 마스크
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(cx - w * 0.16, cy + h * 0.04),
+					Vector2(cx + w * 0.16, cy + h * 0.04),
+					Vector2(cx, cy + h * 0.20)
+				]), Color("3a2c20"))
+
+			_:
+				# 기본 고딕 실루엣
+				draw_circle(Vector2(cx, cy), w * 0.20, Color("221e28"))
+				draw_rect(Rect2(cx - w * 0.16, cy - h * 0.06, w * 0.32, h * 0.08), Color("0a080e"))
+
+		# 4. 등급별(일반/정예/특수) 고딕 액자 프레임
+		var frame_c := JobDb.grade_color(grade)
+		draw_rect(Rect2(1, 1, w - 2, h - 2), frame_c, false, 2.0)
+		# 네 모서리 철제 장식 팁
+		var corner_size := 5.0
+		draw_line(Vector2(1, 1), Vector2(1 + corner_size, 1), Color("ffffff"), 1.5)
+		draw_line(Vector2(1, 1), Vector2(1, 1 + corner_size), Color("ffffff"), 1.5)
+		draw_line(Vector2(w - 2, 1), Vector2(w - 2 - corner_size, 1), Color("ffffff"), 1.5)
+		draw_line(Vector2(w - 2, 1), Vector2(w - 2, 1 + corner_size), Color("ffffff"), 1.5)
+
+
+## 대장간의 4대 장비(무기, 갑옷, 투구, 장신구)를 고딕 도트 아이콘 텍스처로 그리는 캔버스
+class EquipmentIconCanvas extends Control:
+	var slot_type: String = "weapon" # weapon, armor, helmet, ring
+	var item_level: int = 1
+	var is_selected: bool = false
+	static var _eq_tex_cache: Dictionary = {}
+
+	func _ready() -> void:
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _get_eq_texture(stype: String) -> Texture2D:
+		if _eq_tex_cache.has(stype):
+			return _eq_tex_cache[stype]
+		var path := "res://assets/sprites/ui/icon_%s.png" % stype
+		var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
+		_eq_tex_cache[stype] = tex
+		return tex
+
+	func _draw() -> void:
+		var w := size.x
+		var h := size.y
+
+		# 1. 고딕 장비 슬롯 배경 (어두운 주철 텍스처)
+		var bg_c := Color("141118") if not is_selected else Color("221b16")
+		draw_rect(Rect2(0, 0, w, h), bg_c)
+
+		var tex := _get_eq_texture(slot_type)
+		if tex != null:
+			var pad := 6.0
+			var max_dim := minf(w, h) - pad * 2.0
+			var sc := minf(max_dim / float(tex.get_width()), max_dim / float(tex.get_height()))
+			var dw := float(tex.get_width()) * sc
+			var dh := float(tex.get_height()) * sc
+			draw_texture_rect(tex, Rect2((w - dw) * 0.5, (h - dh) * 0.5, dw, dh), false)
+			if is_selected:
+				draw_rect(Rect2(0, 0, w, h), Color("f6d355"), false, 3.0)
+				draw_rect(Rect2(-2, -2, w + 4, h + 4), Color(0.96, 0.83, 0.33, 0.35), false, 2.0)
+			else:
+				draw_rect(Rect2(0, 0, w, h), Color("2e2a34"), false, 1.5)
+			return
+
+		var cx := w * 0.5
+		var cy := h * 0.5
+
+		# 2. 장비 타입별 고품질 절차적 벡터/도트 렌더링
+		match slot_type:
+			"weapon":
+				# 고대 은빛 검 (대각선으로 배치된 날카로운 장검)
+				# 칼날
+				var blade_poly := PackedVector2Array([
+					Vector2(cx + 20, cy - 22),
+					Vector2(cx + 25, cy - 20),
+					Vector2(cx - 10, cy + 15),
+					Vector2(cx - 14, cy + 11)
+				])
+				draw_colored_polygon(blade_poly, Color("c2cad6"))
+				# 칼날 중심 하이라이트 라인
+				draw_line(Vector2(cx + 22, cy - 21), Vector2(cx - 12, cy + 13), Color("ffffff"), 1.5)
+				# 십자 코등이 (Crossguard - 금빛)
+				draw_line(Vector2(cx - 18, cy + 6), Vector2(cx - 6, cy + 18), Color("d4af37"), 4.0)
+				# 손잡이 (Grip) & 폼멜 (Pommel)
+				draw_line(Vector2(cx - 12, cy + 12), Vector2(cx - 20, cy + 20), Color("4a321a"), 3.0)
+				draw_circle(Vector2(cx - 22, cy + 22), 3.5, Color("d4af37"))
+
+			"armor":
+				# 묵직한 강철 판금 흉갑 (Plate Armor)
+				var chest_poly := PackedVector2Array([
+					Vector2(cx - 16, cy - 16), Vector2(cx + 16, cy - 16),
+					Vector2(cx + 20, cy - 6), Vector2(cx + 14, cy + 18),
+					Vector2(cx - 14, cy + 18), Vector2(cx - 20, cy - 6)
+				])
+				draw_colored_polygon(chest_poly, Color("4a5360"))
+				# 가슴 중앙 엠보싱 리벳 라인
+				draw_line(Vector2(cx, cy - 16), Vector2(cx, cy + 16), Color("2e3540"), 2.0)
+				draw_line(Vector2(cx - 14, cy - 6), Vector2(cx + 14, cy - 6), Color("727e90"), 2.0)
+				# 금빛 버클
+				draw_circle(Vector2(cx, cy + 10), 3.0, Color("d4af37"))
+
+			"helmet":
+				# 기사의 그레이트 헬름 (Great Helm)
+				var helm_poly := PackedVector2Array([
+					Vector2(cx - 15, cy - 18), Vector2(cx + 15, cy - 18),
+					Vector2(cx + 18, cy + 8), Vector2(cx, cy + 20),
+					Vector2(cx - 18, cy + 8)
+				])
+				draw_colored_polygon(helm_poly, Color("505866"))
+				# T자형 흑철 시야 슬릿
+				draw_line(Vector2(cx - 12, cy - 2), Vector2(cx + 12, cy - 2), Color("121418"), 3.0)
+				draw_line(Vector2(cx, cy - 2), Vector2(cx, cy + 14), Color("121418"), 3.0)
+				# 투구 상단 금빛 브로우 밴드
+				draw_line(Vector2(cx - 15, cy - 12), Vector2(cx + 15, cy - 12), Color("d4af37"), 2.0)
+
+			"ring":
+				# 신비로운 룬이 각인된 황금 마법 반지
+				draw_circle(Vector2(cx, cy), 18.0, Color("c8982a"))
+				draw_circle(Vector2(cx, cy), 12.0, bg_c)
+				# 상단에 박힌 찬란한 사파이어/루비 보석
+				draw_circle(Vector2(cx, cy - 16), 5.5, Color("22b8ff"))
+				draw_circle(Vector2(cx, cy - 16), 2.5, Color("ffffff")) # 광채 하이라이트
+
+		# 3. 테두리 및 선택 강조 효과 (image2.png처럼 선택 시 황금빛 오라!)
+		if is_selected:
+			# 황금빛 외곽선 + 네 모서리 하이라이트
+			draw_rect(Rect2(0, 0, w, h), Color("f6d355"), false, 3.0)
+			draw_rect(Rect2(-2, -2, w + 4, h + 4), Color(0.96, 0.83, 0.33, 0.35), false, 2.0)
 		else:
-			draw_circle(Vector2(cx, h * 0.34), 11.0, accent.lightened(0.15))
-		# 테두리
-		draw_rect(Rect2(1, 1, w - 2, h - 2), JobDb.grade_color(grade), false, 2.0)
+			draw_rect(Rect2(0, 0, w, h), Color("2e2a34"), false, 1.5)
+
+
+## 대장간 팝업 내부의 타오르는 용광로, 모루, 4단계 드워프 애니메이션 및 모루질 불꽃 이펙트 캔버스
+class BlacksmithInteriorCanvas extends Control:
+	enum DwarfState { IDLE, HAMMERING, SUCCESS, FAIL }
+
+	var current_state: DwarfState = DwarfState.IDLE:
+		set(val):
+			current_state = val
+			queue_redraw()
+
+	var flash_alpha: float = 0.0
+	var hammer_strike_t: float = 0.0
+	var sparks: Array[Dictionary] = []
+	var anim_time: float = 0.0
+	static var _bg_tex: Texture2D = null
+	static var _brazier_tex: Texture2D = null
+	static var _npc_tex: Texture2D = null
+
+	func _ready() -> void:
+		set_process(true)
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		if _bg_tex == null and ResourceLoader.exists("res://assets/sprites/ui/blacksmith_interior_bg.png"):
+			_bg_tex = load("res://assets/sprites/ui/blacksmith_interior_bg.png")
+		if _brazier_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/brazier/fire/brazier/brazier.png"):
+			_brazier_tex = load("res://assets/sprites/vfx/brazier/fire/brazier/brazier.png")
+		if _npc_tex == null and ResourceLoader.exists("res://assets/sprites/npc/npc_blacksmith.png"):
+			_npc_tex = load("res://assets/sprites/npc/npc_blacksmith.png")
+
+	func _process(delta: float) -> void:
+		anim_time += delta
+		if flash_alpha > 0.0:
+			flash_alpha = maxf(0.0, flash_alpha - delta * 3.5)
+		if hammer_strike_t > 0.0:
+			hammer_strike_t = maxf(0.0, hammer_strike_t - delta * 4.0)
+
+		# 불꽃 스파크 물리 시뮬레이션
+		var i := sparks.size() - 1
+		while i >= 0:
+			var s: Dictionary = sparks[i]
+			s["pos"] += s["vel"] * delta
+			s["vel"].y += 240.0 * delta # 중력
+			s["life"] -= delta
+			if s["life"] <= 0.0:
+				sparks.remove_at(i)
+			i -= 1
+
+		queue_redraw()
+
+	## 모루질 타격 시 호출되어 모루 타격 모션, 섬광 및 24개의 불꽃 스파크를 방출한다.
+	func trigger_hammer_strike() -> void:
+		flash_alpha = 0.85
+		hammer_strike_t = 1.0
+		# 모루 위치 (중앙 약간 좌측 Vector2(210, 185))
+		var anvil_pos := Vector2(210, 185)
+		for k in range(24):
+			var angle := randf_range(-PI * 0.85, -PI * 0.15)
+			var spd := randf_range(90.0, 320.0)
+			sparks.append({
+				"pos": anvil_pos + Vector2(randf_range(-12, 12), randf_range(-4, 4)),
+				"vel": Vector2(cos(angle), sin(angle)) * spd,
+				"life": randf_range(0.25, 0.65),
+				"max_life": 0.65,
+				"color": Color("fff380") if (k % 2 == 0) else Color("ff7722"),
+				"size": randf_range(2.0, 4.5)
+			})
+		queue_redraw()
+
+	func _draw() -> void:
+		var w := size.x
+		var h := size.y
+
+		if _bg_tex != null:
+			# 1. 고화질 다키스트 던전 고딕 대장간 배경 렌더링
+			draw_texture_rect(_bg_tex, Rect2(0, 0, w, h), false)
+
+			# 2. 화덕 위 pixelfx brazier 불꽃 애니메이션 가미
+			if _brazier_tex != null:
+				var f_idx := int(anim_time * 24.0) % 90
+				var src_r := Rect2(f_idx * 112, 0, 112, 148)
+				draw_texture_rect_region(_brazier_tex, Rect2(w * 0.44, h * 0.22, 120, 136), src_r, Color(1, 0.9, 0.8, 0.85))
+
+			# 3. 고딕 대장장이 장인 NPC 스프라이트 렌더링
+			if _npc_tex != null:
+				var npc_w := h * 0.65
+				var npc_h := h * 0.85
+				var npc_x := w * 0.52
+				var npc_y := h * 0.15
+
+				# 타격 또는 상태별 애니메이션 오프셋
+				var bob_y := 0.0
+				var npc_mod := Color.WHITE
+				match current_state:
+					DwarfState.IDLE:
+						bob_y = sin(anim_time * 2.5) * 2.0
+					DwarfState.HAMMERING:
+						bob_y = hammer_strike_t * 14.0 # 망치 강타 반동
+						npc_mod = Color("ffddaa")
+					DwarfState.SUCCESS:
+						npc_mod = Color("ffe57f")
+						# 황금 아우라
+						draw_circle(Vector2(npc_x + npc_w * 0.5, npc_y + npc_h * 0.5), npc_w * 0.45, Color(0.96, 0.84, 0.32, 0.15 + 0.08 * sin(anim_time * 6.0)))
+					DwarfState.FAIL:
+						npc_mod = Color("8c949e")
+
+				draw_texture_rect(_npc_tex, Rect2(npc_x, npc_y + bob_y, npc_w, npc_h), false, npc_mod)
+			else:
+				# 폴백 드워프 캐릭터
+				var floor_y := h * 0.72
+				var a_x := w * 0.45
+				var a_y := floor_y - 20.0
+				_draw_dwarf_character(w, h, a_x + 55.0, a_y - 20.0)
+
+			# 4. 모루질 실시간 스파크 렌더링
+			for s in sparks:
+				var alpha: float = clampf(s["life"] / s["max_life"], 0.0, 1.0)
+				var c: Color = s["color"]
+				c.a = alpha
+				draw_circle(s["pos"], s["size"] * alpha, c)
+
+			# 5. 모루 강타 시 섬광 플래시
+			if flash_alpha > 0.0:
+				draw_rect(Rect2(0, 0, w, h), Color(1.0, 0.95, 0.85, flash_alpha * 0.55))
+			return
+
+		# 1. 고풍스러운 대장간 석조 벽면 & 목조 대들보 인테리어
+		draw_rect(Rect2(0, 0, w, h), Color("181416"))
+		# 석조 벽돌 패턴
+		var brick_c := Color(0.24, 0.20, 0.22, 0.45)
+		for row in range(8):
+			var by := row * (h * 0.12)
+			draw_line(Vector2(0, by), Vector2(w, by), brick_c, 1.0)
+			var offset := (row % 2) * (w * 0.08)
+			var bx := offset
+			while bx < w:
+				draw_line(Vector2(bx, by), Vector2(bx, by + h * 0.12), brick_c, 1.0)
+				bx += w * 0.16
+
+		# 2. 좌측 햇살이 비쳐 들어오는 아치형 격자 창문 & 햇살 빛줄기 (God Rays)
+		var win_x := w * 0.14
+		var win_y := h * 0.12
+		var win_w := w * 0.18
+		var win_h := h * 0.44
+		# 창밖 푸른 하늘과 초록빛 언덕
+		draw_rect(Rect2(win_x, win_y, win_w, win_h), Color("7baed8"))
+		draw_rect(Rect2(win_x, win_y + win_h * 0.55, win_w, win_h * 0.45), Color("4e8242"))
+		# 아치형 창틀
+		draw_rect(Rect2(win_x, win_y, win_w, win_h), Color("3a2618"), false, 4.0)
+		draw_line(Vector2(win_x + win_w * 0.5, win_y), Vector2(win_x + win_w * 0.5, win_y + win_h), Color("3a2618"), 3.0)
+		draw_line(Vector2(win_x, win_y + win_h * 0.45), Vector2(win_x + win_w, win_y + win_h * 0.45), Color("3a2618"), 3.0)
+		# 쏟아지는 따스한 황금빛 햇살 (God Rays)
+		var ray_poly := PackedVector2Array([
+			Vector2(win_x + win_w * 0.2, win_y + win_h * 0.3),
+			Vector2(win_x + win_w, win_y + win_h * 0.2),
+			Vector2(win_x + win_w * 2.2, h * 0.85),
+			Vector2(win_x + win_w * 0.8, h * 0.85)
+		])
+		draw_colored_polygon(ray_poly, Color(1.0, 0.92, 0.70, 0.10))
+
+		# 3. 중앙 후면의 거대한 석조 아치형 용광로 화덕 (Stone Arch Fireplace)
+		var f_cx := w * 0.58
+		var f_cy := h * 0.45
+		var f_w := w * 0.28
+		var f_h := h * 0.42
+		# 굴뚝 & 화덕 외벽
+		draw_rect(Rect2(f_cx - f_w * 0.35, 0, f_w * 0.7, f_cy - f_h * 0.5), Color("2c2422"))
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(f_cx - f_w * 0.5, f_cy + f_h * 0.5),
+			Vector2(f_cx - f_w * 0.5, f_cy - f_h * 0.3),
+			Vector2(f_cx, f_cy - f_h * 0.55),
+			Vector2(f_cx + f_w * 0.5, f_cy - f_h * 0.3),
+			Vector2(f_cx + f_w * 0.5, f_cy + f_h * 0.5)
+		]), Color("322a28"))
+		# 화덕 내부 아치 (검붉은 심연)
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(f_cx - f_w * 0.36, f_cy + f_h * 0.5),
+			Vector2(f_cx - f_w * 0.36, f_cy - f_h * 0.1),
+			Vector2(f_cx, f_cy - f_h * 0.3),
+			Vector2(f_cx + f_w * 0.36, f_cy - f_h * 0.1),
+			Vector2(f_cx + f_w * 0.36, f_cy + f_h * 0.5)
+		]), Color("140804"))
+		# 타오르는 장작과 이글거리는 주황빛 불꽃 오라
+		var aura_pulse := 0.35 + 0.15 * sin(anim_time * 5.0)
+		draw_circle(Vector2(f_cx, f_cy + f_h * 0.2), f_w * 0.35, Color(1.0, 0.42, 0.08, aura_pulse))
+		# 불꽃 폴리곤들
+		for fi in range(6):
+			var fh := (f_h * 0.3) + (f_h * 0.12) * sin(anim_time * 8.0 + float(fi) * 1.5)
+			var fx := f_cx - f_w * 0.24 + float(fi) * (f_w * 0.09)
+			var fy := f_cy + f_h * 0.45
+			draw_colored_polygon(PackedVector2Array([
+				Vector2(fx - 10, fy), Vector2(fx, fy - fh), Vector2(fx + 10, fy)
+			]), Color("ff7711"))
+			draw_colored_polygon(PackedVector2Array([
+				Vector2(fx - 5, fy), Vector2(fx, fy - fh * 0.7), Vector2(fx + 5, fy)
+			]), Color("ffea44"))
+
+		# 4. 바닥 묵직한 돌판 타일 (Stone Floor)
+		var floor_y := h * 0.72
+		draw_rect(Rect2(0, floor_y, w, h - floor_y), Color("1e1b1e"))
+		draw_line(Vector2(0, floor_y), Vector2(w, floor_y), Color("383238"), 3.0)
+
+		# 5. 중앙 전면의 흑철 모루 (Anvil) & 달궈진 쇳덩이
+		var a_x := w * 0.45
+		var a_y := floor_y - 20.0
+		# 모루 밑둥 & 상단 날
+		var anvil_poly := PackedVector2Array([
+			Vector2(a_x - 30, a_y + 35), Vector2(a_x - 18, a_y),
+			Vector2(a_x - 45, a_y - 5), Vector2(a_x + 35, a_y - 5),
+			Vector2(a_x + 22, a_y), Vector2(a_x + 30, a_y + 35)
+		])
+		draw_colored_polygon(anvil_poly, Color("2a2f38"))
+		draw_polyline(anvil_poly, Color("454f5e"), 2.0)
+		# 달궈진 붉은 쇳덩이 (모루 상단에 놓여 빛남)
+		var glow_c := Color("ff3300").lerp(Color("ffea66"), 0.5 + 0.5 * sin(anim_time * 6.0))
+		draw_rect(Rect2(a_x - 15, a_y - 12, 34, 10), glow_c)
+
+		# 6. 드워프 대장장이 캐릭터 드로잉 (상태별 포즈)
+		_draw_dwarf_character(w, h, a_x + 55.0, a_y - 20.0)
+
+		# 7. 모루질 불꽃 파티클 렌더링
+		for s in sparks:
+			var alpha: float = clampf(s["life"] / s["max_life"], 0.0, 1.0)
+			var c: Color = s["color"]
+			c.a = alpha
+			draw_circle(s["pos"], s["size"] * alpha, c)
+
+		# 8. 타격 시 화면 전체 섬광 플래시
+		if flash_alpha > 0.0:
+			draw_rect(Rect2(0, 0, w, h), Color(1.0, 0.95, 0.85, flash_alpha * 0.55))
+
+	## 드워프 대장장이 캐릭터 렌더링 (image2.png 완벽 반영)
+	func _draw_dwarf_character(w: float, h: float, dx: float, dy: float) -> void:
+		match current_state:
+			DwarfState.IDLE:
+				# 모루 앞에 늠름하게 서서 망치를 들고 있는 모습
+				# 부츠 및 다리
+				draw_rect(Rect2(dx - 18, dy + 32, 16, 25), Color("281810"))
+				draw_rect(Rect2(dx + 6, dy + 32, 16, 25), Color("281810"))
+				# 가죽 앞치마와 옷
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 26, dy - 18), Vector2(dx + 26, dy - 18),
+					Vector2(dx + 30, dy + 34), Vector2(dx - 30, dy + 34)
+				]), Color("4e2e1a"))
+				# 두꺼운 가죽 벨트
+				draw_rect(Rect2(dx - 28, dy + 10, 56, 9), Color("1a120b"))
+				draw_rect(Rect2(dx - 7, dy + 8, 14, 13), Color("d4af37"))
+				# 풍성한 주황빛 드워프 턱수염
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 22, dy - 30), Vector2(dx + 22, dy - 30),
+					Vector2(dx + 16, dy + 16), Vector2(dx, dy + 25), Vector2(dx - 16, dy + 16)
+				]), Color("c65318"))
+				# 머리/코
+				draw_circle(Vector2(dx, dy - 38), 18.0, Color("f4b288"))
+				draw_circle(Vector2(dx - 7, dy - 35), 6.5, Color("e48e64")) # 둥근 매부리코
+				# 머리띠/두건
+				draw_rect(Rect2(dx - 19, dy - 52, 38, 10), Color("2c4436"))
+				# 오른손의 대형 대장장이 해머
+				draw_line(Vector2(dx - 22, dy - 10), Vector2(dx - 38, dy - 50), Color("5c3c24"), 6.0)
+				draw_rect(Rect2(dx - 52, dy - 62, 28, 18), Color("6c7585"))
+
+			DwarfState.HAMMERING:
+				# 망치를 높이 들어 모루를 강타하는 역동적 포즈
+				var strike_progress := hammer_strike_t
+				# 숙여진 몸통
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 34, dy - 12), Vector2(dx + 18, dy - 22),
+					Vector2(dx + 22, dy + 34), Vector2(dx - 32, dy + 34)
+				]), Color("4e2e1a"))
+				# 수염 날림
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 30, dy - 26), Vector2(dx + 10, dy - 28),
+					Vector2(dx - 8, dy + 20), Vector2(dx - 28, dy + 12)
+				]), Color("c65318"))
+				draw_circle(Vector2(dx - 12, dy - 36), 18.0, Color("f4b288"))
+				# 해머 타격 모션 각도
+				var h_ang := lerpf(-1.1, 0.45, strike_progress)
+				var h_base := Vector2(dx - 15, dy - 15)
+				var h_tip := h_base + Vector2(cos(h_ang), sin(h_ang)) * 72.0
+				draw_line(h_base, h_tip, Color("5c3c24"), 7.0)
+				draw_rect(Rect2(h_tip.x - 14, h_tip.y - 12, 28, 24), Color("828d9e"))
+
+			DwarfState.SUCCESS:
+				# 강화 대성공: 양팔을 끼고 고개를 들며 호탕하게 웃는 승리 포즈 + 찬란한 황금 아우라
+				draw_circle(Vector2(dx, dy - 10), 65.0, Color(0.96, 0.84, 0.32, 0.18 + 0.1 * sin(anim_time * 5.0)))
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 26, dy - 20), Vector2(dx + 26, dy - 20),
+					Vector2(dx + 30, dy + 34), Vector2(dx - 30, dy + 34)
+				]), Color("4e2e1a"))
+				# 팔짱 낀 두 팔
+				draw_rect(Rect2(dx - 25, dy - 2, 50, 18), Color("683c22"))
+				# 수염
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 22, dy - 32), Vector2(dx + 22, dy - 32),
+					Vector2(dx + 18, dy + 14), Vector2(dx, dy + 24), Vector2(dx - 18, dy + 14)
+				]), Color("c65318"))
+				draw_circle(Vector2(dx, dy - 42), 18.0, Color("f4b288"))
+				# 웃는 눈과 입
+				draw_line(Vector2(dx - 8, dy - 46), Vector2(dx - 2, dy - 44), Color("341608"), 2.5)
+				draw_line(Vector2(dx + 2, dy - 44), Vector2(dx + 8, dy - 46), Color("341608"), 2.5)
+
+			DwarfState.FAIL:
+				# 강화 실패: 좌측 창문 쪽을 바라보며 고개를 떨군 쓸쓸한 뒷모습 실루엣
+				var dim_c := Color("1c1822")
+				draw_colored_polygon(PackedVector2Array([
+					Vector2(dx - 22, dy - 14), Vector2(dx + 22, dy - 18),
+					Vector2(dx + 25, dy + 36), Vector2(dx - 24, dy + 36)
+				]), dim_c)
+				# 고개 숙인 뒷머리와 묶은 머리
+				draw_circle(Vector2(dx - 6, dy - 32), 17.0, dim_c)
+				# 바닥에 힘없이 내려놓은 망치
+				draw_line(Vector2(dx - 45, dy + 42), Vector2(dx - 15, dy + 42), Color("382418"), 5.0)
+				draw_rect(Rect2(dx - 55, dy + 36, 14, 12), Color("444c58"))

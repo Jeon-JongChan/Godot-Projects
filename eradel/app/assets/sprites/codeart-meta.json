@@ -1,0 +1,23 @@
+{
+	"art_source": "code",
+	"disclosure": "code-drawn, no image model (quota 429 fallback via codeart2d)",
+	"generated_buildings": [
+		"mercenary_outpost.png",
+		"hero_lodge.png",
+		"sanatorium.png",
+		"manor.png",
+		"training_camp.png",
+		"memorial_hall.png",
+		"dungeon_gate.png"
+	],
+	"generated_monsters": [
+		"mob_skeleton.png",
+		"mob_cultist.png",
+		"mob_eldritch.png"
+	],
+	"generated_ui": [
+		"blacksmith_interior_bg.png",
+		"panel_gothic_frame.png"
+	],
+	"placeholder": false
+}

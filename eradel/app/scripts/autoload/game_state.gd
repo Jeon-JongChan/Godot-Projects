@@ -27,6 +27,8 @@ const SEASONS := ["봄", "여름", "가을", "겨울"]
 # ── 자원 ──
 var gold: int = 300
 var manastone: int = 2
+## 대장간 강화용 철광석 (Iron Ore)
+var iron_ore: int = 45
 var max_action_points: int = 3
 var day: int = 1
 
@@ -116,6 +118,25 @@ func add_gold(amount: int) -> void:
 func add_manastone(amount: int) -> void:
 	manastone = max(0, manastone + amount)
 	resources_changed.emit()
+
+
+func add_iron_ore(amount: int) -> void:
+	iron_ore = max(0, iron_ore + amount)
+	resources_changed.emit()
+
+
+func can_afford_forge(cost_gold: int, cost_ore: int, cost_mana: int) -> bool:
+	return gold >= cost_gold and iron_ore >= cost_ore and manastone >= cost_mana
+
+
+func spend_forge(cost_gold: int, cost_ore: int, cost_mana: int) -> bool:
+	if not can_afford_forge(cost_gold, cost_ore, cost_mana):
+		return false
+	gold -= cost_gold
+	iron_ore -= cost_ore
+	manastone -= cost_mana
+	resources_changed.emit()
+	return true
 
 
 func season() -> String:
@@ -437,6 +458,7 @@ func to_dict() -> Dictionary:
 	return {
 		"gold": gold,
 		"manastone": manastone,
+		"iron_ore": iron_ore,
 		"action_points": action_points,
 		"max_action_points": max_action_points,
 		"day": day,
@@ -456,6 +478,7 @@ func to_dict() -> Dictionary:
 func from_dict(data: Dictionary) -> void:
 	gold = int(data.get("gold", 300))
 	manastone = int(data.get("manastone", 2))
+	iron_ore = int(data.get("iron_ore", 45))
 	action_points = int(data.get("action_points", 3))
 	max_action_points = int(data.get("max_action_points", 3))
 	day = int(data.get("day", 1))

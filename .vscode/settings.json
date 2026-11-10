@@ -1,0 +1,16 @@
+{
+    "godotTools.editorPath.godot4": "c:\\Users\\user\\Documents\\projects\\Godot-Projects\\Godot_v4.6.3-stable_win64_console.exe",
+    
+    // Antigravity 에이전트가 파일 생성/수정 시 자동으로 에디터 탭을 여는 현상 방지
+    "antigravity.autoOpenFiles": false,
+    
+    // Ruff linter/formatter 자동 동작 및 파일 포커스 억제
+    "ruff.enable": false,
+    "ruff.lint.enable": false,
+    "ruff.organizeImports": false,
+    "ruff.fixAll": false,
+    
+    // 파일 수정 시 자동 프리뷰 탭 팝업 방지
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false
+}

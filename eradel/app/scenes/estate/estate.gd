@@ -33,6 +33,11 @@ var _view_fsm: StateMachine = StateMachine.new()
 var _active_modal: Control = null
 var _current_open_def: Dictionary = {}
 var _popup_notice: String = ""
+var _selected_forge_merc: Mercenary = null
+var _selected_forge_slot: String = "weapon"
+var _active_blacksmith_canvas: Control = null
+var _roster_dock_expanded: bool = true
+var _roster_dock_panel: Control = null
 
 # ── 노드 참조 ([업데이트 메서드] 대상 컬렉션 포함) ──
 var _world_container: Control
@@ -117,6 +122,8 @@ func _process(delta: float) -> void:
 			bc.update_tick(delta)
 	if is_instance_valid(_active_interior_canvas):
 		_active_interior_canvas.update_tick(delta)
+	if is_instance_valid(_active_blacksmith_canvas) and _active_blacksmith_canvas.has_method("update_tick"):
+		_active_blacksmith_canvas.update_tick(delta)
 
 	# 건물 머리 위 상태 말풍선 부드러운 상하 부유 애니메이션
 	for i in range(_floating_bubbles.size()):
@@ -401,52 +408,54 @@ func _open_large_building_popup(def: Dictionary) -> void:
 	center.mouse_filter = MOUSE_FILTER_PASS
 	_active_modal.add_child(center)
 
-	# 대형 팝업 메인 프레임 (1060 x 600)
+	# 대형 팝업 메인 프레임 (대장간은 1220 x 660, 일반 건물은 1060 x 600)
 	var frame_border := UiKit.RED if is_dungeon else UiKit.GOLD
 	var main_panel := UiKit.panel(UiKit.BG, frame_border, 14)
-	main_panel.custom_minimum_size = Vector2(1060, 600)
+	var panel_size := Vector2(1220, 660) if def.type == "blacksmith" else Vector2(1060, 600)
+	main_panel.custom_minimum_size = panel_size
 	main_panel.mouse_filter = MOUSE_FILTER_STOP
 	center.add_child(main_panel)
 
 	var root_vbox := VBoxContainer.new()
-	root_vbox.add_theme_constant_override("separation", 12)
+	root_vbox.add_theme_constant_override("separation", 10)
 	main_panel.add_child(root_vbox)
 
-	# ── 1. 대형 팝업 상단 헤더 바 (건물 이름, 별 등급, 실시간 자원 칩, 닫기 버튼) ──
-	var header_bar := UiKit.panel(UiKit.BG2, UiKit.BORDER2, 10)
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 12)
-	header_bar.add_child(hbox)
+	# ── 1. 일반 건물 상단 헤더 바 (대장간은 image2.png 기획에 따라 자체 상단바를 가짐) ──
+	if def.type != "blacksmith":
+		var header_bar := UiKit.panel(UiKit.BG2, UiKit.BORDER2, 10)
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 12)
+		header_bar.add_child(hbox)
 
-	hbox.add_child(UiKit.label(def.icon, 28, UiKit.WHITE))
+		hbox.add_child(UiKit.label(def.icon, 28, UiKit.WHITE))
 
-	var title_col := VBoxContainer.new()
-	title_col.add_theme_constant_override("separation", 2)
-	var stars := ""
-	for s in range(5):
-		stars += "★" if s < cur_lv else "☆"
-	var head_title := "%s" % bname if is_dungeon else "%s   %s (Lv.%d)" % [bname, stars, cur_lv]
-	title_col.add_child(UiKit.title(head_title, 20, UiKit.GOLD2 if not is_dungeon else Color("ff6880")))
-	title_col.add_child(UiKit.label(def.tag, 12, UiKit.TEXT2))
-	hbox.add_child(title_col)
+		var title_col := VBoxContainer.new()
+		title_col.add_theme_constant_override("separation", 2)
+		var stars := ""
+		for s in range(5):
+			stars += "★" if s < cur_lv else "☆"
+		var head_title := "%s" % bname if is_dungeon else "%s   %s (Lv.%d)" % [bname, stars, cur_lv]
+		title_col.add_child(UiKit.title(head_title, 20, UiKit.GOLD2 if not is_dungeon else Color("ff6880")))
+		title_col.add_child(UiKit.label(def.tag, 12, UiKit.TEXT2))
+		hbox.add_child(title_col)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = SIZE_EXPAND_FILL
-	hbox.add_child(spacer)
+		var spacer := Control.new()
+		spacer.size_flags_horizontal = SIZE_EXPAND_FILL
+		hbox.add_child(spacer)
 
-	# 팝업 내 실시간 자원/지표 칩 표시
-	hbox.add_child(UiKit.chip("🪙 금화 %d" % GameState.gold, UiKit.GOLD))
-	hbox.add_child(UiKit.chip("💎 마나석 %d" % GameState.manastone, UiKit.BLUE))
-	hbox.add_child(UiKit.chip("⚡ 행동력 %d/%d" % [GameState.action_points, GameState.max_action_points], UiKit.GREEN))
-	hbox.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD))
-	hbox.add_child(UiKit.chip("스트레스 %d/100" % GameState.total_stress(), GameState.stress_color()))
+		# 팝업 내 실시간 자원/지표 칩 표시
+		hbox.add_child(UiKit.chip("🪙 금화 %d" % GameState.gold, UiKit.GOLD))
+		hbox.add_child(UiKit.chip("💎 마나석 %d" % GameState.manastone, UiKit.BLUE))
+		hbox.add_child(UiKit.chip("⚡ 행동력 %d/%d" % [GameState.action_points, GameState.max_action_points], UiKit.GREEN))
+		hbox.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD))
+		hbox.add_child(UiKit.chip("스트레스 %d/100" % GameState.total_stress(), GameState.stress_color()))
 
-	var btn_close := UiKit.button("✕ 마을로 복귀 (ESC)", UiKit.GOLD)
-	btn_close.custom_minimum_size = Vector2(150, 38)
-	btn_close.pressed.connect(_zoom_out_and_return)
-	hbox.add_child(btn_close)
+		var btn_close := UiKit.button("✕ 마을로 복귀 (ESC)", UiKit.GOLD)
+		btn_close.custom_minimum_size = Vector2(150, 38)
+		btn_close.pressed.connect(_zoom_out_and_return)
+		hbox.add_child(btn_close)
 
-	root_vbox.add_child(header_bar)
+		root_vbox.add_child(header_bar)
 
 	# 알림 배너 (행동 결과 피드백 메시지)
 	if _popup_notice != "":
@@ -462,8 +471,12 @@ func _open_large_building_popup(def: Dictionary) -> void:
 	body_hbox.size_flags_vertical = SIZE_EXPAND_FILL
 	root_vbox.add_child(body_hbox)
 
-	body_hbox.add_child(_build_popup_left_showcase(def))
-	body_hbox.add_child(_build_popup_right_content(def))
+	if def.type == "blacksmith":
+		# 대장간은 기획서(대장간.docx) 레이아웃에 맞춰 전용 3단 패널(영웅목록+장비, 용광로/모루 드워프, 강화컨트롤)로 단독 구성
+		body_hbox.add_child(_build_popup_right_content(def))
+	else:
+		body_hbox.add_child(_build_popup_left_showcase(def))
+		body_hbox.add_child(_build_popup_right_content(def))
 
 
 ## 대형 팝업 좌측 컬럼: 건물 내부 아트워크 캔버스 + 레벨 효과 + 건물 증축 카드
@@ -892,48 +905,365 @@ func _populate_warehouse_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 	vbox.add_child(dash)
 
 
-# ── [7] 대장간 대형 팝업 컨텐츠 ──
+# ── [7] 대장간 대형 팝업 컨텐츠 (기획서: image1.jpeg & image2.png 100% 반영) ──
 func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
-	var bs_lv: int = GameState.buildings.get("대장간", 1)
-	vbox.add_child(UiKit.label("⚒️ 드워프 대장간 — 현재 원정 파티 전체 공격력 보너스: +%d (대장간 Lv.%d)" % [GameState.party_attack_bonus(), bs_lv], 14, UiKit.GOLD))
-	vbox.add_child(UiKit.label("영웅의 개인 무기를 벼려 영구적으로 공격력을 +2 강화할 수 있습니다. (비용: 금화 90G)", 12, UiKit.TEXT2))
-
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = SIZE_EXPAND_FILL
-	vbox.add_child(scroll)
-
-	var list := VBoxContainer.new()
-	list.size_flags_horizontal = SIZE_EXPAND_FILL
-	list.add_theme_constant_override("separation", 8)
-	scroll.add_child(list)
-
+	# 대기 중인 유효 용병 목록 확인
+	var available_mercs: Array[Mercenary] = []
 	for m in GameState.roster:
-		if m.status != Mercenary.Status.READY:
-			continue
-		var card := UiKit.panel(UiKit.BG3, UiKit.BORDER, 8)
-		var h := HBoxContainer.new()
-		h.add_theme_constant_override("separation", 12)
-		card.add_child(h)
+		if m.status == Mercenary.Status.READY:
+			available_mercs.append(m)
 
-		var port := VillageVisuals.HeroPortraitCanvas.new()
-		port.category = m.category
-		port.grade = m.grade
-		port.custom_minimum_size = Vector2(46, 46)
-		h.add_child(port)
+	# 기본 선택 용병 유효성 검사
+	if _selected_forge_merc == null or not (_selected_forge_merc in available_mercs):
+		_selected_forge_merc = available_mercs[0] if not available_mercs.is_empty() else null
 
-		var info := VBoxContainer.new()
-		info.size_flags_horizontal = SIZE_EXPAND_FILL
-		info.add_child(UiKit.title("%s  (%s Lv.%d)" % [m.merc_name, m.job, m.level], 14, UiKit.WHITE))
-		info.add_child(UiKit.label("현재 개인 공격력: %d  (파티 합산 공격력: %d)" % [m.attack, m.attack + GameState.party_attack_bonus()], 12, UiKit.GOLD2))
-		h.add_child(info)
+	var target_m: Mercenary = _selected_forge_merc
 
-		var forge_cmd := EstateCommand.for_merc("forge", m)
-		var btn_forge := UiKit.primary_button("%s (%s → %s)" % [forge_cmd.title, forge_cmd.cost_text(), forge_cmd.desc], UiKit.GOLD)
-		btn_forge.custom_minimum_size = Vector2(210, 38)
-		btn_forge.disabled = not forge_cmd.can_execute()
-		btn_forge.pressed.connect(func(): _run_estate_command(forge_cmd, def))
-		h.add_child(btn_forge)
-		list.add_child(card)
+	# ─────────────────────────────────────────────────────────
+	# [상단 헤더]: < BACK TO TOWN  |  [골드] GOLD   [루비] RUBIES   [철광석] ORE
+	# ─────────────────────────────────────────────────────────
+	var top_h := HBoxContainer.new()
+	top_h.add_theme_constant_override("separation", 16)
+	top_h.size_flags_horizontal = SIZE_EXPAND_FILL
+	vbox.add_child(top_h)
+
+	var btn_back := UiKit.gothic_button("◀  BACK TO TOWN", UiKit.GOLD)
+	btn_back.custom_minimum_size = Vector2(170, 36)
+	btn_back.pressed.connect(func():
+		_zoom_out_and_return()
+	)
+	top_h.add_child(btn_back)
+
+	var top_spacer := Control.new()
+	top_spacer.size_flags_horizontal = SIZE_EXPAND_FILL
+	top_h.add_child(top_spacer)
+
+	# 실시간 자원 HUD (도트 아이콘 적용)
+	var res_card := UiKit.panel(Color("161214"), UiKit.BORDER2, 6)
+	var res_h := HBoxContainer.new()
+	res_h.add_theme_constant_override("separation", 14)
+	res_card.add_child(res_h)
+
+	var g_box := HBoxContainer.new()
+	g_box.add_theme_constant_override("separation", 5)
+	g_box.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_gold.png", 18))
+	g_box.add_child(UiKit.label("%d GOLD" % GameState.gold, 13, UiKit.GOLD))
+	res_h.add_child(g_box)
+
+	var r_box := HBoxContainer.new()
+	r_box.add_theme_constant_override("separation", 5)
+	r_box.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_ruby.png", 18))
+	r_box.add_child(UiKit.label("%d RUBIES" % GameState.manastone, 13, Color("ff3b56")))
+	res_h.add_child(r_box)
+
+	var o_box := HBoxContainer.new()
+	o_box.add_theme_constant_override("separation", 5)
+	o_box.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_ore.png", 18))
+	o_box.add_child(UiKit.label("%d ORE" % GameState.iron_ore, 13, Color("a0b2c6")))
+	res_h.add_child(o_box)
+	top_h.add_child(res_card)
+
+	# ─────────────────────────────────────────────────────────
+	# [메인 본문]: 좌측 영웅 로스터 + 중앙 (캔버스 + 4종 장비 슬롯) + 우측 UPGRADE INFO 패널
+	# ─────────────────────────────────────────────────────────
+	var main_h := HBoxContainer.new()
+	main_h.add_theme_constant_override("separation", 14)
+	main_h.size_flags_horizontal = SIZE_EXPAND_FILL
+	main_h.size_flags_vertical = SIZE_EXPAND_FILL
+	vbox.add_child(main_h)
+
+	# [1. 좌측 로스터 컬럼] (너비 250)
+	var left_col := VBoxContainer.new()
+	left_col.custom_minimum_size = Vector2(250, 0)
+	left_col.size_flags_vertical = SIZE_EXPAND_FILL
+	left_col.add_theme_constant_override("separation", 8)
+	main_h.add_child(left_col)
+
+	var roster_card := UiKit.panel(UiKit.BG3, UiKit.BORDER, 8)
+	roster_card.size_flags_vertical = SIZE_EXPAND_FILL
+	var r_cv := VBoxContainer.new()
+	r_cv.add_theme_constant_override("separation", 8)
+	roster_card.add_child(r_cv)
+	r_cv.add_child(UiKit.title("HERO ROSTER (%d)" % available_mercs.size(), 13, UiKit.GOLD))
+
+	var hero_scroll := ScrollContainer.new()
+	hero_scroll.size_flags_vertical = SIZE_EXPAND_FILL
+	r_cv.add_child(hero_scroll)
+
+	var hero_list := VBoxContainer.new()
+	hero_list.size_flags_horizontal = SIZE_EXPAND_FILL
+	hero_list.add_theme_constant_override("separation", 6)
+	hero_scroll.add_child(hero_list)
+
+	if available_mercs.is_empty():
+		hero_list.add_child(UiKit.label("대기 중인 영웅이 없습니다.", 12, UiKit.TEXT2))
+	else:
+		for m in available_mercs:
+			var is_sel := (m == _selected_forge_merc)
+			var b_col := Color("f6d355") if is_sel else UiKit.BORDER
+			var bg_c := Color("2a2016") if is_sel else Color("141116")
+			var h_panel := UiKit.panel(bg_c, b_col, 6)
+			h_panel.mouse_filter = MOUSE_FILTER_PASS
+
+			var hh := HBoxContainer.new()
+			hh.add_theme_constant_override("separation", 8)
+			h_panel.add_child(hh)
+
+			var port := VillageVisuals.HeroPortraitCanvas.new()
+			port.category = m.category
+			port.grade = m.grade
+			port.hero_name = m.merc_name
+			port.custom_minimum_size = Vector2(44, 44)
+			hh.add_child(port)
+
+			var iv := VBoxContainer.new()
+			iv.size_flags_horizontal = SIZE_EXPAND_FILL
+			iv.add_theme_constant_override("separation", 2)
+			iv.add_child(UiKit.title("%s" % m.merc_name, 12, UiKit.GOLD if is_sel else UiKit.WHITE))
+			iv.add_child(UiKit.label("LVL %d %s" % [m.level, m.job], 10, UiKit.TEXT2))
+			iv.add_child(UiKit.progress(m.hp, m.max_hp, Color("22b8ff"), 4))
+			hh.add_child(iv)
+
+			var cur_m: Mercenary = m
+			h_panel.gui_input.connect(func(ev: InputEvent):
+				if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
+					_selected_forge_merc = cur_m
+					_open_large_building_popup(def)
+			)
+			hero_list.add_child(h_panel)
+
+	left_col.add_child(roster_card)
+
+	# [2. 중앙 컬럼]: 대장간 내부 캔버스 + 하단 4종 장비 슬롯 패널
+	var center_col := VBoxContainer.new()
+	center_col.size_flags_horizontal = SIZE_EXPAND_FILL
+	center_col.size_flags_vertical = SIZE_EXPAND_FILL
+	center_col.add_theme_constant_override("separation", 8)
+	main_h.add_child(center_col)
+
+	# 2-A. 드워프 모루/화덕 캔버스 (상단 약 340px)
+	var forge_holder := Control.new()
+	forge_holder.custom_minimum_size = Vector2(0, 340)
+	forge_holder.size_flags_horizontal = SIZE_EXPAND_FILL
+	forge_holder.size_flags_vertical = SIZE_EXPAND_FILL
+	center_col.add_child(forge_holder)
+
+	var forge_interior := VillageVisuals.BlacksmithInteriorCanvas.new()
+	forge_interior.set_anchors_preset(PRESET_FULL_RECT)
+	forge_holder.add_child(forge_interior)
+	_active_blacksmith_canvas = forge_interior
+
+	# 2-B. 중앙 하단 4칸 장비 슬롯 (WEAPON, ARMOR, HELMET, RING)
+	var eq_card := UiKit.panel(Color("161318"), UiKit.BORDER2, 8)
+	eq_card.custom_minimum_size = Vector2(0, 110)
+	center_col.add_child(eq_card)
+
+	var eq_h := HBoxContainer.new()
+	eq_h.alignment = BoxContainer.ALIGNMENT_CENTER
+	eq_h.add_theme_constant_override("separation", 24)
+	eq_card.add_child(eq_h)
+
+	var slots_data := [
+		{"id": "weapon", "label": "WEAPON", "level": target_m.weapon_level if target_m else 1},
+		{"id": "armor", "label": "ARMOR", "level": target_m.armor_level if target_m else 1},
+		{"id": "helmet", "label": "HELMET", "level": target_m.helmet_level if target_m else 1},
+		{"id": "ring", "label": "RING", "level": target_m.ring_level if target_m else 1}
+	]
+
+	for s_info in slots_data:
+		var sid: String = s_info.id
+		var is_s_sel: bool = (_selected_forge_slot == sid)
+		var s_box := VBoxContainer.new()
+		s_box.alignment = BoxContainer.ALIGNMENT_CENTER
+		s_box.add_theme_constant_override("separation", 4)
+		s_box.mouse_filter = MOUSE_FILTER_PASS
+
+		# 상단 슬롯 레이블
+		s_box.add_child(UiKit.label(s_info.label, 10, UiKit.GOLD if is_s_sel else UiKit.TEXT2))
+
+		# 아이콘 캔버스
+		var icon_cv := VillageVisuals.EquipmentIconCanvas.new()
+		icon_cv.slot_type = sid
+		icon_cv.item_level = int(s_info.level)
+		icon_cv.is_selected = is_s_sel
+		icon_cv.custom_minimum_size = Vector2(58, 58)
+		s_box.add_child(icon_cv)
+
+		# 하단 레벨 레이블
+		s_box.add_child(UiKit.label("+%d강" % int(s_info.level), 11, UiKit.GOLD2 if is_s_sel else UiKit.WHITE))
+
+		# 클릭 시 장비 슬롯 전환
+		var clicked_sid: String = sid
+		s_box.gui_input.connect(func(ev: InputEvent):
+			if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
+				_selected_forge_slot = clicked_sid
+				_open_large_building_popup(def)
+		)
+		eq_h.add_child(s_box)
+
+	# [3. 우측 UPGRADE INFO 컬럼] (너비 290)
+	var right_col := VBoxContainer.new()
+	right_col.custom_minimum_size = Vector2(290, 0)
+	right_col.size_flags_vertical = SIZE_EXPAND_FILL
+	right_col.add_theme_constant_override("separation", 8)
+	main_h.add_child(right_col)
+
+	var info_panel := UiKit.panel(Color("181419"), UiKit.BORDER2, 10)
+	info_panel.size_flags_vertical = SIZE_EXPAND_FILL
+	var iv := VBoxContainer.new()
+	iv.add_theme_constant_override("separation", 10)
+	info_panel.add_child(iv)
+
+	iv.add_child(UiKit.title("UPGRADE INFO", 15, UiKit.GOLD))
+	iv.add_child(UiKit.divider())
+
+	if target_m != null:
+		var cur_slot_lv: int = 1
+		var slot_kr_name := "무기"
+		match _selected_forge_slot:
+			"weapon":
+				cur_slot_lv = target_m.weapon_level
+				slot_kr_name = "무기"
+			"armor":
+				cur_slot_lv = target_m.armor_level
+				slot_kr_name = "갑옷"
+			"helmet":
+				cur_slot_lv = target_m.helmet_level
+				slot_kr_name = "투구"
+			"ring":
+				cur_slot_lv = target_m.ring_level
+				slot_kr_name = "장신구"
+
+		var next_slot_lv := cur_slot_lv + 1
+		iv.add_child(UiKit.label("대상: %s (+%d → +%d강)" % [slot_kr_name, cur_slot_lv, next_slot_lv], 13, UiKit.WHITE))
+
+		# 성공 확률: 기본 85%, 레벨당 -7%, 최소 40%
+		var success_rate := clampi(85 - (cur_slot_lv - 1) * 7, 40, 95)
+		iv.add_child(UiKit.label("SUCCESS RATE: %d%%" % success_rate, 12, UiKit.GREEN))
+		iv.add_child(UiKit.progress(success_rate, 100, UiKit.GREEN, 8))
+
+		iv.add_child(UiKit.divider())
+		iv.add_child(UiKit.label("REQUIRED MATERIALS:", 11, UiKit.GOLD))
+
+		# 요구 재료: 철광석 x10 (레벨당 +5), 마나석 x1 (3강 이상 시 x2), 골드 300G (레벨당 +150G)
+		var req_ore := 10 + (cur_slot_lv - 1) * 5
+		var req_mana := 1 if cur_slot_lv >= 2 else 0
+		if cur_slot_lv >= 4:
+			req_mana = 2
+		var req_gold := 300 + (cur_slot_lv - 1) * 150
+
+		var has_ore := (GameState.iron_ore >= req_ore)
+		var has_mana := (GameState.manastone >= req_mana)
+		var has_gold := (GameState.gold >= req_gold)
+		var can_forge := has_ore and has_mana and has_gold
+
+		# 1. 철광석 행 (도트 아이콘 + 부족 시 빨간색 글씨)
+		var ore_c := UiKit.WHITE if has_ore else UiKit.RED
+		var ore_txt := "IRON ORE  x%d  (보유: %d)" % [req_ore, GameState.iron_ore]
+		if not has_ore:
+			ore_txt += " [부족!]"
+		var ore_row := HBoxContainer.new()
+		ore_row.add_theme_constant_override("separation", 6)
+		ore_row.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_ore.png", 16))
+		ore_row.add_child(UiKit.label(ore_txt, 12, ore_c))
+		iv.add_child(ore_row)
+
+		# 2. 마나석 행 (부족 시 빨간색 글씨)
+		if req_mana > 0:
+			var mana_c := UiKit.WHITE if has_mana else UiKit.RED
+			var mana_txt := "MAGIC DUST  x%d  (보유: %d)" % [req_mana, GameState.manastone]
+			if not has_mana:
+				mana_txt += " [부족!]"
+			var mana_row := HBoxContainer.new()
+			mana_row.add_theme_constant_override("separation", 6)
+			mana_row.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_ruby.png", 16))
+			mana_row.add_child(UiKit.label(mana_txt, 12, mana_c))
+			iv.add_child(mana_row)
+
+		# 3. 골드 행 (부족 시 빨간색 글씨)
+		var gold_c := UiKit.GOLD2 if has_gold else UiKit.RED
+		var gold_txt := "%d GOLD  (보유: %d)" % [req_gold, GameState.gold]
+		if not has_gold:
+			gold_txt += " [부족!]"
+		var gold_row := HBoxContainer.new()
+		gold_row.add_theme_constant_override("separation", 6)
+		gold_row.add_child(UiKit.icon_rect("res://assets/sprites/ui/icon_gold.png", 16))
+		gold_row.add_child(UiKit.label(gold_txt, 12, gold_c))
+		iv.add_child(gold_row)
+
+		var iv_spacer := Control.new()
+		iv_spacer.size_flags_vertical = SIZE_EXPAND_FILL
+		iv.add_child(iv_spacer)
+
+		# 대형 황금 [ FORGE UPGRADE ] 버튼
+		var btn_forge := UiKit.gothic_button("⚒️  FORGE UPGRADE", UiKit.GOLD)
+		btn_forge.custom_minimum_size = Vector2(0, 52)
+		btn_forge.disabled = not can_forge
+
+		btn_forge.pressed.connect(func():
+			if not can_forge:
+				return
+			if not GameState.spend_forge(req_gold, req_ore, req_mana):
+				return
+
+			btn_forge.disabled = true
+			forge_interior.current_state = VillageVisuals.BlacksmithInteriorCanvas.DwarfState.HAMMERING
+
+			var is_success := (GameState.rng().randi_range(1, 100) <= success_rate)
+
+			# 4번의 모루질과 화면 전체 플래시 빛 연출 (타격 간격 0.35초)
+			var tw := create_tween()
+			for strike in range(4):
+				tw.tween_callback(func():
+					forge_interior.trigger_hammer_strike()
+				)
+				tw.tween_interval(0.35)
+
+			# 4회 타격 종료 후 결과 연출 및 데이터 반영
+			tw.chain().tween_callback(func():
+				if is_success:
+					match _selected_forge_slot:
+						"weapon":
+							target_m.weapon_level += 1
+							target_m.attack += 2
+						"armor":
+							target_m.armor_level += 1
+							target_m.max_hp += 8
+							target_m.hp = mini(target_m.hp + 8, target_m.max_hp)
+						"helmet":
+							target_m.helmet_level += 1
+							target_m.max_hp += 5
+						"ring":
+							target_m.ring_level += 1
+							target_m.attack += 1
+
+					forge_interior.current_state = VillageVisuals.BlacksmithInteriorCanvas.DwarfState.SUCCESS
+					_popup_notice = "🎉 강화 대성공! [%s]의 %s가 +%d강이 되었습니다!" % [target_m.merc_name, slot_kr_name, cur_slot_lv + 1]
+				else:
+					forge_interior.current_state = VillageVisuals.BlacksmithInteriorCanvas.DwarfState.FAIL
+					_popup_notice = "💨 강화 실패... 아쉽게도 이번 제련은 성공하지 못했습니다."
+
+				GameState.roster_changed.emit()
+
+				# 기획서 규칙: 강화 버튼 클릭 시 자동 저장
+				var sm = get_node_or_null("/root/SaveManager")
+				if sm != null and sm.has_method("auto_save"):
+					sm.auto_save()
+
+				# 1.5초 후 대장간 팝업 UI 상태 갱신
+				var reset_tw := create_tween()
+				reset_tw.tween_interval(1.5)
+				reset_tw.tween_callback(func():
+					_open_large_building_popup(def)
+				)
+			)
+		)
+		iv.add_child(btn_forge)
+	else:
+		iv.add_child(UiKit.label("좌측 목록에서 강화를 진행할 영웅을 먼저 선택해 주세요.", 12, UiKit.TEXT2))
+
+	right_col.add_child(info_panel)
+
 
 
 # ── [8] 마법사학회 대형 팝업 컨텐츠 ──
@@ -1238,36 +1568,41 @@ func _build_hud() -> void:
 		if c != _active_modal:
 			c.queue_free()
 
-	# 1. 상단바 (영지 일차, 계절, 금화, 마나석, 행동력)
-	_top_bar_holder = UiKit.top_bar("🏰 변경 영지 에라델   %d일차 — %s" % [GameState.day, GameState.season()])
-	_top_bar_holder.set_anchors_preset(PRESET_TOP_WIDE)
-	_hud_layer.add_child(_top_bar_holder)
+	# 1. 상단바 (다키스트 던전 스타일 고딕 문장 엠블럼 + 영지 타이틀 및 실시간 자원 칩)
+	var top_bar := PanelContainer.new()
+	top_bar.custom_minimum_size = Vector2(VIEWPORT_WIDTH, 48)
+	top_bar.set_anchors_preset(PRESET_TOP_WIDE)
+	top_bar.add_theme_stylebox_override("panel", UiKit.style(Color("0c0a08"), UiKit.BORDER2, 0, 2, 16, 6))
+	_hud_layer.add_child(top_bar)
+	_top_bar_holder = top_bar
 
-	# 2. 좌측 상단 영지 핵심 지표 배지 + 우측 상단 빠른 출진 버튼
-	var sub_bar := HBoxContainer.new()
-	sub_bar.position = Vector2(16, 52)
-	sub_bar.size = Vector2(VIEWPORT_WIDTH - 32, 34)
-	sub_bar.add_theme_constant_override("separation", 8)
-	sub_bar.mouse_filter = MOUSE_FILTER_PASS
-	_hud_layer.add_child(sub_bar)
+	var top_h := HBoxContainer.new()
+	top_h.add_theme_constant_override("separation", 14)
+	top_bar.add_child(top_h)
 
-	sub_bar.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD))
+	# 고딕 문장 도트 아이콘 & 영지 타이틀
+	top_h.add_child(UiKit.icon_rect("res://assets/sprites/ui/skill_guard.png", 26))
+	var title_box := VBoxContainer.new()
+	title_box.add_theme_constant_override("separation", 1)
+	title_box.add_child(UiKit.title("THE ERADEL ESTATE", 15, UiKit.GOLD2))
+	title_box.add_child(UiKit.label("제 %d일차 · %s (행동력 %d/%d)" % [GameState.day, GameState.season(), GameState.action_points, GameState.max_action_points], 11, UiKit.TEXT2))
+	top_h.add_child(title_box)
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = SIZE_EXPAND_FILL
+	top_h.add_child(spacer)
+
+	# 다키스트 던전 스타일 도트 아이콘 자원/지표 카운터 바
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_gold.png", "%d G" % GameState.gold, UiKit.GOLD))
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ruby.png", "마나석 %d" % GameState.manastone, UiKit.BLUE))
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ore.png", "철광석 %d" % GameState.iron_ore, UiKit.TEXT2))
+	top_h.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD2))
 	var act_col := UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GREEN
-	sub_bar.add_child(UiKit.chip("던전 활성도 %d%%" % GameState.dungeon_activity, act_col))
-	sub_bar.add_child(UiKit.chip("스트레스 %d/100 (%s)" % [GameState.total_stress(), GameState.stress_stage()], GameState.stress_color()))
-	sub_bar.add_child(UiKit.chip("원정 파티 %d/%d명" % [GameState.party.size(), GameState.MAX_PARTY], UiKit.BLUE))
+	top_h.add_child(UiKit.chip("균열 활성 %d%%" % GameState.dungeon_activity, act_col))
+	top_h.add_child(UiKit.chip("스트레스 %d/100" % GameState.total_stress(), GameState.stress_color()))
 
-	var hud_spacer := Control.new()
-	hud_spacer.size_flags_horizontal = SIZE_EXPAND_FILL
-	hud_spacer.mouse_filter = MOUSE_FILTER_IGNORE
-	sub_bar.add_child(hud_spacer)
-
-	var btn_quick_dungeon := UiKit.primary_button("⚔️ 어둠의 균열 (원정 출진)", UiKit.RED)
-	btn_quick_dungeon.custom_minimum_size = Vector2(190, 32)
-	btn_quick_dungeon.pressed.connect(func():
-		_on_building_selected(_building_defs[_building_defs.size() - 1])
-	)
-	sub_bar.add_child(btn_quick_dungeon)
+	# 2. 우측 상단 다키스트 던전 스타일 접이식 영웅 로스터 덱 (Hero Roster Dock)
+	_build_roster_dock()
 
 	# 3. 화면 양 끝단 카메라 스크롤 화살표 버튼
 	var btn_left := Button.new()
@@ -1294,11 +1629,46 @@ func _build_hud() -> void:
 	)
 	_hud_layer.add_child(btn_right)
 
-	# 4. 하단 네비게이션 스크롤바 (스케치의 빨간색 스크롤바 + 노란색 창 1칸 핸들)
+	# 4. 하단 네비게이션 스크롤바 및 시그니처 원정 출진(EMBARK) 대형 버튼
+	var btm_container := VBoxContainer.new()
+	btm_container.position = Vector2((VIEWPORT_WIDTH - _scroll_track_width) * 0.5, VIEWPORT_HEIGHT - 94)
+	btm_container.custom_minimum_size = Vector2(_scroll_track_width, 88)
+	btm_container.add_theme_constant_override("separation", 6)
+	btm_container.mouse_filter = MOUSE_FILTER_PASS
+	_hud_layer.add_child(btm_container)
+
+	# 다키스트 던전 시그니처 붉은색 EMBARK (원정 출진) 대형 버튼
+	var embark_h := HBoxContainer.new()
+	embark_h.alignment = BoxContainer.ALIGNMENT_CENTER
+	btm_container.add_child(embark_h)
+
+	var btn_embark := Button.new()
+	btn_embark.text = "⚔️  E M B A R K  ·  어둠의 균열 원정 출진  ⚔️"
+	btn_embark.custom_minimum_size = Vector2(380, 36)
+	btn_embark.focus_mode = FOCUS_NONE
+	btn_embark.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn_embark.add_theme_font_size_override("font_size", 14)
+	btn_embark.add_theme_color_override("font_color", Color("fff0e8"))
+	btn_embark.add_theme_color_override("font_hover_color", Color("ffffff"))
+	var embark_sb := StyleBoxFlat.new()
+	embark_sb.bg_color = Color("8c1f24")
+	embark_sb.border_color = Color("e04c54")
+	embark_sb.set_border_width_all(2)
+	embark_sb.set_corner_radius_all(6)
+	btn_embark.add_theme_stylebox_override("normal", embark_sb)
+	var embark_hover_sb := embark_sb.duplicate()
+	embark_hover_sb.bg_color = Color("a8272d")
+	btn_embark.add_theme_stylebox_override("hover", embark_hover_sb)
+
+	btn_embark.pressed.connect(func():
+		_on_building_selected(_building_defs[_building_defs.size() - 1])
+	)
+	embark_h.add_child(btn_embark)
+
+	# 하단 네비게이션 미니 트랙 스크롤바
 	var scroll_root := Control.new()
-	scroll_root.position = Vector2((VIEWPORT_WIDTH - _scroll_track_width) * 0.5, VIEWPORT_HEIGHT - 46)
-	scroll_root.size = Vector2(_scroll_track_width, _scroll_track_height)
-	_hud_layer.add_child(scroll_root)
+	scroll_root.custom_minimum_size = Vector2(_scroll_track_width, _scroll_track_height)
+	btm_container.add_child(scroll_root)
 
 	_scroll_track = Panel.new()
 	_scroll_track.size = Vector2(_scroll_track_width, _scroll_track_height)
@@ -1354,6 +1724,110 @@ func _build_hud() -> void:
 	)
 
 	_update_scroll_position()
+
+
+## 다키스트 던전 1 스타일의 우측 접이식 영웅 로스터 패널 (초상화, 레벨 뱃지, 10칸 스트레스 핍, 장비 수치)
+func _build_roster_dock() -> void:
+	var dock_w: float = 230.0 if _roster_dock_expanded else 44.0
+	var dock_panel := PanelContainer.new()
+	dock_panel.position = Vector2(VIEWPORT_WIDTH - dock_w - 6, 56)
+	dock_panel.size = Vector2(dock_w, 420)
+	dock_panel.custom_minimum_size = Vector2(dock_w, 420)
+	dock_panel.add_theme_stylebox_override("panel", UiKit.style(Color("0c0a08ee"), UiKit.BORDER2, 8, 2, 6, 6))
+	_hud_layer.add_child(dock_panel)
+	_roster_dock_panel = dock_panel
+
+	var dv := VBoxContainer.new()
+	dv.add_theme_constant_override("separation", 4)
+	dock_panel.add_child(dv)
+
+	# 헤더 바 및 토글 버튼
+	var dh := HBoxContainer.new()
+	dv.add_child(dh)
+
+	var btn_toggle := Button.new()
+	btn_toggle.text = "▶" if not _roster_dock_expanded else "◀"
+	btn_toggle.custom_minimum_size = Vector2(32, 26)
+	btn_toggle.focus_mode = FOCUS_NONE
+	btn_toggle.add_theme_stylebox_override("normal", UiKit.style(UiKit.BG3, UiKit.BORDER, 4))
+	btn_toggle.pressed.connect(func():
+		_roster_dock_expanded = not _roster_dock_expanded
+		_build_hud()
+	)
+	dh.add_child(btn_toggle)
+
+	if _roster_dock_expanded:
+		var dock_title := UiKit.label("영웅 로스터 (%d명)" % GameState.roster.size(), 12, UiKit.GOLD2)
+		dock_title.size_flags_horizontal = SIZE_EXPAND_FILL
+		dh.add_child(dock_title)
+
+		# 로스터 스크롤 리스트
+		var r_scroll := ScrollContainer.new()
+		r_scroll.size_flags_vertical = SIZE_EXPAND_FILL
+		r_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		dv.add_child(r_scroll)
+
+		var r_list := VBoxContainer.new()
+		r_list.size_flags_horizontal = SIZE_EXPAND_FILL
+		r_list.add_theme_constant_override("separation", 5)
+		r_scroll.add_child(r_list)
+
+		for m in GameState.roster:
+			var slot := PanelContainer.new()
+			var in_party := GameState.party.has(m)
+			var border_col := UiKit.GOLD if in_party else UiKit.BORDER
+			slot.add_theme_stylebox_override("panel", UiKit.style(Color("16120e"), border_col, 6, 1, 6, 4))
+			slot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+			var sh := HBoxContainer.new()
+			sh.add_theme_constant_override("separation", 8)
+			slot.add_child(sh)
+
+			# 초상화
+			var port := VillageVisuals.HeroPortraitCanvas.new()
+			port.category = m.category
+			port.grade = m.grade
+			port.custom_minimum_size = Vector2(32, 32)
+			sh.add_child(port)
+
+			# 영웅 정보 및 10칸 스트레스 핍 블록
+			var info_v := VBoxContainer.new()
+			info_v.size_flags_horizontal = SIZE_EXPAND_FILL
+			info_v.add_theme_constant_override("separation", 2)
+			sh.add_child(info_v)
+
+			var name_h := HBoxContainer.new()
+			info_v.add_child(name_h)
+			var name_lbl := UiKit.label(m.merc_name, 11, UiKit.WHITE)
+			name_lbl.size_flags_horizontal = SIZE_EXPAND_FILL
+			name_h.add_child(name_lbl)
+
+			# 결의 레벨 뱃지 (Lv.N)
+			var lv_badge := UiKit.label("Lv.%d" % m.level, 10, UiKit.GOLD2)
+			name_h.add_child(lv_badge)
+
+			# 장비 수치 (W: 무기, A: 방어구)
+			var eq_lbl := UiKit.label("%s | ⚔+%d 🛡+%d" % [m.job, m.weapon_level, m.armor_level], 9, UiKit.TEXT2)
+			info_v.add_child(eq_lbl)
+
+			# 다키스트 던전 시그니처 10칸 분할 스트레스 핍 바
+			var pips_h := HBoxContainer.new()
+			pips_h.add_theme_constant_override("separation", 2)
+			info_v.add_child(pips_h)
+			# 영지 스트레스 비율(0~10)을 블록으로 시각화
+			var filled_pips: int = mini(10, int(round(float(GameState.total_stress()) / 10.0)))
+			for p_idx in range(10):
+				var pip := ColorRect.new()
+				pip.custom_minimum_size = Vector2(10, 4)
+				pip.color = Color("e03838") if p_idx < filled_pips else Color("2a201a")
+				pips_h.add_child(pip)
+
+			r_list.add_child(slot)
+	else:
+		# 접힌 상태 아이콘
+		var collapsed_lbl := UiKit.label("👥\n로\n스\n터", 11, UiKit.GOLD)
+		collapsed_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		dv.add_child(collapsed_lbl)
 
 
 ## 하단 스크롤바 드래그/클릭 시 카메라 위치 즉시 갱신

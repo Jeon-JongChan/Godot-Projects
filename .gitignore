@@ -1,9 +1,33 @@
-.docs
-*.exe
-node_modules/
-.archify
-VSCode AMI Tunning/
-.tools/.graphify/
+# ── Godot 4 Engine Cache & Build ──
+.godot/
+*.translation
 *.tmp
+*.log
+*.exe
 Godot/build/*
 !Godot/build/run.cmd
+
+# ── Tests & Test Runner Files ──
+.tools/
+**/.tools/
+**/.test/
+tests/
+test/
+*.test.gd
+*.test.tscn
+
+# ── Agent, AI & Dev Tools ──
+.agent/
+.docs/
+.archify/
+**/.archify/
+**/.graphify/
+node_modules/
+VSCode AMI Tunning/
+개발지시문서 및 자료/*
+
+# ── OS & IDE ──
+.DS_Store
+Thumbs.db
+*.swp
+*.bak

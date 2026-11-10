@@ -100,6 +100,60 @@ static func primary_button(text: String, accent: Color = GREEN) -> Button:
 	return b
 
 
+## 다키스트 던전 풍의 각진 흑철/황금 테두리 고딕 버튼 생성 헬퍼.
+## _style_cache 기반 StyleBox 를 재사용해 대장간·결전 UI 의 일관성과 경량화를 유지한다.
+static func gothic_button(text: String, accent: Color = GOLD) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.add_theme_font_size_override("font_size", 14)
+	b.add_theme_color_override("font_color", accent.lightened(0.2))
+	b.add_theme_color_override("font_hover_color", WHITE)
+	b.add_theme_color_override("font_pressed_color", accent.darkened(0.3))
+	b.add_theme_color_override("font_disabled_color", TEXT3)
+	b.add_theme_stylebox_override("normal", style(Color("120f0c"), accent.darkened(0.3), 2, 2, 16, 8))
+	b.add_theme_stylebox_override("hover", style(Color("1e1712"), accent.lightened(0.3), 2, 2, 16, 8))
+	b.add_theme_stylebox_override("pressed", style(Color("0a0806"), accent, 2, 2, 16, 8))
+	b.add_theme_stylebox_override("disabled", style(Color("0d0c0a"), Color("2a241c"), 2, 1, 16, 8))
+	b.focus_mode = Control.FOCUS_NONE
+	return b
+
+
+## 수평 구분선 컨트롤 생성 헬퍼 (대장간 정보 패널 등 섹션 분리용).
+static func divider(color: Color = BORDER, height: int = 1) -> Control:
+	var c := ColorRect.new()
+	c.color = color
+	c.custom_minimum_size = Vector2(0, height)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return c
+
+
+## 도트 픽셀 아트가 번지지 않도록 TEXTURE_FILTER_NEAREST 를 적용한 아이콘 TextureRect 생성 헬퍼.
+static func icon_rect(path: String, px: int = 18) -> TextureRect:
+	var trect := TextureRect.new()
+	trect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if ResourceLoader.exists(path):
+		trect.texture = load(path)
+	trect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	trect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	trect.custom_minimum_size = Vector2(px, px)
+	trect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return trect
+
+
+## 도트 아이콘이 포함된 상태/자원 칩 생성 헬퍼.
+static func icon_chip(icon_path: String, text: String, color: Color = GOLD, icon_px: int = 16) -> PanelContainer:
+	var p := PanelContainer.new()
+	p.add_theme_stylebox_override("panel", style(color.darkened(0.55), color, 10, 1))
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 5)
+	p.add_child(h)
+	if ResourceLoader.exists(icon_path):
+		h.add_child(icon_rect(icon_path, icon_px))
+	var l := label(text, 12, color.lightened(0.3))
+	h.add_child(l)
+	return p
+
+
 static func chip(text: String, color: Color = GOLD) -> PanelContainer:
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", style(color.darkened(0.55), color, 10, 1))
@@ -132,14 +186,14 @@ static func hsep(h: int = 8) -> Control:
 
 
 static func avatar(diameter: int = 36) -> TextureRect:
-	var tr := TextureRect.new()
+	var trect := TextureRect.new()
 	var tex := load(AVATAR)
 	if tex:
-		tr.texture = tex
-	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tr.custom_minimum_size = Vector2(diameter, diameter)
-	return tr
+		trect.texture = tex
+	trect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	trect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	trect.custom_minimum_size = Vector2(diameter, diameter)
+	return trect
 
 
 ## 자원 칩이 포함된 상단바. on_back 이 Callable 이면 뒤로 버튼을 단다.

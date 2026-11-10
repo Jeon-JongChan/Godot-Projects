@@ -14,6 +14,16 @@ enum Status { READY, ON_EXPEDITION, MISSING, DEAD }
 @export var attack: int = 10
 
 @export var hp: int = 80
+## 다키스트 던전 스트레스 수치 (0 ~ 100, 100 도달 시 고통/붕괴 상태 진입 위험)
+@export var stress: int = 0
+## 대장간 강화 무기 레벨 (1 ~ 5)
+@export var weapon_level: int = 1
+## 대장간 강화 방어구 레벨 (1 ~ 5)
+@export var armor_level: int = 1
+## 대장간 강화 투구 레벨 (1 ~ 5)
+@export var helmet_level: int = 1
+## 대장간 강화 장신구/반지 레벨 (1 ~ 5)
+@export var ring_level: int = 1
 # 패널티는 프로토타입 단계에서는 전투 능력치에 영향을 주지 않으며 순수 기록용으로 사용됨
 @export var penalties: Array[String] = []
 @export var status: int = Status.READY
@@ -77,6 +87,11 @@ func to_dict() -> Dictionary:
 		"max_hp": max_hp,
 		"attack": attack,
 		"hp": hp,
+		"stress": stress,
+		"weapon_level": weapon_level,
+		"armor_level": armor_level,
+		"helmet_level": helmet_level,
+		"ring_level": ring_level,
 		"penalties": penalties.duplicate(),
 		"status": status,
 	}
@@ -93,9 +108,68 @@ static func from_dict(data: Dictionary) -> Mercenary:
 	m.max_hp = int(data.get("max_hp", 80))
 	m.attack = int(data.get("attack", 10))
 	m.hp = int(data.get("hp", m.max_hp))
+	m.stress = int(data.get("stress", 0))
+	m.weapon_level = int(data.get("weapon_level", 1))
+	m.armor_level = int(data.get("armor_level", 1))
+	m.helmet_level = int(data.get("helmet_level", 1))
+	m.ring_level = int(data.get("ring_level", 1))
 	var pens: Array = data.get("penalties", [])
 	m.penalties.clear()
 	for p in pens:
 		m.penalties.append(str(p))
 	m.status = int(data.get("status", Status.READY))
 	return m
+
+
+## 다키스트 던전 6대 전투 능력치: 명중률(ACC)을 계산합니다.
+func get_acc() -> int:
+	var base := 90 + level * 2
+	if category == "레인저":
+		base += 5
+	return base
+
+
+## 다키스트 던전 6대 전투 능력치: 치명타율(CRIT %)을 계산합니다.
+func get_crit() -> float:
+	var base := 5.0 + float(level) * 1.5
+	if category == "레인저":
+		base += 3.0
+	return base
+
+
+## 다키스트 던전 6대 전투 능력치: 최소 피해량(DMG Min)을 계산합니다.
+func get_dmg_min() -> int:
+	return maxi(1, attack - 2 + (weapon_level - 1) * 2)
+
+
+## 다키스트 던전 6대 전투 능력치: 최대 피해량(DMG Max)을 계산합니다.
+func get_dmg_max() -> int:
+	return maxi(2, attack + 3 + (weapon_level - 1) * 3)
+
+
+## 다키스트 던전 6대 전투 능력치: 회피율(DODGE)을 계산합니다.
+func get_dodge() -> int:
+	var base := 8 + level * 3
+	if category == "레인저":
+		base += 6
+	return base
+
+
+## 다키스트 던전 6대 전투 능력치: 방어력/피해감소율(PROT %)을 계산합니다.
+func get_prot() -> int:
+	var prot := 0
+	if category == "전사":
+		prot = 10 + (armor_level - 1) * 3
+	elif category == "성직자":
+		prot = 5 + (armor_level - 1) * 2
+	return prot
+
+
+## 다키스트 던전 6대 전투 능력치: 턴 속도(SPD)를 계산합니다.
+func get_spd() -> int:
+	var spd := 4 + level
+	if category == "레인저":
+		spd += 3
+	elif category == "전사":
+		spd -= 1
+	return maxi(1, spd)
