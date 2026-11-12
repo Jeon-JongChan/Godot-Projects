@@ -17,7 +17,6 @@ test/
 *.test.tscn
 
 # ── Agent, AI & Dev Tools ──
-.agent/
 .docs/
 .archify/
 **/.archify/

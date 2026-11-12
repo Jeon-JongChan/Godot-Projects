@@ -9,67 +9,45 @@ extends RefCounted
 class VillageTerrainCanvas extends Control:
 	var anim_time: float = 0.0
 	var building_defs: Array[Dictionary] = []
+	static var _estate_bg_tex: Texture2D = null
+	static var _road_tex: Texture2D = null
+
+	## 초기화: 도트풍 텍스처 필터링(NEAREST) 및 도로 타일링(REPEAT) 활성화
+	func _ready() -> void:
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 
 	## [업데이트 메서드] 상위 월드(EstateWorld)의 중앙 루프가 매 프레임 호출하여 애니메이션을 갱신한다.
 	func update_tick(delta: float) -> void:
 		anim_time += delta
 		queue_redraw()
 
-	## 다키스트 던전 1 스타일의 황혼녘 고딕 영지(The Estate) 배경 지형을 렌더링한다.
+	## 다키스트 던전 1 스타일의 황혼녘 고딕 영지(The Estate) 도트풍 배경 지형을 렌더링한다.
 	func _draw() -> void:
 		var w := size.x
 		var h := size.y
 
-		# 1. 다키스트 던전 시그니처: 핏빛/호박빛 황혼 노을과 짙은 먹구름 하늘
-		var sky_bands := [
-			{"y0": 0.0, "y1": 65.0, "c": Color("06060a")},
-			{"y0": 65.0, "y1": 125.0, "c": Color("140a12")},
-			{"y0": 125.0, "y1": 185.0, "c": Color("281014")},
-			{"y0": 185.0, "y1": 240.0, "c": Color("421a16")},
-			{"y0": 240.0, "y1": 275.0, "c": Color("582a1c")},
-		]
-		for b in sky_bands:
-			draw_rect(Rect2(0, b.y0, w, b.y1 - b.y0 + 2), b.c)
+		# 고화질 도트풍 마을 배경 및 조약돌 도로 텍스처 지연 로드
+		if _estate_bg_tex == null and ResourceLoader.exists("res://assets/sprites/textures/village_estate_bg.png"):
+			_estate_bg_tex = load("res://assets/sprites/textures/village_estate_bg.png")
+		if _road_tex == null and ResourceLoader.exists("res://assets/sprites/textures/village_cobblestone_road.png"):
+			_road_tex = load("res://assets/sprites/textures/village_cobblestone_road.png")
 
-		# 2. 지평선 노을 속 붉은 태양빛 무리와 먹구름 띠
-		draw_circle(Vector2(w * 0.48, 255), 180.0, Color(0.95, 0.45, 0.15, 0.12))
-		draw_circle(Vector2(w * 0.48, 255), 110.0, Color(1.0, 0.65, 0.25, 0.18))
+		if _estate_bg_tex != null:
+			# 2500x720 광폭 월드를 좌우 심리스 미러링으로 왜곡 없이 도트풍 배경 렌더링
+			var half_w := w * 0.5
+			draw_texture_rect(_estate_bg_tex, Rect2(0, 0, half_w, h), false)
+			draw_texture_rect(_estate_bg_tex, Rect2(w, 0, -half_w, h), false)
+			# 상단 하늘과 지평선 톤을 어둡게 눌러 건물과 UI 가독성 확보
+			draw_rect(Rect2(0, 0, w, h), Color(0.05, 0.04, 0.06, 0.25))
+		else:
+			# 폴백 단색 배경
+			draw_rect(Rect2(0, 0, w, 255), Color("281014"))
+			draw_rect(Rect2(0, 255, w, h - 255), Color("121014"))
 
-		# 짙은 먹구름 실루엣
-		var cloud_pts := PackedVector2Array([
-			Vector2(0, 110), Vector2(180, 85), Vector2(380, 120), Vector2(620, 90),
-			Vector2(920, 130), Vector2(1250, 95), Vector2(1580, 135), Vector2(1920, 90),
-			Vector2(2240, 120), Vector2(w, 100), Vector2(w, 160), Vector2(0, 160)
-		])
-		draw_colored_polygon(cloud_pts, Color(0.08, 0.05, 0.07, 0.75))
-
-		# 3. 원경 뾰족한 고딕 첨탑 성곽 & 톱니 산맥 실루엣 (다키스트 던전 1 1.webp)
-		var far_mtn := PackedVector2Array([
-			Vector2(0, 250), Vector2(110, 175), Vector2(190, 220), Vector2(340, 140),
-			Vector2(450, 195), Vector2(640, 130), Vector2(810, 185), Vector2(980, 110),
-			Vector2(1180, 175), Vector2(1390, 125), Vector2(1620, 180), Vector2(1850, 120),
-			Vector2(2120, 170), Vector2(2360, 115), Vector2(w, 180), Vector2(w, 290), Vector2(0, 290)
-		])
-		draw_colored_polygon(far_mtn, Color("100a10"))
-
-		# 중경 불길한 침엽수림 능선 & 원경 성곽 십자가 실루엣
-		var mid_hills := PackedVector2Array([
-			Vector2(0, 265), Vector2(180, 230), Vector2(460, 252), Vector2(820, 215),
-			Vector2(1160, 250), Vector2(1540, 225), Vector2(1920, 248), Vector2(w, 225),
-			Vector2(w, 320), Vector2(0, 320)
-		])
-		draw_colored_polygon(mid_hills, Color("140e14"))
-
-		# 4. 마을 대지 (황폐한 잿빛 흑토와 자갈, 다키스트 던전 고딕 톤)
-		draw_rect(Rect2(0, 255, w, h - 255), Color("121014"))
-
-		# 음산한 지형 음영 패치
-		_draw_ellipse(Vector2(930, 205), Vector2(320, 90), Color("18141a"))
-		_draw_ellipse(Vector2(500, 320), Vector2(360, 180), Color("151217"))
-		_draw_ellipse(Vector2(1450, 360), Vector2(400, 200), Color("161318"))
-		# 우측 어둠의 균열 주변 핏빛/보랏빛 오염 대지
-		_draw_ellipse(Vector2(2180, 350), Vector2(280, 175), Color("220c18"))
-		_draw_ellipse(Vector2(2180, 350), Vector2(190, 120), Color("340f22"))
+		# 우측 어둠의 균열 주변 핏빛/보랏빛 오염 오라
+		_draw_ellipse(Vector2(2180, 350), Vector2(280, 175), Color(0.18, 0.04, 0.14, 0.45))
+		_draw_ellipse(Vector2(2180, 350), Vector2(190, 120), Color(0.28, 0.06, 0.20, 0.55))
 
 		# 5. 마을 건물들을 연결하는 비에 젖은 어두운 조약돌 도로망 (Cobblestone)
 		var road_paths := [
@@ -141,22 +119,37 @@ class VillageTerrainCanvas extends Control:
 		draw_polyline(pts, col, width)
 
 	## 조약돌 도로 드로잉
+	## 도트풍 조약돌 도로 텍스처 타일링 렌더링 (가장자리 고딕 음영 테두리 포함)
 	func _draw_cobblestone_path(points: Array, width: float) -> void:
 		for i in range(points.size() - 1):
 			var p0: Vector2 = points[i]
 			var p1: Vector2 = points[i + 1]
-			draw_line(p0, p1, Color("251f18"), width + 6.0)
-			draw_line(p0, p1, Color("382f24"), width)
-			draw_circle(p0, width * 0.5, Color("382f24"))
-			draw_circle(p1, width * 0.5, Color("382f24"))
-			# 징검돌 디테일
-			var dist := p0.distance_to(p1)
-			var steps := maxi(2, int(dist / 26.0))
-			for s in range(steps):
-				var t := float(s) / float(steps)
-				var pos := p0.lerp(p1, t)
-				var off := Vector2(sin(float(s * 3 + i)) * 6.0, cos(float(s * 5 + i)) * 4.0)
-				_draw_ellipse(pos + off, Vector2(7, 4), Color("483d2e"))
+			var seg_len := p0.distance_to(p1)
+			if seg_len < 1.0:
+				continue
+
+			# 도로 양옆 흙 경계선 및 그림자
+			draw_line(p0, p1, Color("161215", 0.90), width + 10.0)
+			draw_circle(p0, (width + 10.0) * 0.5, Color("161215", 0.90))
+			draw_circle(p1, (width + 10.0) * 0.5, Color("161215", 0.90))
+
+			if _road_tex != null:
+				var dir := (p1 - p0).normalized()
+				var perp := Vector2(-dir.y, dir.x) * (width * 0.5)
+				var rep := maxf(1.0, seg_len / 52.0)
+
+				var quad_pts := PackedVector2Array([p0 - perp, p1 - perp, p1 + perp, p0 + perp])
+				var uvs := PackedVector2Array([Vector2(0, 0), Vector2(rep, 0), Vector2(rep, 1.0), Vector2(0, 1.0)])
+				var cols := PackedColorArray([Color(0.85, 0.85, 0.9, 1.0), Color(0.85, 0.85, 0.9, 1.0), Color(0.85, 0.85, 0.9, 1.0), Color(0.85, 0.85, 0.9, 1.0)])
+				draw_polygon(quad_pts, cols, uvs, _road_tex)
+
+				# 교차점 이음새 조약돌 캡
+				draw_circle(p0, width * 0.46, Color("2e2a32"))
+				draw_circle(p1, width * 0.46, Color("2e2a32"))
+			else:
+				draw_line(p0, p1, Color("382f24"), width)
+				draw_circle(p0, width * 0.5, Color("382f24"))
+				draw_circle(p1, width * 0.5, Color("382f24"))
 
 	## 다키스트 던전 스타일 앙상한 가시나무(Dead Tree) 드로잉
 	func _draw_gothic_dead_tree(pos: Vector2) -> void:
@@ -724,11 +717,14 @@ class BuildingInteriorCanvas extends Control:
 				_npc_cache[npc_path] = npc_tex
 
 			if npc_tex != null:
-				var nw := float(npc_tex.get_width()) * 1.35
-				var nh := float(npc_tex.get_height()) * 1.35
+				# 캔버스 높이(h)에 비례하도록 종횡비를 유지하며 우측 하단에 정렬
+				var target_h := h * 0.88
+				var scale_ratio := target_h / maxf(1.0, float(npc_tex.get_height()))
+				var nw := float(npc_tex.get_width()) * scale_ratio
+				var nh := target_h
 				var bob := sin(anim_time * 2.8) * 2.0
-				var nx := w * 0.62
-				var ny := (h - 22.0) - nh + bob
+				var nx := w - nw - 14.0
+				var ny := (h - 6.0) - nh + bob
 				draw_texture_rect(npc_tex, Rect2(nx, ny, nw, nh), false)
 
 			# 3. 고딕 황금 테두리 액자 프레임

@@ -1,0 +1,874 @@
+{
+  "schema": "agent-sprite-forge.install.v1",
+  "tool": "install_skills/1.0",
+  "installedAt": "2026-11-10T05:23:48Z",
+  "source": {
+    "commit": "6b3da5c444363378e20f3fce130ebecc22f343dd",
+    "dirty": false
+  },
+  "skills": [
+    "codeart2d",
+    "generate2dmap",
+    "generate2dmedia",
+    "generate2dsprite",
+    "video2dsprite"
+  ],
+  "files": [
+    {
+      "path": "codeart2d/agents/openai.yaml",
+      "sha256": "218f5daabbec192ff017c26dc860752fc7f4e05491789217ed2ff4cbcafa5876",
+      "bytes": 371
+    },
+    {
+      "path": "codeart2d/examples/dirt-path.material.json",
+      "sha256": "e3297529824ca2be4d9f13e2d7a9e0f3c3589a6bca261580a581e7893b0938ba",
+      "bytes": 2075
+    },
+    {
+      "path": "codeart2d/examples/hero.anim.json",
+      "sha256": "ed68148236479cb3392940eacd38f9927c2a2198b94cceb7f6492e2d1addf4de",
+      "bytes": 2259
+    },
+    {
+      "path": "codeart2d/examples/hero.rig.svg",
+      "sha256": "3ef883e4a58e5a2704539ca2d6f3e198a91b2f5e5e5ba20d47177bc15528eed8",
+      "bytes": 3358
+    },
+    {
+      "path": "codeart2d/examples/meadow-layout.json",
+      "sha256": "e5f5c52926c6a6eecccba679683a2f7e569e8b844660ed480071d969fdf4f55b",
+      "bytes": 13765
+    },
+    {
+      "path": "codeart2d/examples/palette.json",
+      "sha256": "c37974fef6e1e85b7fff8622e0b47c0fc2416e838e29d5593168b7751fe15838",
+      "bytes": 464
+    },
+    {
+      "path": "codeart2d/examples/parallax-gen.json",
+      "sha256": "c1dd820004632d4bf5b8e5d682e6d3bee00f04bc6533f6f9721bbd80eb66eea9",
+      "bytes": 1500
+    },
+    {
+      "path": "codeart2d/examples/plate-effects.json",
+      "sha256": "7871dfc5f4b5443ec665ae97b1b3566c934e8c7aa53700cbb4aa972412b13201",
+      "bytes": 1179
+    },
+    {
+      "path": "codeart2d/examples/potion-icons.svg",
+      "sha256": "a596bdf32ae94f18863ffc2278035edbc2f0256a7131dd8e1ccc4408e1759180",
+      "bytes": 3380
+    },
+    {
+      "path": "codeart2d/examples/slash.fx.json",
+      "sha256": "09669824e88266a1b3498b788b603a57dbf485a8ee89ecec97758be2bf3b8a12",
+      "bytes": 2138
+    },
+    {
+      "path": "codeart2d/examples/slime.pixelspec.json",
+      "sha256": "7b529261c66884a607382ea4834c4623f7f2bcf4887c2c846a800460c168756c",
+      "bytes": 3436
+    },
+    {
+      "path": "codeart2d/examples/walker16x24.pixelspec.json",
+      "sha256": "c86b314545bb6ad0cc946697687567d0c92963d4dcba852601643f2d065d02c4",
+      "bytes": 5383
+    },
+    {
+      "path": "codeart2d/examples/water-grass.material.json",
+      "sha256": "2e84e8fb179d9de472561253de9732316dec7deda5fe1ada788ec1fe0d12a108",
+      "bytes": 1469
+    },
+    {
+      "path": "codeart2d/references/fx-language.md",
+      "sha256": "4019ad60a9720f8e8e67380d15506492935558e8911df768ec1d5cfc5a957392",
+      "bytes": 9831
+    },
+    {
+      "path": "codeart2d/references/fx-runtime-contract.md",
+      "sha256": "904048e676e80e6548cef618397fcc412e09732aee776a5ad8766a886311437d",
+      "bytes": 7599
+    },
+    {
+      "path": "codeart2d/references/layouts-and-parallax.md",
+      "sha256": "902e04e414ea93503ed341467c72e6722b1676919feb3e8930785cb6c3d2773d",
+      "bytes": 21100
+    },
+    {
+      "path": "codeart2d/references/pixelspec.md",
+      "sha256": "6a0021af08f757e6acaf8a0ebf78abe10795228e2dc906dfc34c80f5192f90a2",
+      "bytes": 11256
+    },
+    {
+      "path": "codeart2d/references/rasterizers.md",
+      "sha256": "aa2f8eac6fb98b5a84cc9163015586a23d60c7a8330af4295794359d4dbe5264",
+      "bytes": 5065
+    },
+    {
+      "path": "codeart2d/references/rig-animation.md",
+      "sha256": "4ef07ca016156d117a90c836d8d5cbcb7415a98778afc80b504749b25f45c216",
+      "bytes": 18730
+    },
+    {
+      "path": "codeart2d/references/runtime/fx-template.mjs",
+      "sha256": "30a5a2313f0e0712abc2339ecd992915615cc988521fa4cc6dcc1c80aa8cfbcd",
+      "bytes": 13584
+    },
+    {
+      "path": "codeart2d/references/schemas/codeart.schema.json",
+      "sha256": "4a371119d45514c5381d0c0f109531f3a7c5f13e32ddc687c2a8e4c37be75c4e",
+      "bytes": 54499
+    },
+    {
+      "path": "codeart2d/references/schemas/common.schema.json",
+      "sha256": "7fa5b022fac7698f2be22449e4338baeb34bfe48e98dfdebb4dac33df956bd09",
+      "bytes": 13480
+    },
+    {
+      "path": "codeart2d/references/schemas/map.schema.json",
+      "sha256": "212d2092dd68dfa44961b13c7a748c1328c6d3d764b15ff97298dc32f8088cf8",
+      "bytes": 134178
+    },
+    {
+      "path": "codeart2d/references/schemas/sprite.schema.json",
+      "sha256": "5a0c7cceb505556d8740ad72c4bc3ca84a31fc2ad635a6e122096760f91776d7",
+      "bytes": 68260
+    },
+    {
+      "path": "codeart2d/references/style-envelope.md",
+      "sha256": "10edc64a26c44ffef5fe9458a6e73c5f4f1086f6173c040c8e95de0005e515f1",
+      "bytes": 5278
+    },
+    {
+      "path": "codeart2d/references/svg-profile.md",
+      "sha256": "dc0cfb6a4f5f01c02396d1c6a70595971832be5050f94848b5a57ce37f478666",
+      "bytes": 8717
+    },
+    {
+      "path": "codeart2d/references/tiles-and-maps.md",
+      "sha256": "ed390aa902c91e436a4c10c203ed428ed34524fd2c47586690c36a974899c526",
+      "bytes": 15934
+    },
+    {
+      "path": "codeart2d/scripts/ambient_bake.py",
+      "sha256": "c4b5cfa50169a2d03d51875f08d31f5ab85c3ef64fb26d41d9c419396cbd47d4",
+      "bytes": 33856
+    },
+    {
+      "path": "codeart2d/scripts/autotile_build.py",
+      "sha256": "5cd067d94c27d06dea5b60878e899f12fae504492651276f29765d189f71d37b",
+      "bytes": 107164
+    },
+    {
+      "path": "codeart2d/scripts/codeart_core.py",
+      "sha256": "a4331a997f190b6894e1f915b41b5510e9e2c801ab0999b36f1d3ddbc1c091c0",
+      "bytes": 123973
+    },
+    {
+      "path": "codeart2d/scripts/forge_core.py",
+      "sha256": "5e1ce8c42339ec759a977ff3651e6b07045206221bd3870302499f6850bc07c8",
+      "bytes": 81903
+    },
+    {
+      "path": "codeart2d/scripts/forge_nav.py",
+      "sha256": "e50ec3a86b1075c61e91e6f8b8b8ae7081732e60cc87b988ac22e65465021ed7",
+      "bytes": 99607
+    },
+    {
+      "path": "codeart2d/scripts/forge_schema.py",
+      "sha256": "ac2ce52eade3b1bc6dac15b453f59f8c87463c0d8bc3653c3cb5c6e8fdc83b33",
+      "bytes": 27225
+    },
+    {
+      "path": "codeart2d/scripts/fx_build.py",
+      "sha256": "aab959686ba2e1be94c3f7ea8610512efeb5785a583164fb20cc1b6590df0b09",
+      "bytes": 51436
+    },
+    {
+      "path": "codeart2d/scripts/fx_verify.mjs",
+      "sha256": "317ade4ae64b38a98356592957169732289af6d002f0dd3516dbd316b9af0a92",
+      "bytes": 31122
+    },
+    {
+      "path": "codeart2d/scripts/layout_build.py",
+      "sha256": "c4a09c61a062eafee9299361e61b9ad523139000a791753512e17fd79bd334ad",
+      "bytes": 111149
+    },
+    {
+      "path": "codeart2d/scripts/parallax_build.py",
+      "sha256": "dbe0b67b9f00b47c8da201405abc713bc95abf8f762be9c65c3ed4b751921539",
+      "bytes": 48731
+    },
+    {
+      "path": "codeart2d/scripts/pixel_qa.py",
+      "sha256": "65d90b9964b6e889195be6ec8b53c11a87f8527fb43d11190edd8a48a19bb425",
+      "bytes": 22469
+    },
+    {
+      "path": "codeart2d/scripts/render_pixelspec.py",
+      "sha256": "9de5b1f1bb6d5a5b5108cbdf86a13933af332c759f28d7d139c58af8e8d5b2f7",
+      "bytes": 44783
+    },
+    {
+      "path": "codeart2d/scripts/rig_animate.py",
+      "sha256": "220093b8c11416dbe46ab822cd5ea187f0e445df798339b1f641c8ecaa069002",
+      "bytes": 123243
+    },
+    {
+      "path": "codeart2d/scripts/svg_render.py",
+      "sha256": "bf33b194ccdbd1857991e041e8b617e11844374f7e7a7d82ae8e0171909d410c",
+      "bytes": 27358
+    },
+    {
+      "path": "codeart2d/SKILL.md",
+      "sha256": "c1c31232c6026310c7cc11330bfb96d30beef826cd52cc1805c4d7398112a8d1",
+      "bytes": 9930
+    },
+    {
+      "path": "generate2dmap/agents/openai.yaml",
+      "sha256": "e53140613fe379714df40ffeaa7e08e4bf33080b395796d830c45f0c750b8f4c",
+      "bytes": 520
+    },
+    {
+      "path": "generate2dmap/references/background-scenes.md",
+      "sha256": "04de62e9e4d54a8851b13744849e124bd0067a696034586fc077d40d356d1d14",
+      "bytes": 14635
+    },
+    {
+      "path": "generate2dmap/references/engine-maps.md",
+      "sha256": "04f4b43a91221f98a6104a1f3e2f57b3649130837806acdebb7d90e15b290533",
+      "bytes": 14817
+    },
+    {
+      "path": "generate2dmap/references/hd2d-plates.md",
+      "sha256": "602c4f00953295bae2cbacaed17aef586de95bbd6ab60ab433352e65672a5483",
+      "bytes": 12277
+    },
+    {
+      "path": "generate2dmap/references/hd2d-presentation.md",
+      "sha256": "524c12e1b04ebbb4798629ffa81414c6386c60fe66f5e75213f9d34ebc599622",
+      "bytes": 10177
+    },
+    {
+      "path": "generate2dmap/references/layered-map-contract.md",
+      "sha256": "8430d9e84997a2dbad2364c9e70c41902d49f0e64fe78346627c370ce00b61e0",
+      "bytes": 22031
+    },
+    {
+      "path": "generate2dmap/references/map-presets.md",
+      "sha256": "e51aaf710e41850f43eb788694c1297fb9861cf037f6467debc30d4747f49290",
+      "bytes": 8140
+    },
+    {
+      "path": "generate2dmap/references/map-strategies.md",
+      "sha256": "713b8eff676f815f4a6a41f0cffa19d1723bae9ff344dc763ce26426ee5dfd7d",
+      "bytes": 12550
+    },
+    {
+      "path": "generate2dmap/references/parallax-backgrounds.md",
+      "sha256": "c106c58659e67564fbbdc9bb6f3e2f7a1243c3d76ed134146f0da4db4e950fe5",
+      "bytes": 14508
+    },
+    {
+      "path": "generate2dmap/references/prop-pack-contract.md",
+      "sha256": "a275a2c022022da650518ddfbebca97a78a2139c7ed9a673700cb9f9878d1753",
+      "bytes": 15458
+    },
+    {
+      "path": "generate2dmap/references/runtime/map-runtime.mjs",
+      "sha256": "25c9d06322d6d98c76092aebe228227b526685e9309675285622e9d574df0c5b",
+      "bytes": 84875
+    },
+    {
+      "path": "generate2dmap/references/scene-preview.md",
+      "sha256": "2c00bf972c636ba8e8af54c0550bc95a9d9c09ee6498213b472a1d912b9d9d77",
+      "bytes": 15039
+    },
+    {
+      "path": "generate2dmap/references/schemas/common.schema.json",
+      "sha256": "7fa5b022fac7698f2be22449e4338baeb34bfe48e98dfdebb4dac33df956bd09",
+      "bytes": 13480
+    },
+    {
+      "path": "generate2dmap/references/schemas/map.schema.json",
+      "sha256": "212d2092dd68dfa44961b13c7a748c1328c6d3d764b15ff97298dc32f8088cf8",
+      "bytes": 134178
+    },
+    {
+      "path": "generate2dmap/references/side-scroll-scenes.md",
+      "sha256": "876a160b3c97188525512e8894ebac3068cc44cf3bd9ac5797771c99c20de3dc",
+      "bytes": 14795
+    },
+    {
+      "path": "generate2dmap/scripts/build_motion_mask.py",
+      "sha256": "e919ba48981d9573b09c6cd5149e51d4f15e0cfc5492625af477046d79a8c439",
+      "bytes": 48322
+    },
+    {
+      "path": "generate2dmap/scripts/build_scene_preview.py",
+      "sha256": "fee894522c0714e93fdea188e5b3e4be4cb363a41080c41ef79a38d2669a7c9c",
+      "bytes": 97609
+    },
+    {
+      "path": "generate2dmap/scripts/compose_layered_preview.py",
+      "sha256": "daf9a2c63b5577496a0811e5dde0d59b23348348bf33778288f03824528bfd19",
+      "bytes": 96088
+    },
+    {
+      "path": "generate2dmap/scripts/conform_background.py",
+      "sha256": "f4e74c16f5de8ba77b792728660a3c29b6e614a9a74e8d8bb974dffafe38af17",
+      "bytes": 26457
+    },
+    {
+      "path": "generate2dmap/scripts/edit_locality_check.py",
+      "sha256": "838544d016388f1f20de653d8b602aa0d691fd2d91c7e1666dd5950541e4d106",
+      "bytes": 28148
+    },
+    {
+      "path": "generate2dmap/scripts/export_godot.py",
+      "sha256": "0428528927a3b6907d83264eed989dca7b30eb6fe3632308c2d2e2d672318822",
+      "bytes": 89301
+    },
+    {
+      "path": "generate2dmap/scripts/export_ldtk.py",
+      "sha256": "02f5496ddcc314dc5e4bca5a7af4987bcc3a970377a346660bd11936bbc199a4",
+      "bytes": 53478
+    },
+    {
+      "path": "generate2dmap/scripts/export_tiled.py",
+      "sha256": "31108fd5839dd6d760a8aaf6875d77cb0246d18f3a76a918998b595e7efbf835",
+      "bytes": 47411
+    },
+    {
+      "path": "generate2dmap/scripts/extract_platform_strip.py",
+      "sha256": "804861084c1f144dc2c7c0a6b44c92cfcc449b91d8b836d028cfafeedcebda0f",
+      "bytes": 30631
+    },
+    {
+      "path": "generate2dmap/scripts/extract_prop_pack.py",
+      "sha256": "c4b9bf2a29df142ecba9e44a68f17357de610375c127df6f076bfa8edc2b8ad7",
+      "bytes": 65944
+    },
+    {
+      "path": "generate2dmap/scripts/extract_scene_lights.py",
+      "sha256": "4bb31a6aab12d1c35ec09b2bf1bb342033426f936edd56f9e2fe5072ee100f1d",
+      "bytes": 44971
+    },
+    {
+      "path": "generate2dmap/scripts/extract_terrain_tiles.py",
+      "sha256": "1e8d547c231c9758fcf82891e0b7dd4e708fcb9ce180335c17fe617de01a129f",
+      "bytes": 56360
+    },
+    {
+      "path": "generate2dmap/scripts/forge_av.py",
+      "sha256": "39885fee57cf797ca6e2e91b12583074abe823aff369f68cb06ed3c31842bf80",
+      "bytes": 48730
+    },
+    {
+      "path": "generate2dmap/scripts/forge_core.py",
+      "sha256": "5e1ce8c42339ec759a977ff3651e6b07045206221bd3870302499f6850bc07c8",
+      "bytes": 81903
+    },
+    {
+      "path": "generate2dmap/scripts/forge_hibit.py",
+      "sha256": "c725da93a92c11cc62499d9cce2863c10ef6a63102aa3b7f3912f1eb0b72ff18",
+      "bytes": 19663
+    },
+    {
+      "path": "generate2dmap/scripts/forge_matte.py",
+      "sha256": "7f82dacdf9489abadc920c7fdea07b124a7d740930bc355604a556eb72366be4",
+      "bytes": 74778
+    },
+    {
+      "path": "generate2dmap/scripts/forge_nav.py",
+      "sha256": "e50ec3a86b1075c61e91e6f8b8b8ae7081732e60cc87b988ac22e65465021ed7",
+      "bytes": 99607
+    },
+    {
+      "path": "generate2dmap/scripts/forge_schema.py",
+      "sha256": "ac2ce52eade3b1bc6dac15b453f59f8c87463c0d8bc3653c3cb5c6e8fdc83b33",
+      "bytes": 27225
+    },
+    {
+      "path": "generate2dmap/scripts/hibit_plate.py",
+      "sha256": "d9821f943552b65e381b6add49b9785f95fb95bef3b2aaca566faedb63f69b90",
+      "bytes": 13931
+    },
+    {
+      "path": "generate2dmap/scripts/map_bundle.py",
+      "sha256": "b7fa2a953298b0d933c81d2533dbb04b64c46054296c16316c048de6d1ca08a8",
+      "bytes": 85900
+    },
+    {
+      "path": "generate2dmap/scripts/map_nav.py",
+      "sha256": "5f4f25e18e495dd750611a388fe0c6d558eaad704badce511a71cba8b347318a",
+      "bytes": 33223
+    },
+    {
+      "path": "generate2dmap/scripts/scene_layout_guide.py",
+      "sha256": "2f603bc73b3e1083c3b3abb6560293b639893cdb0db7a870de37fccea9f7c0cc",
+      "bytes": 22926
+    },
+    {
+      "path": "generate2dmap/scripts/scene_motion.py",
+      "sha256": "d1800675364c9bc41bc68560b9c545e29bb28bf46bfc4915a23a480841bb2e6e",
+      "bytes": 56697
+    },
+    {
+      "path": "generate2dmap/scripts/validate_chunks.py",
+      "sha256": "d2d8b1109ca9361f9a5a29bf752e8c9a9f6bf4dc97cbbc042b651327b48d6ad9",
+      "bytes": 50921
+    },
+    {
+      "path": "generate2dmap/scripts/validate_layout.py",
+      "sha256": "a0fc51c058858c6c3df75a3645177341b6a45da7936bdfe6852bdda5501b7a48",
+      "bytes": 49124
+    },
+    {
+      "path": "generate2dmap/scripts/validate_parallax.py",
+      "sha256": "c48f4953aa78127678fe7df7d13cd18874f23d211c6deaba2b8a98bb5cc578ac",
+      "bytes": 30621
+    },
+    {
+      "path": "generate2dmap/scripts/validate_stage.py",
+      "sha256": "d23b2ffae76c693e6e52597f861d4fd89af558fd8965c71267bc7a267e713719",
+      "bytes": 64952
+    },
+    {
+      "path": "generate2dmap/SKILL.md",
+      "sha256": "53e3aacb3d8529a4e989ecfc94f4abfe9cbd76dde4791ec85f561d65096c6696",
+      "bytes": 12303
+    },
+    {
+      "path": "generate2dmedia/agents/openai.yaml",
+      "sha256": "9b9edc27cb9e46a78bd95308d40077b8f8f3c6dedd48e0a0a52757773b805676",
+      "bytes": 395
+    },
+    {
+      "path": "generate2dmedia/references/agent-profiles/README.md",
+      "sha256": "2df9c6a2b41922a63c653856c712aac24cba458a2705219ae016e668f4bea566",
+      "bytes": 1348
+    },
+    {
+      "path": "generate2dmedia/references/agent-profiles/video-agent.md",
+      "sha256": "b02146414e54c31355c4110d67e249b1ced942fb05b83d1b37842793be9c5b23",
+      "bytes": 1001
+    },
+    {
+      "path": "generate2dmedia/references/api-usage.md",
+      "sha256": "1bcc51c2f6b505e70a36179b16efc75e75b591f9ce1275f84db215a92f793fb3",
+      "bytes": 19309
+    },
+    {
+      "path": "generate2dmedia/references/capabilities.json",
+      "sha256": "6b032a70fe66ca4ef5933f0fa30eee2e57c15ad37f0a18a30c70767f6a14462c",
+      "bytes": 34021
+    },
+    {
+      "path": "generate2dmedia/references/cli-routes.md",
+      "sha256": "bd1532f035e84972615a744ca2d0b94110af9071d4f406b54f74deaba035968c",
+      "bytes": 15887
+    },
+    {
+      "path": "generate2dmedia/references/prices.json",
+      "sha256": "efc719f9ae45a5cdf8ab54c49a25dc2125f13365d8fb1d219db44711dde56385",
+      "bytes": 24183
+    },
+    {
+      "path": "generate2dmedia/references/provider-survey.md",
+      "sha256": "3e8b6e72aada594034f4afd70cf3e00ae7d69e6e04d5efe1c0f5e9291a588770",
+      "bytes": 17856
+    },
+    {
+      "path": "generate2dmedia/references/route-media.md",
+      "sha256": "521922b41fa1220e2e50c6bd357c7d67c434714c938178b9c385bc49de81b273",
+      "bytes": 13254
+    },
+    {
+      "path": "generate2dmedia/references/schemas/common.schema.json",
+      "sha256": "7fa5b022fac7698f2be22449e4338baeb34bfe48e98dfdebb4dac33df956bd09",
+      "bytes": 13480
+    },
+    {
+      "path": "generate2dmedia/references/schemas/media.schema.json",
+      "sha256": "3d7c6f522ccd42ee3e9db9b02d8344ce13dfaeecc6f1c033601af3a25375464f",
+      "bytes": 23405
+    },
+    {
+      "path": "generate2dmedia/scripts/cli_media.py",
+      "sha256": "a3cc93dcd9ffa55382766a7ea694ef08df169a08e9c636944688f085febb4514",
+      "bytes": 118101
+    },
+    {
+      "path": "generate2dmedia/scripts/forge_doctor.py",
+      "sha256": "cc5a00b263e05b1665d8b1e079a5fd955f158dec751b2682c9d5062ed2ce248b",
+      "bytes": 75397
+    },
+    {
+      "path": "generate2dmedia/scripts/generate_media.py",
+      "sha256": "6a3e1a46ba317f62a8e2e82abc8f00881a14edb40c21fb8e1c5bdd7c6cc41d6c",
+      "bytes": 75300
+    },
+    {
+      "path": "generate2dmedia/scripts/media_config.py",
+      "sha256": "0f0599d44ba77c774f0a8bafc078c1cb5ed379604186bd468207b59c4655f35c",
+      "bytes": 9518
+    },
+    {
+      "path": "generate2dmedia/scripts/media_ledger.py",
+      "sha256": "005cec26615aba0b6ccea4826e0b43643b6fa3e0216b04f12a43bca88bf99683",
+      "bytes": 30182
+    },
+    {
+      "path": "generate2dmedia/scripts/media_mp4.py",
+      "sha256": "ebea1012f70e51dca656758feeb610b7e2fc08283988993d6867a8edc36cd3cc",
+      "bytes": 9824
+    },
+    {
+      "path": "generate2dmedia/scripts/media_providers.py",
+      "sha256": "a5a1475f96037bd5bf569aff11affb574e28d2bbaf5f521d0704f06d3fa79daa",
+      "bytes": 69849
+    },
+    {
+      "path": "generate2dmedia/scripts/route_media.py",
+      "sha256": "d34a1f26f6f56103b896f3a0a0ffb8040857d66a3d8b038b37450b47d7c713cc",
+      "bytes": 43519
+    },
+    {
+      "path": "generate2dmedia/SKILL.md",
+      "sha256": "a2ac3232ea7dd583504c6e6996ebcbf2cf60a0a8fd893974a29d2df981b1fad4",
+      "bytes": 8677
+    },
+    {
+      "path": "generate2dsprite/agents/openai.yaml",
+      "sha256": "8b9042a71691a5c8500832c4b38eb76461a12c3ce437196a9be81f6e09dbd041",
+      "bytes": 533
+    },
+    {
+      "path": "generate2dsprite/references/action-recipes.md",
+      "sha256": "49ca84f0fa1464affa6b0997005f17961932c09808e8259c6b53a820ba95318e",
+      "bytes": 14329
+    },
+    {
+      "path": "generate2dsprite/references/animation-planning.md",
+      "sha256": "33b36d7feda514eed6075bcd6353137c4db9a0bd1d6d8938a61fc29392a05d11",
+      "bytes": 9388
+    },
+    {
+      "path": "generate2dsprite/references/character-animation.md",
+      "sha256": "094c76cfdeff675e74e365b95d4f01358b1efb1ecc64f5c83a3923b1fa6ff967",
+      "bytes": 4031
+    },
+    {
+      "path": "generate2dsprite/references/engine-export.md",
+      "sha256": "f60d3ef11b71711a41b3c6482dd27f7db08c328cc6eb812253b8644e010c644d",
+      "bytes": 14102
+    },
+    {
+      "path": "generate2dsprite/references/frames-and-clips.md",
+      "sha256": "685a699d2d5746a64e526b2fe04b3fac5917dd98bf2a15e625611efc453272a7",
+      "bytes": 16822
+    },
+    {
+      "path": "generate2dsprite/references/hibit.md",
+      "sha256": "2fe72b87e009a13a653b107e1169e95e0cda6af0285e165589e2fc9956703714",
+      "bytes": 7400
+    },
+    {
+      "path": "generate2dsprite/references/master-still.md",
+      "sha256": "9039e9cc49a7b50006c9f76aecbe8ecb97fea8c77e0576b6f5ac6697facdccb1",
+      "bytes": 15441
+    },
+    {
+      "path": "generate2dsprite/references/modes.md",
+      "sha256": "75864deba48f6404506e9badbd7a325ab32b905e2c58f8dc3851397b96690447",
+      "bytes": 6266
+    },
+    {
+      "path": "generate2dsprite/references/palette-and-pixels.md",
+      "sha256": "a74a332ee5af6a046534edbcf157e5ee65697f394a970ddd5f2041f3b709b0a7",
+      "bytes": 12413
+    },
+    {
+      "path": "generate2dsprite/references/processing.md",
+      "sha256": "861ee796a99b62ae3ed9dfc4ed816b2ee48aa2cdcde6ecc0b9c3fed9a9ea0562",
+      "bytes": 14717
+    },
+    {
+      "path": "generate2dsprite/references/prompt-rules.md",
+      "sha256": "b75dc1e1b6d3e7152b26576c258f9a3b5688b19482dea6f01a9ff425e79ca85e",
+      "bytes": 10089
+    },
+    {
+      "path": "generate2dsprite/references/runtime-integration.md",
+      "sha256": "e25d49459e35448519b3d4795ce24c49f74ba9bf0e8d4b692d4b8751ca357f89",
+      "bytes": 10952
+    },
+    {
+      "path": "generate2dsprite/references/schemas/common.schema.json",
+      "sha256": "7fa5b022fac7698f2be22449e4338baeb34bfe48e98dfdebb4dac33df956bd09",
+      "bytes": 13480
+    },
+    {
+      "path": "generate2dsprite/references/schemas/sprite.schema.json",
+      "sha256": "5a0c7cceb505556d8740ad72c4bc3ca84a31fc2ad635a6e122096760f91776d7",
+      "bytes": 68260
+    },
+    {
+      "path": "generate2dsprite/references/video-handoff.md",
+      "sha256": "5bc17473621eae446b0978d343acece894a8388429515aeb235b679d51c87717",
+      "bytes": 8073
+    },
+    {
+      "path": "generate2dsprite/scripts/assemble_frames.py",
+      "sha256": "d7876b906fab3f49aefec5e3d28dd8dc9c20fd88a41eedbf86ae25681a1b69a8",
+      "bytes": 54094
+    },
+    {
+      "path": "generate2dsprite/scripts/build_animation_clips.py",
+      "sha256": "36ef673a1b0de86b22c5e35ef3d3c4a1af8f1d6389a97a4530dd117d112a518a",
+      "bytes": 76984
+    },
+    {
+      "path": "generate2dsprite/scripts/export_engine.py",
+      "sha256": "c6aa3c2b16b2a587a7de15c8ddfaa37c8e90fec75d07ea66c64253ea9541995e",
+      "bytes": 67833
+    },
+    {
+      "path": "generate2dsprite/scripts/forge_core.py",
+      "sha256": "5e1ce8c42339ec759a977ff3651e6b07045206221bd3870302499f6850bc07c8",
+      "bytes": 81903
+    },
+    {
+      "path": "generate2dsprite/scripts/forge_hibit.py",
+      "sha256": "c725da93a92c11cc62499d9cce2863c10ef6a63102aa3b7f3912f1eb0b72ff18",
+      "bytes": 19663
+    },
+    {
+      "path": "generate2dsprite/scripts/forge_matte.py",
+      "sha256": "7f82dacdf9489abadc920c7fdea07b124a7d740930bc355604a556eb72366be4",
+      "bytes": 74778
+    },
+    {
+      "path": "generate2dsprite/scripts/forge_palette.py",
+      "sha256": "6dbc1164e7bea2631fd776f01e76846a5f083f29dd54dc730c455bf5137083ed",
+      "bytes": 73322
+    },
+    {
+      "path": "generate2dsprite/scripts/fx_pixelfx.py",
+      "sha256": "bff8756248443310dde3aa95abf9a85de51a78179c7893c460756e6fc95b3775",
+      "bytes": 26949
+    },
+    {
+      "path": "generate2dsprite/scripts/generate2dsprite.py",
+      "sha256": "306cb2f305d5530d88d89f5447035d200036679b46e0b8c9173ba41ca27dc433",
+      "bytes": 141703
+    },
+    {
+      "path": "generate2dsprite/scripts/hibit_fx.py",
+      "sha256": "80c4a388c7f27cdaef35bd258656e63a7f7139b21f158eb59db63fed39306dad",
+      "bytes": 16351
+    },
+    {
+      "path": "generate2dsprite/scripts/make_anchor_layout.py",
+      "sha256": "f7132b6c1d621bcbdaf66486d9ebb4571fff79ff57350e4cab5c239f34be22de",
+      "bytes": 7645
+    },
+    {
+      "path": "generate2dsprite/scripts/make_layout_guide.py",
+      "sha256": "e42ae974cb5b0b6eedf2f9727685cd83a24c8f283eb815a83c27eaf9c24be5e1",
+      "bytes": 6402
+    },
+    {
+      "path": "generate2dsprite/scripts/master_still.py",
+      "sha256": "d4f3011de9361d88254a7263d25c236a59616073171f88f5eef0c13a0a275288",
+      "bytes": 90079
+    },
+    {
+      "path": "generate2dsprite/scripts/palette_tool.py",
+      "sha256": "2fe0f5ce57ac24295192e1fec96ade8a1aec50e1d5da19f3eb17327351ef7829",
+      "bytes": 42323
+    },
+    {
+      "path": "generate2dsprite/scripts/pixel_reduce.py",
+      "sha256": "ce0ebe277df83ff791b93ea472adf431a97877bde7886eb85b8c0c6501a471d7",
+      "bytes": 15856
+    },
+    {
+      "path": "generate2dsprite/scripts/plan_guide.py",
+      "sha256": "98182a406f3393619cb9e0af9dd5495a49217437e273c9b53beabc58c8a20ce9",
+      "bytes": 33964
+    },
+    {
+      "path": "generate2dsprite/scripts/scale_frames.py",
+      "sha256": "e9ba5a47f5b6f6ffb2f418d0b369d24f574b38f0207872a5fec27862cfa0dc6e",
+      "bytes": 39343
+    },
+    {
+      "path": "generate2dsprite/scripts/sheet_qc.py",
+      "sha256": "a2360ab3ae5ea751efbe8dace5369a87c602c4ddb3cdbed7d876f8a894f9c461",
+      "bytes": 73140
+    },
+    {
+      "path": "generate2dsprite/SKILL.md",
+      "sha256": "a09624e3c111c87f1a0735e0c0196871f633b68249416eb23f8343dc649747e6",
+      "bytes": 15628
+    },
+    {
+      "path": "video2dsprite/agents/openai.yaml",
+      "sha256": "cd045b913810948ff50dff3377a51d711c980cfc90898be418f108b2ace571e2",
+      "bytes": 499
+    },
+    {
+      "path": "video2dsprite/references/animation-review.md",
+      "sha256": "ae0e9f585c1c00d6dcb3e93e3dc7a1b7175f33b01942b99e7ad5d057e7f8f0ef",
+      "bytes": 11398
+    },
+    {
+      "path": "video2dsprite/references/finishing.md",
+      "sha256": "96f85f15950c40f124ceaca376e3650e8129e27f405986abfad2fed39f98a802",
+      "bytes": 20080
+    },
+    {
+      "path": "video2dsprite/references/matte.md",
+      "sha256": "57bb63d6be41ae2e899d1948ebb026b9e33910a5434dc56de6a9ab5ca465eb62",
+      "bytes": 11703
+    },
+    {
+      "path": "video2dsprite/references/motion-prompts.md",
+      "sha256": "d849193e23a04bf5a5b16305b64ada380ee1bd98cdf04b57e24771a1d098c177",
+      "bytes": 15701
+    },
+    {
+      "path": "video2dsprite/references/packed-alpha-runtime.js",
+      "sha256": "06e8c6414f6b68086c4ae0fc15332cb0685b418db033a8f3487311873be952f8",
+      "bytes": 2965
+    },
+    {
+      "path": "video2dsprite/references/pipeline.md",
+      "sha256": "dd78d08f06125e1ff23a1948b8b31c829970358ed956f4695ade93c7fa9ccac7",
+      "bytes": 17545
+    },
+    {
+      "path": "video2dsprite/references/prompt-rules.md",
+      "sha256": "79d43be65f6a8d79f6fca20256026acd3d50d9628e67c31475feaf3077b0c81a",
+      "bytes": 9504
+    },
+    {
+      "path": "video2dsprite/references/runtime/forge-runtime.mjs",
+      "sha256": "b900c083c63c089444d7044327b2c328f706fd725d77dd4aef9c5b9a9772106c",
+      "bytes": 39660
+    },
+    {
+      "path": "video2dsprite/references/runtime/packed-alpha-webgl.mjs",
+      "sha256": "564309268617eb73722cb165c50f023890df57a51436e2a4d8928fcd23d7d34c",
+      "bytes": 22479
+    },
+    {
+      "path": "video2dsprite/references/schemas/common.schema.json",
+      "sha256": "7fa5b022fac7698f2be22449e4338baeb34bfe48e98dfdebb4dac33df956bd09",
+      "bytes": 13480
+    },
+    {
+      "path": "video2dsprite/references/schemas/video.schema.json",
+      "sha256": "75299914be238d7e94b2f5af5879b3e252cb824a82b390fb05d03d804272cb8c",
+      "bytes": 49666
+    },
+    {
+      "path": "video2dsprite/references/sprite-set.md",
+      "sha256": "f028d3f8c631c418390ff75ff038c05b824e3c59e8e396bb6c943887c0a77059",
+      "bytes": 20857
+    },
+    {
+      "path": "video2dsprite/scripts/animation_review.py",
+      "sha256": "fcdc5ec712b2edb20069d6ede8c4d130a8106a4fc0e7f4109ddfe2934c9e6c46",
+      "bytes": 32340
+    },
+    {
+      "path": "video2dsprite/scripts/colour_lock.py",
+      "sha256": "9054fa847c93c5c23ecec86b42584045576ecb7e3142bf487bd537b6f7793d48",
+      "bytes": 26495
+    },
+    {
+      "path": "video2dsprite/scripts/engine_export.py",
+      "sha256": "fc879a6a9c46f746b9e75cb8172eb623553c9fe321af0565613c1ffaa9b6c3aa",
+      "bytes": 112357
+    },
+    {
+      "path": "video2dsprite/scripts/finish_frames.py",
+      "sha256": "5d5eac0d09ef49b4c3a6dbeec8de9dcbe6e55c57cd4b1191a096794cfd5fd201",
+      "bytes": 139936
+    },
+    {
+      "path": "video2dsprite/scripts/forge_av.py",
+      "sha256": "39885fee57cf797ca6e2e91b12583074abe823aff369f68cb06ed3c31842bf80",
+      "bytes": 48730
+    },
+    {
+      "path": "video2dsprite/scripts/forge_core.py",
+      "sha256": "5e1ce8c42339ec759a977ff3651e6b07045206221bd3870302499f6850bc07c8",
+      "bytes": 81903
+    },
+    {
+      "path": "video2dsprite/scripts/forge_hibit.py",
+      "sha256": "c725da93a92c11cc62499d9cce2863c10ef6a63102aa3b7f3912f1eb0b72ff18",
+      "bytes": 19663
+    },
+    {
+      "path": "video2dsprite/scripts/forge_matte.py",
+      "sha256": "7f82dacdf9489abadc920c7fdea07b124a7d740930bc355604a556eb72366be4",
+      "bytes": 74778
+    },
+    {
+      "path": "video2dsprite/scripts/forge_palette.py",
+      "sha256": "6dbc1164e7bea2631fd776f01e76846a5f083f29dd54dc730c455bf5137083ed",
+      "bytes": 73322
+    },
+    {
+      "path": "video2dsprite/scripts/forge_schema.py",
+      "sha256": "ac2ce52eade3b1bc6dac15b453f59f8c87463c0d8bc3653c3cb5c6e8fdc83b33",
+      "bytes": 27225
+    },
+    {
+      "path": "video2dsprite/scripts/gait_loop.py",
+      "sha256": "e0eb4221bec39a19fc9b45ad5efade6aea8fa64e55228195cc0fe7e1b791ff4c",
+      "bytes": 108409
+    },
+    {
+      "path": "video2dsprite/scripts/prepare_i2v_input.py",
+      "sha256": "c44fb5c5bba7ae15deb30d5f5cab53140dd86227d6f795db51f558c376c0cfc7",
+      "bytes": 47920
+    },
+    {
+      "path": "video2dsprite/scripts/register_clip.py",
+      "sha256": "2b08141df16b1ca3ce7c12d6314f266a4cad063bfddd514a63fbcb3b321ae382",
+      "bytes": 107323
+    },
+    {
+      "path": "video2dsprite/scripts/retime.py",
+      "sha256": "8e4f25a29df0e3a117ddc8f75b3103aa842be21587fe7874a52fc8a74051323e",
+      "bytes": 47765
+    },
+    {
+      "path": "video2dsprite/scripts/sprite_set.py",
+      "sha256": "9bf0b0372ba7e2eacf4b9acadf80d69a0598e28a30abcf91f78e9f749fea96a0",
+      "bytes": 185215
+    },
+    {
+      "path": "video2dsprite/scripts/validate_animation.py",
+      "sha256": "0b7460742e78fb3e4c2c43bd8da16e7a59bf815db13d4fae2f7600ce4aa633da",
+      "bytes": 41544
+    },
+    {
+      "path": "video2dsprite/scripts/video2dsprite.py",
+      "sha256": "3289f6b621efbc1bea6942d64212c02d822cab7d481364a9111c0132216f8bbf",
+      "bytes": 101051
+    },
+    {
+      "path": "video2dsprite/SKILL.md",
+      "sha256": "5fbe79b419cb8054e94deccf8bb9d21663df5d96a6ea40aee8f1a9fe8781bac8",
+      "bytes": 16334
+    }
+  ],
+  "backup": null
+}

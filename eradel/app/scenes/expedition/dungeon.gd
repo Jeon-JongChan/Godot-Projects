@@ -308,82 +308,65 @@ func _update_torchlight_display() -> void:
 	_torch_bar.add_theme_stylebox_override("fill", fill_sb)
 
 
-## 다키스트 던전 특유의 어둡고 음산한 석벽 및 원근 바닥을 그립니다.
-## 다키스트 던전 1 특유의 심연 유적(Ruins & Crypts), 고딕 아치, 쇠사슬 및 촉수 실루엣 배경을 구축합니다.
+## 다키스트 던전 특유의 어둡고 음산한 석조 회랑 및 원근 바닥을 그립니다.
+## 고화질 던전 전투 배경(dungeon_combat_bg.png)과 pixelfx 실시간 횃불 애니메이션을 합성합니다.
 func _build_stage_background(parent: Control) -> void:
-	var bg_canvas := Control.new()
+	var bg_canvas := DungeonCombatBackgroundCanvas.new()
 	bg_canvas.set_anchors_preset(PRESET_FULL_RECT)
 	bg_canvas.mouse_filter = MOUSE_FILTER_IGNORE
 	parent.add_child(bg_canvas)
 
-	bg_canvas.draw.connect(func():
-		var w := bg_canvas.size.x
-		var h := bg_canvas.size.y
 
-		# 1. 심연의 푸른빛/칠흑 석조 벽면 그라데이션
-		bg_canvas.draw_rect(Rect2(0, 0, w, h), Color("0a0910"))
-		for row in range(7):
-			var by := row * 45.0
-			var brick_col := Color(0.12, 0.14, 0.20, 0.35)
-			bg_canvas.draw_line(Vector2(0, by), Vector2(w, by), brick_col, 1.5)
-			var offset := (row % 2) * 60.0
-			var bx := offset
-			while bx < w:
-				bg_canvas.draw_line(Vector2(bx, by), Vector2(bx, by + 45.0), brick_col, 1.5)
-				bx += 120.0
+## 고화질 던전 전투 배경 텍스처 및 실시간 횃불 파티클 애니메이션을 렌더링하는 전용 캔버스 클래스
+class DungeonCombatBackgroundCanvas extends Control:
+	var anim_time: float = 0.0
+	static var _bg_tex: Texture2D = null
+	static var _torch_tex: Texture2D = null
 
-		# 2. 다키스트 던전 2.webp 시그니처: 후면 거대한 고대 룬 아치 문양 및 촉수 실루엣
+	func _ready() -> void:
+		set_process(true)
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		if _bg_tex == null and ResourceLoader.exists("res://assets/sprites/textures/dungeon_combat_bg.png"):
+			_bg_tex = load("res://assets/sprites/textures/dungeon_combat_bg.png")
+		if _torch_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/torch/fire/torch/torch.png"):
+			_torch_tex = load("res://assets/sprites/vfx/torch/fire/torch/torch.png")
+
+	func _process(delta: float) -> void:
+		anim_time += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var w := size.x
+		var h := size.y
+
+		# 1. 고화질 던전 전투 배경 텍스처 렌더링 (960x540)
+		if _bg_tex != null:
+			draw_texture_rect(_bg_tex, Rect2(0, 0, w, h), false)
+		else:
+			draw_rect(Rect2(0, 0, w, h), Color("0a0910"))
+
+		# 2. 벽면 4개 횃불 위치에 pixelfx 실시간 횃불 화염 애니메이션 및 호박빛 조명 펄스 합성
 		var arch_cx := w * 0.5
-		# 거대한 중앙 고딕 아치문
-		var arch_poly := PackedVector2Array([
-			Vector2(arch_cx - 240, 310), Vector2(arch_cx - 240, 110),
-			Vector2(arch_cx - 160, 30), Vector2(arch_cx, 10),
-			Vector2(arch_cx + 160, 30), Vector2(arch_cx + 240, 110),
-			Vector2(arch_cx + 240, 310)
-		])
-		bg_canvas.draw_colored_polygon(arch_poly, Color("06050a"))
-		bg_canvas.draw_polyline(arch_poly, Color("202436"), 3.0)
+		var torch_xs := [arch_cx - 450.0, arch_cx - 190.0, arch_cx + 190.0, arch_cx + 450.0]
+		var torch_y := 142.0
 
-		# 심연에서 똬리를 틀고 올라오는 거대한 촉수 실루엣
-		var tentacle_l := PackedVector2Array([
-			Vector2(arch_cx - 320, 310), Vector2(arch_cx - 360, 220),
-			Vector2(arch_cx - 410, 160), Vector2(arch_cx - 390, 80),
-			Vector2(arch_cx - 340, 100), Vector2(arch_cx - 330, 150),
-			Vector2(arch_cx - 280, 240), Vector2(arch_cx - 270, 310)
-		])
-		bg_canvas.draw_colored_polygon(tentacle_l, Color("0f121e"))
-		bg_canvas.draw_polyline(tentacle_l, Color("242d48"), 2.0)
-
-		var tentacle_r := PackedVector2Array([
-			Vector2(arch_cx + 270, 310), Vector2(arch_cx + 290, 220),
-			Vector2(arch_cx + 340, 140), Vector2(arch_cx + 390, 90),
-			Vector2(arch_cx + 420, 120), Vector2(arch_cx + 360, 180),
-			Vector2(arch_cx + 330, 250), Vector2(arch_cx + 340, 310)
-		])
-		bg_canvas.draw_colored_polygon(tentacle_r, Color("0f121e"))
-		bg_canvas.draw_polyline(tentacle_r, Color("242d48"), 2.0)
-
-		# 3. 벽면에 걸린 4개의 횃불 브래킷과 주황빛 불길
-		var torch_xs := [arch_cx - 450, arch_cx - 190, arch_cx + 190, arch_cx + 450]
 		for tx in torch_xs:
 			# 철제 브래킷
-			bg_canvas.draw_line(Vector2(tx, 140), Vector2(tx, 175), Color("2c241c"), 4.0)
-			bg_canvas.draw_circle(Vector2(tx, 140), 7.0, Color("3a2e22"))
-			# 횃불 화염 및 빛 번짐
-			bg_canvas.draw_circle(Vector2(tx, 134), 28.0, Color(1.0, 0.45, 0.1, 0.14))
-			bg_canvas.draw_circle(Vector2(tx, 134), 14.0, Color(1.0, 0.65, 0.2, 0.35))
-			bg_canvas.draw_circle(Vector2(tx, 132), 6.0, Color("fff066"))
+			draw_line(Vector2(tx, torch_y), Vector2(tx, torch_y + 28.0), Color("2c241c"), 4.0)
+			draw_circle(Vector2(tx, torch_y), 6.0, Color("3a2e22"))
 
-		# 4. 바닥 석판 타일 (Flagstone Floor with Perspective)
-		var floor_y := 295.0
-		bg_canvas.draw_rect(Rect2(0, floor_y, w, h - floor_y), Color("120f14"))
-		bg_canvas.draw_line(Vector2(0, floor_y), Vector2(w, floor_y), Color("28222e"), 3.0)
+			# 화염 빛 파동 (동적 조명 연출)
+			var pulse := 0.22 + 0.08 * sin(anim_time * 6.0 + tx * 0.05)
+			draw_circle(Vector2(tx, torch_y - 12.0), 45.0, Color(1.0, 0.45, 0.1, pulse * 0.4))
+			draw_circle(Vector2(tx, torch_y - 12.0), 22.0, Color(1.0, 0.70, 0.2, pulse * 0.8))
 
-		# 바닥 돌타일 원근 격자선
-		for fx in range(14):
-			var bx := fx * 95.0 + 15.0
-			bg_canvas.draw_line(Vector2(bx, floor_y), Vector2(bx - 25.0, h), Color(0.18, 0.16, 0.22, 0.45), 1.5)
-	)
+			# pixelfx torch 실제 화염 시트 프레임 렌더링
+			if _torch_tex != null:
+				var f_idx := int(anim_time * 24.0) % 60
+				var src_r := Rect2(f_idx * 96, 0, 96, 128)
+				var dst_r := Rect2(tx - 24.0, torch_y - 56.0, 48.0, 64.0)
+				draw_texture_rect_region(_torch_tex, dst_r, src_r, Color(1.0, 0.9, 0.8, 0.95))
+
 
 
 ## 하단 좌측 다키스트 던전 스타일 영웅 상세 패널을 생성합니다.

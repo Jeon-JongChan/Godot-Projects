@@ -533,4 +533,3 @@ func save_game() -> bool:
 		return sm.auto_save()
 	push_warning("save_game: SaveManager를 찾을 수 없거나 auto_save 메서드가 없습니다.")
 	return false
-
