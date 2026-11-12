@@ -519,3 +519,18 @@ func from_dict(data: Dictionary) -> void:
 	stress_changed.emit()
 	roster_changed.emit()
 	party_changed.emit()
+
+
+## 현재 진행 상태를 저장한다 (SaveManager를 통한 자동 저장 위임).
+## 저장 성공 시 true, 실패 또는 매니저 부재 시 false를 반환하여 호출 측 씬 전환이 중단되지 않도록 보호한다.
+func save_game() -> bool:
+	var sm = get_node_or_null("/root/SaveManager")
+	if sm == null:
+		var ml = Engine.get_main_loop()
+		if ml != null and "root" in ml and ml.root != null:
+			sm = ml.root.get_node_or_null("SaveManager")
+	if sm != null and sm.has_method("auto_save"):
+		return sm.auto_save()
+	push_warning("save_game: SaveManager를 찾을 수 없거나 auto_save 메서드가 없습니다.")
+	return false
+

@@ -1,8 +1,11 @@
+## 원정 출정 준비 화면 (expedition_prep.gd)
+## 던전 입장 전 최대 4인의 탐험 파티를 구성하고, 목표 던전의 활성도 및 예상 난이도를 점검하는 화면.
 extends Control
 
 var _root: MarginContainer
 
 
+## 화면 진입 시 초기화: 고딕 배경 구성 및 파티/로스터 상태 변경 시그널 구독
 func _ready() -> void:
 	UiKit.background(self, UiKit.BG)
 	_root = MarginContainer.new()
@@ -13,6 +16,7 @@ func _ready() -> void:
 	_rebuild()
 
 
+## UI 전체 재구성: 상단바, 목표 던전 위험도 패널, 좌측 파티 슬롯, 우측 대기 용병 목록, 하단 입장 버튼 생성
 func _rebuild() -> void:
 	for c in _root.get_children():
 		c.queue_free()
@@ -33,7 +37,7 @@ func _rebuild() -> void:
 	content.add_theme_constant_override("separation", 10)
 	margin.add_child(content)
 
-	# 목표 던전
+	# 목표 던전 패널
 	var dungeon_panel := UiKit.panel(UiKit.BG2)
 	var dv := VBoxContainer.new()
 	dungeon_panel.add_child(dv)
@@ -43,7 +47,7 @@ func _rebuild() -> void:
 	dv.add_child(UiKit.label("활성도 %d%% — 예상 난이도 %s" % [GameState.dungeon_activity, _difficulty_text()], 12, act_color))
 	content.add_child(dungeon_panel)
 
-	# 본문 좌우
+	# 본문 2단: 좌측(현재 파티) + 우측(대기 용병)
 	var body := HBoxContainer.new()
 	body.add_theme_constant_override("separation", 12)
 	body.size_flags_vertical = SIZE_EXPAND_FILL
@@ -52,7 +56,7 @@ func _rebuild() -> void:
 	body.add_child(_build_party())
 	body.add_child(_build_available())
 
-	# 하단
+	# 하단 푸터: 힌트 문구 및 던전 입장 액션 버튼
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 10)
 	var hint := UiKit.label(_footer_hint(), 12, UiKit.TEXT2)
@@ -66,6 +70,7 @@ func _rebuild() -> void:
 	content.add_child(footer)
 
 
+## 던전 활성도와 몬스터 티어를 종합하여 난이도 등급(상/중상/중/하) 문자열 계산
 func _difficulty_text() -> String:
 	var a := GameState.dungeon_activity + GameState.monster_tier * 15
 	if a >= 80: return "상"
@@ -74,12 +79,14 @@ func _difficulty_text() -> String:
 	return "하"
 
 
+## 하단 안내 문구 생성: 파티 편성 인원수 또는 미편성 경고 안내
 func _footer_hint() -> String:
 	if GameState.party.is_empty():
 		return "⚠ 최소 1명의 용병을 파티에 편성하세요."
 	return "파티 %d명 편성됨. 입장하면 그 날의 원정이 시작됩니다." % GameState.party.size()
 
 
+## 현재 출정 파티 목록 패널 생성 (최대 4인)
 func _build_party() -> Control:
 	var panel := UiKit.panel()
 	panel.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -94,6 +101,7 @@ func _build_party() -> Control:
 	return panel
 
 
+## 출정 가능한 대기 용병 목록 스크롤 패널 생성
 func _build_available() -> Control:
 	var panel := UiKit.panel()
 	panel.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -117,6 +125,7 @@ func _build_available() -> Control:
 	return panel
 
 
+## 단일 용병 슬롯 UI 카드 생성: 아바타, 이름, 직업/레벨, 패널티 뱃지, 파티 추가/제거 버튼
 func _slot(m: Mercenary, in_party: bool) -> Control:
 	var p := UiKit.panel(UiKit.BG3, UiKit.BORDER, 6)
 	var h := HBoxContainer.new()
@@ -143,6 +152,7 @@ func _slot(m: Mercenary, in_party: bool) -> Control:
 	return p
 
 
+## 던전 입장 실행: 파티원 상태를 '원정 중(ON_EXPEDITION)'으로 전환 후 던전 씬으로 전환
 func _on_enter() -> void:
 	for m in GameState.party:
 		m.status = Mercenary.Status.ON_EXPEDITION

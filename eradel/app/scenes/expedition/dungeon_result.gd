@@ -1,6 +1,9 @@
+## 원정 결과 정산 및 영지 귀환 화면 (dungeon_result.gd)
+## 던전 탐험 종료 후 파티 생존/실종/사망 현황, 획득 전리품(골드/마나석), 영지 파문(스트레스/민심 변화)을 정산하고 영지로 복귀하는 화면.
 extends Control
 
 
+## 화면 진입 시 초기화: 마지막 원정 결과(GameState.last_result)를 로드하고 결과 UI 전체 렌더링
 func _ready() -> void:
 	UiKit.background(self, UiKit.BG)
 	var r := GameState.last_result
@@ -23,7 +26,7 @@ func _ready() -> void:
 	v.add_theme_constant_override("separation", 10)
 	margin.add_child(v)
 
-	# 배너
+	# 상단 결과 대형 배너
 	var banner := UiKit.panel(result_theme.bg, result_theme.color)
 	var bv := VBoxContainer.new()
 	bv.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -42,7 +45,7 @@ func _ready() -> void:
 	bv.add_child(dname)
 	v.add_child(banner)
 
-	# 본문 2단
+	# 본문 2단: 파티 생존 현황 + 획득 전리품
 	var body := HBoxContainer.new()
 	body.add_theme_constant_override("separation", 12)
 	body.size_flags_vertical = SIZE_EXPAND_FILL
@@ -50,10 +53,10 @@ func _ready() -> void:
 	body.add_child(_build_party(r))
 	body.add_child(_build_loot(r))
 
-	# 영지 파문
+	# 영지 파문 (스트레스 및 민심 영향)
 	v.add_child(_build_ripple(r))
 
-	# 하단 버튼
+	# 하단 푸터 및 영지 귀환 액션 버튼
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 10)
 	var sp := Control.new()
@@ -66,6 +69,7 @@ func _ready() -> void:
 	v.add_child(footer)
 
 
+## 탐험 결과 상태(clear, retreat, wipe)에 따른 배너 색상, 타이틀, 로어 문구 테마 반환
 func _theme_for(outcome: String) -> Dictionary:
 	match outcome:
 		"clear":
@@ -79,6 +83,7 @@ func _theme_for(outcome: String) -> Dictionary:
 				"bg": Color("1a0808"), "lore": "\"영지는 그들을 기다렸다. 그러나 아무도 돌아오지 않았다.\""}
 
 
+## 원정 참가 용병들의 생존/실종/사망 현황 목록 패널 생성
 func _build_party(r: Dictionary) -> Control:
 	var panel := UiKit.panel()
 	panel.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -95,6 +100,7 @@ func _build_party(r: Dictionary) -> Control:
 	return panel
 
 
+## 개별 용병 상태 표시 행 생성: 이름, 레벨/직업, 신규 패널티 목록, 생존 상태 칩
 func _member_line(m: Mercenary, state: String, color: Color) -> Control:
 	var p := UiKit.panel(UiKit.BG3, color.darkened(0.3), 6)
 	var h := HBoxContainer.new()
@@ -112,6 +118,7 @@ func _member_line(m: Mercenary, state: String, color: Color) -> Control:
 	return p
 
 
+## 원정 획득 전리품 및 던전 활성도 변화 패널 생성
 func _build_loot(r: Dictionary) -> Control:
 	var panel := UiKit.panel()
 	panel.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -131,6 +138,7 @@ func _build_loot(r: Dictionary) -> Control:
 	return panel
 
 
+## 단일 전리품 항목 라벨 및 수치 행 생성 헬퍼
 func _loot_row(name: String, value: String, color: Color) -> Control:
 	var h := HBoxContainer.new()
 	var n := UiKit.label(name, 12, UiKit.TEXT)
@@ -140,6 +148,7 @@ func _loot_row(name: String, value: String, color: Color) -> Control:
 	return h
 
 
+## 원정 결과가 영지 전체에 미친 스트레스 및 민심 변화 요약 패널 생성
 func _build_ripple(r: Dictionary) -> Control:
 	var panel := UiKit.panel(UiKit.BG2)
 	var v := VBoxContainer.new()
@@ -160,6 +169,7 @@ func _build_ripple(r: Dictionary) -> Control:
 	return panel
 
 
+## 영지 복귀 처리: GameState.return_to_estate() 호출 후 스트레스 100 이상 시 게임오버, 미만 시 영지 씬으로 전환
 func _on_return() -> void:
 	GameState.return_to_estate()
 	if GameState.total_stress() >= GameState.MAX_STRESS:

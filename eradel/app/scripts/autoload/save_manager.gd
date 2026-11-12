@@ -13,6 +13,9 @@ signal slot_deleted(slot_index: int)
 ## 테스트 또는 외부 주입용 GameState 오버라이드
 var game_state_override: Node = null
 
+## 현재 활성화(플레이/저장/로드) 중인 세이브 슬롯 번호 (1~3)
+var current_slot_index: int = 1
+
 
 ## 슬롯 번호(1~3)에 해당하는 세이브 파일 경로를 반환한다.
 func get_slot_path(slot_index: int) -> String:
@@ -123,6 +126,7 @@ func save_slot(slot_index: int, save_name: String) -> bool:
 	file.store_string(json_str)
 	file.close()
 
+	current_slot_index = slot_index
 	slot_saved.emit(slot_index)
 	return true
 
@@ -153,6 +157,7 @@ func load_slot(slot_index: int) -> bool:
 		return false
 
 	gs.from_dict(game_data)
+	current_slot_index = slot_index
 	slot_loaded.emit(slot_index)
 	return true
 
@@ -202,3 +207,22 @@ func delete_slot(slot_index: int) -> bool:
 		slot_deleted.emit(slot_index)
 		return true
 	return false
+
+
+## 현재 활성 슬롯에 대해 자동 저장(Auto Save)을 수행한다.
+## 슬롯에 기존 이름이 있다면 유지하고, 없다면 기본 영주 이름을 부여한다.
+func auto_save() -> bool:
+	var target_slot := clampi(current_slot_index, 1, MAX_SAVE_SLOTS)
+	var save_name: String = "영주 #%d" % target_slot
+	if has_slot(target_slot):
+		var meta := get_slot_meta(target_slot)
+		var existing_name: String = str(meta.get("name", "")).strip_edges()
+		if not existing_name.is_empty() and existing_name != "빈 슬롯":
+			save_name = existing_name
+	return save_slot(target_slot, save_name)
+
+
+## 현재 활성화된 슬롯에 즉시 저장한다 (auto_save의 별칭)
+func save_current() -> bool:
+	return auto_save()
+

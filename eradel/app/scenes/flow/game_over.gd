@@ -1,6 +1,9 @@
+## 게임 오버 화면 (game_over.gd)
+## 영지 스트레스가 100에 도달하여 영지가 붕괴되었을 때 호출되는 최종 패배 및 통계 확인 화면.
 extends Control
 
 
+## 화면 진입 시 초기화: 붉은 암흑 배경, 영지 붕괴 타이틀, 생존일수/사망자 통계 및 타이틀 복귀 버튼 생성
 func _ready() -> void:
 	UiKit.background(self, Color("0e0808"))
 
@@ -45,11 +48,12 @@ func _ready() -> void:
 	box.add_child(btn)
 
 
+## 단일 통계 지표 행 생성 헬퍼 (지표명 - 값)
 func _stat(name: String, value: String) -> Control:
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", 16)
-	var n := UiKit.label(name, 13, UiKit.TEXT2)
-	n.custom_minimum_size = Vector2(140, 0)
+	var n := UiKit.label(name, 12, UiKit.TEXT2)
+	n.size_flags_horizontal = SIZE_EXPAND_FILL
 	h.add_child(n)
-	h.add_child(UiKit.label(value, 13, UiKit.TEXT))
+	h.add_child(UiKit.label(value, 12, UiKit.WHITE))
 	return h

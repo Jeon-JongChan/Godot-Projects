@@ -519,39 +519,28 @@ func _build_popup_left_showcase(def: Dictionary) -> Control:
 	ev.add_child(eff_lbl)
 	v.add_child(eff_card)
 
-	# 3. 건물 증축(Upgrade) 컨트롤 카드
-	var up_card := UiKit.panel(UiKit.BG3, UiKit.GOLD if not is_dungeon else UiKit.RED, 8)
+	# 3. 시설 상태 및 증축 안내 카드 (시설 증축 기능은 영주저택으로 일원화)
+	var is_manor: bool = (def.type == "manor")
+	var up_card := UiKit.panel(UiKit.BG3, UiKit.RED if is_dungeon else (UiKit.GOLD if is_manor else UiKit.BORDER2), 8)
 	var uv := VBoxContainer.new()
 	uv.add_theme_constant_override("separation", 8)
 	up_card.add_child(uv)
 
-	if not is_dungeon:
-		uv.add_child(UiKit.label("🔼 시설 증축 (Lv.%d / 5)" % cur_lv, 13, UiKit.GOLD2))
-		uv.add_child(UiKit.progress(cur_lv, 5, UiKit.GOLD, 8))
-
-		if cur_lv >= 5:
-			uv.add_child(UiKit.label("★ 최고 단계(Lv.5) 증축 완료!", 12, UiKit.GREEN))
-		else:
-			var cost := GameState.upgrade_cost(bname)
-			var cost_str := "필요 자원: 금화 %dG" % cost.gold
-			if cost.mana > 0:
-				cost_str += " · 마나석 %d개" % cost.mana
-			uv.add_child(UiKit.label(cost_str, 12, UiKit.TEXT2))
-
-			var btn_up := UiKit.primary_button("건물 증축 (Lv.%d → Lv.%d)" % [cur_lv, cur_lv + 1], UiKit.GOLD)
-			btn_up.custom_minimum_size = Vector2(0, 38)
-			btn_up.disabled = not GameState.can_upgrade(bname)
-			btn_up.pressed.connect(func():
-				if GameState.upgrade_building(bname):
-					_popup_notice = "%s 시설이 Lv.%d(으)로 증축되었습니다!" % [bname, cur_lv + 1]
-					_build_village_structures()
-					_open_large_building_popup(def)
-			)
-			uv.add_child(btn_up)
-	else:
+	if is_dungeon:
+		# 던전 게이트 전용: 차원 균열 경보 표시
 		uv.add_child(UiKit.label("⚠ 차원 균열 경보", 13, UiKit.RED))
 		uv.add_child(UiKit.label("던전 활성도: %d%%  ·  몬스터 강화 +%d단계" % [GameState.dungeon_activity, GameState.monster_tier], 12, UiKit.TEXT))
 		uv.add_child(UiKit.progress(GameState.dungeon_activity, 100, UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GOLD, 8))
+	elif is_manor:
+		# 영주저택: 영주저택 등급 및 우측 10대 시설 증축 총람 안내
+		uv.add_child(UiKit.label("👑 영주저택 등급 (Lv.%d / 5)" % cur_lv, 13, UiKit.GOLD2))
+		uv.add_child(UiKit.progress(cur_lv, 5, UiKit.GOLD, 8))
+		uv.add_child(UiKit.label("💡 전 시설 증축 및 영지 관리는 우측의\n[영지 10대 시설 증축 총람]에서 총괄 집행합니다.", 11, UiKit.TEXT2))
+	else:
+		# 일반 건물: 모든 건물에서 시설 강화 기능 삭제 → 영주저택에서만 가능하도록 안내
+		uv.add_child(UiKit.label("🏛️ 시설 등급 (Lv.%d / 5)" % cur_lv, 13, UiKit.GOLD2))
+		uv.add_child(UiKit.progress(cur_lv, 5, UiKit.GOLD, 8))
+		uv.add_child(UiKit.label("💡 시설 증축은 영주저택에서만 가능합니다.", 11, UiKit.TEXT2))
 
 	v.add_child(up_card)
 	return left_panel
@@ -820,6 +809,10 @@ func _populate_manor_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 			up_btn.pressed.connect(func():
 				if GameState.upgrade_building(bn):
 					_popup_notice = "%s 시설을 Lv.%d(으)로 증축했습니다!" % [bn, blv + 1]
+					_build_village_structures()
+					var sm = get_node_or_null("/root/SaveManager")
+					if sm != null and sm.has_method("auto_save"):
+						sm.auto_save()
 					_open_large_building_popup(def)
 			)
 			ch.add_child(up_btn)

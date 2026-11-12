@@ -136,11 +136,13 @@ func _build_quit_confirm_modal(parent: Control) -> void:
 	btn_row.add_child(btn_confirm)
 
 
+## 일시정지 상태를 해제하고 팝업을 닫으며 게임을 재개한다.
 func _resume_game() -> void:
 	get_tree().paused = false
 	queue_free()
 
 
+## 환경설정 팝업을 연다.
 func _open_settings() -> void:
 	var scene: PackedScene = load("res://scenes/popups/settings_popup.tscn")
 	if scene != null:
@@ -148,8 +150,15 @@ func _open_settings() -> void:
 		add_child(inst)
 
 
+## 진행 상황을 저장하고 타이틀(메인메뉴) 화면으로 전환한다.
 func _save_and_go_title() -> void:
-	GameState.save_game()
-	get_tree().paused = false
+	# 1. 게임 상태 저장 시도 (실패하더라도 메인메뉴 이동이 차단되지 않도록 보호)
+	if GameState != null and GameState.has_method("save_game"):
+		GameState.save_game()
+
+	# 2. 일시정지 해제 및 타이틀 씬으로 안전하게 전환 (지연 호출을 통해 트리 busy 경고 방지)
+	var tree := get_tree()
+	if tree != null:
+		tree.paused = false
+		tree.call_deferred("change_scene_to_file", GameState.SCENE_TITLE)
 	queue_free()
-	get_tree().change_scene_to_file(GameState.SCENE_TITLE)
