@@ -112,38 +112,23 @@ func _on_recruit(grade: String) -> void:
 	# rebuild 은 roster_changed 시그널로 자동 호출됨
 
 
-## 단일 용병 정보 카드 UI 생성: 아바타, 이름, 등급 칩, 직업/레벨, 체력/공격력, 상태 칩 및 해고 버튼
+## 단일 용병 정보 카드 UI 생성: UiKit.merc_card 공용 위젯으로 통합
 func _merc_card(m: Mercenary, show_status: bool) -> Control:
-	var p := UiKit.panel(UiKit.BG2, UiKit.BORDER, 6)
-	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 8)
-	p.add_child(h)
-	h.add_child(UiKit.avatar(32))
-	var info := VBoxContainer.new()
-	info.size_flags_horizontal = SIZE_EXPAND_FILL
-	info.add_theme_constant_override("separation", 1)
-	var line := HBoxContainer.new()
-	line.add_theme_constant_override("separation", 6)
-	line.add_child(UiKit.label(m.merc_name, 13, UiKit.TEXT))
-	line.add_child(UiKit.chip(m.grade, JobDb.grade_color(m.grade)))
-	info.add_child(line)
-	info.add_child(UiKit.label("%s · %s Lv.%d" % [m.category, m.job, m.level], 11, JobDb.category_color(m.category)))
-	var stats := UiKit.label("HP %d / 공격 %d" % [m.max_hp, m.attack], 10, UiKit.TEXT3)
-	info.add_child(stats)
-	if m.penalties.size() > 0:
-		info.add_child(UiKit.label("패널티: " + ", ".join(m.penalties), 10, UiKit.RED))
-	h.add_child(info)
-	if show_status:
-		var right_box := VBoxContainer.new()
-		right_box.add_theme_constant_override("separation", 2)
-		right_box.alignment = BoxContainer.ALIGNMENT_CENTER
-		right_box.add_child(UiKit.chip(m.status_text(), UiKit.TEXT2))
-		if m.status == Mercenary.Status.READY:
-			var fire_btn := UiKit.button("해고", UiKit.RED)
-			fire_btn.pressed.connect(func():
-				GameState.roster.erase(m)
-				GameState.roster_changed.emit()
-			)
-			right_box.add_child(fire_btn)
-		h.add_child(right_box)
-	return p
+	var can_fire := show_status and m.status == Mercenary.Status.READY
+	return UiKit.merc_card(m, {
+		"bg_color": UiKit.BG2,
+		"border_color": UiKit.BORDER,
+		"portrait_size": 32,
+		"grade_in_title": false,
+		"grade_chip": true,
+		"title_size": 13,
+		"subtitle_mode": "full",
+		"subtitle_color": JobDb.category_color(m.category),
+		"show_penalties": true,
+		"right_chip_text": m.status_text() if show_status else "",
+		"action_text": "해고" if can_fire else "",
+		"action_color": UiKit.RED,
+		"on_action": func(target: Mercenary):
+			GameState.roster.erase(target)
+			GameState.roster_changed.emit(),
+	})

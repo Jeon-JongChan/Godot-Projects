@@ -2,23 +2,6 @@ extends Control
 
 var _root: MarginContainer
 
-const EFFECTS := {
-	"용병모집소": "모집 용병 초기 최대 체력 +5 / 레벨",
-	"영웅숙소": "원정 귀환 시 일일 스트레스 자연 감소",
-	"치료소": "부상 및 패널티 완화 성공률 향상",
-	"영주저택": "최대 행동력 및 통치 결단 효율 증가",
-	"잡화점": "원정 보급품 구매 가격 할인",
-	"창고": "마나석 교역 환율 및 전리품 가치 증가",
-	"대장간": "파티 전체 공격력 +2 / 레벨",
-	"훈련장": "용병 특훈 성장 효율 증가",
-	"마법사학회": "차원 균열 억제 및 마나 연구 효율 증가",
-	"기념관": "영령 추모 시 민심 및 스트레스 완화 증가",
-	"마탑": "마나 관련 연구 효율 증가",
-	"모험가 길드": "모집 용병 품질 향상",
-	"주점": "매일 해소 스트레스 감소",
-	"영주 저택": "최대 행동력 및 통치 효율 증가",
-}
-
 
 func _ready() -> void:
 	UiKit.background(self, UiKit.BG)
@@ -71,7 +54,7 @@ func _building_card(building: String) -> Control:
 	line.add_child(UiKit.label(building, 14, UiKit.WHITE))
 	line.add_child(UiKit.chip("Lv.%d" % lv, UiKit.GREEN))
 	info.add_child(line)
-	info.add_child(UiKit.label(EFFECTS.get(building, ""), 11, UiKit.TEXT2))
+	info.add_child(UiKit.label(BuildingDb.effect_desc(building), 11, UiKit.TEXT2))
 	h.add_child(info)
 
 	var right := VBoxContainer.new()

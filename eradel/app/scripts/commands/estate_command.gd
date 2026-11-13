@@ -104,7 +104,96 @@ func _apply_effects() -> void:
 # 건물 레벨에 따라 달라지는 수치는 생성 시점의 레벨로 계산한다 (팝업을 열 때마다 새로 생성).
 
 static func _lv(building: String) -> int:
-	return int(GameState.buildings.get(building, 1))
+	return GameState.building_level(building)
+
+
+## 훈련장 레벨에 따른 1회 실전 특훈 성장치(HP/공격력)를 계산해 반환한다.
+static func training_gains(tlv: int = -1) -> Dictionary:
+	var lv := tlv if tlv > 0 else _lv("훈련장")
+	return {
+		"level": 1,
+		"hp": 10 + (lv - 1) * 4,
+		"atk": 2 + int(lv / 2),
+	}
+
+
+## 대장간 장비 슬롯 제련 명세(현재·다음 레벨, 성공률, 요구 재료, 실행 가능 여부)를 단일 규칙으로 계산한다.
+static func forge_slot_spec(m: Mercenary, slot: String) -> Dictionary:
+	var cur_lv: int = 1
+	var slot_kr := "무기"
+	var canon_slot := "weapon"
+	match slot:
+		"weapon":
+			cur_lv = m.weapon_level if m != null else 1
+			slot_kr = "무기"
+			canon_slot = "weapon"
+		"armor":
+			cur_lv = m.armor_level if m != null else 1
+			slot_kr = "갑옷"
+			canon_slot = "armor"
+		"helmet":
+			cur_lv = m.helmet_level if m != null else 1
+			slot_kr = "투구"
+			canon_slot = "helmet"
+		"ring", "accessory":
+			cur_lv = m.ring_level if m != null else 1
+			slot_kr = "장신구"
+			canon_slot = "accessory"
+
+	var success_rate := clampi(85 - (cur_lv - 1) * 7, 40, 95)
+	var req_ore := 10 + (cur_lv - 1) * 5
+	var req_mana := 1 if cur_lv >= 2 else 0
+	if cur_lv >= 4:
+		req_mana = 2
+	var req_gold := 300 + (cur_lv - 1) * 150
+	var has_ore := GameState.iron_ore >= req_ore
+	var has_mana := GameState.manastone >= req_mana
+	var has_gold := GameState.gold >= req_gold
+	return {
+		"slot": canon_slot,
+		"slot_name": slot_kr,
+		"cur_lv": cur_lv,
+		"next_lv": cur_lv + 1,
+		"success_rate": success_rate,
+		"req_ore": req_ore,
+		"req_mana": req_mana,
+		"req_gold": req_gold,
+		"has_ore": has_ore,
+		"has_mana": has_mana,
+		"has_gold": has_gold,
+		"can_forge": m != null and has_ore and has_mana and has_gold,
+	}
+
+
+## 대장간 제련 성공 시 용병의 해당 슬롯 레벨과 기본 스탯 보너스를 적용하고 결과를 반환한다.
+static func apply_forge_stat_bonus(m: Mercenary, slot: String) -> Dictionary:
+	if m == null:
+		return {}
+	var new_lv := 1
+	var slot_kr := "무기"
+	match slot:
+		"weapon":
+			m.weapon_level += 1
+			m.attack += 2
+			new_lv = m.weapon_level
+			slot_kr = "무기"
+		"armor":
+			m.armor_level += 1
+			m.max_hp += 8
+			m.hp = mini(m.hp + 8, m.max_hp)
+			new_lv = m.armor_level
+			slot_kr = "갑옷"
+		"helmet":
+			m.helmet_level += 1
+			m.max_hp += 5
+			new_lv = m.helmet_level
+			slot_kr = "투구"
+		"ring", "accessory":
+			m.ring_level += 1
+			m.attack += 1
+			new_lv = m.ring_level
+			slot_kr = "장신구"
+	return {"slot_name": slot_kr, "new_lv": new_lv}
 
 
 ## 대상 없는 건물 행동 목록 (건물 유형별)
@@ -179,9 +268,9 @@ static func for_merc(cmd_id: String, m: Mercenary) -> EstateCommand:
 				{"gold": 90}, {"attack": 2},
 				"{name}의 무기를 제련하여 개인 공격력이 {attack}(으)로 상승했습니다!", m)
 		"train":
-			var tlv := _lv("훈련장")
-			var hp_gain := 10 + (tlv - 1) * 4
-			var atk_gain := 2 + int(tlv / 2)
+			var tg := training_gains()
+			var hp_gain: int = int(tg["hp"])
+			var atk_gain: int = int(tg["atk"])
 			return EstateCommand.new("train", "🎯 실전 특훈", "레벨 +1, 최대 체력 +%d, 공격력 +%d" % [hp_gain, atk_gain],
 				{"gold": 80, "ap": 1}, {"level": 1, "max_hp": hp_gain, "attack": atk_gain},
 				"{name} 용병이 특훈을 마치고 Lv.{level}(으)로 성장했습니다! (HP +%d, 공격력 +%d)" % [hp_gain, atk_gain], m)

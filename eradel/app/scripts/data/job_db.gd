@@ -47,21 +47,75 @@ static func random_job(rng: RandomNumberGenerator, category: String) -> String:
 	return jobs[rng.randi_range(0, jobs.size() - 1)]
 
 
+## 직업별 시각 자산·문양·공격 연출 타입 단일 카탈로그
+const VISUAL_SPECS := {
+	"전사": {
+		"key": "warrior",
+		"portrait": "res://assets/sprites/characters/portrait_warrior.png",
+		"hero_sprite": "res://assets/sprites/characters/hero_warrior.png",
+		"glyph": "⚔",
+		"default_atk_type": "slash",
+		"skill_atk_type": "crush",
+	},
+	"마법사": {
+		"key": "mage",
+		"portrait": "res://assets/sprites/characters/portrait_mage.png",
+		"hero_sprite": "res://assets/sprites/characters/hero_mage.png",
+		"glyph": "✦",
+		"default_atk_type": "lightning",
+		"skill_atk_type": "lightning",
+	},
+	"레인저": {
+		"key": "ranger",
+		"portrait": "res://assets/sprites/characters/portrait_ranger.png",
+		"hero_sprite": "res://assets/sprites/characters/hero_ranger.png",
+		"glyph": "➶",
+		"default_atk_type": "arrow",
+		"skill_atk_type": "gun",
+	},
+	"성직자": {
+		"key": "cleric",
+		"portrait": "res://assets/sprites/characters/portrait_cleric.png",
+		"hero_sprite": "res://assets/sprites/characters/hero_cleric.png",
+		"glyph": "✚",
+		"default_atk_type": "holy",
+		"skill_atk_type": "holy",
+	},
+}
+
+
+## 무작위 페널티 문자열을 반환한다.
 static func random_penalty(rng: RandomNumberGenerator) -> String:
 	return PENALTY_POOL[rng.randi_range(0, PENALTY_POOL.size() - 1)]
 
 
+## 직업군(또는 별칭)에 해당하는 시각·연출 스펙 딕셔너리를 반환한다.
+static func visual_spec(category: String) -> Dictionary:
+	var key := category
+	if category == "도적":
+		key = "레인저"
+	return VISUAL_SPECS.get(key, VISUAL_SPECS["전사"])
+
+
+## 직업군과 스킬 여부에 따른 전투 공격 연출 타입을 반환한다.
+static func attack_type_for(category: String, is_skill: bool = false) -> String:
+	var spec := visual_spec(category)
+	return str(spec.get("skill_atk_type" if is_skill else "default_atk_type", "slash"))
+
+
+## 직업군 대표 색상을 반환한다 (UiKit 순환 참조 방지를 위해 리터럴 Color 사용).
 static func category_color(category: String) -> Color:
 	match category:
-		"전사": return UiKit.GOLD
-		"마법사": return UiKit.PURPLE
-		"레인저": return UiKit.GREEN
-		"성직자": return UiKit.BLUE
-		_: return UiKit.TEXT2
+		"전사": return Color("c8a24a")
+		"마법사": return Color("7c588c")
+		"레인저", "도적": return Color("4a8c5c")
+		"성직자": return Color("4a749c")
+		_: return Color("9a8d7a")
 
 
+## 용병 등급 색상을 반환한다.
 static func grade_color(grade: String) -> Color:
 	match grade:
-		"정예": return UiKit.BLUE
-		"특수": return UiKit.PURPLE
-		_: return UiKit.TEXT2
+		"정예": return Color("4a749c")
+		"특수": return Color("7c588c")
+		_: return Color("9a8d7a")

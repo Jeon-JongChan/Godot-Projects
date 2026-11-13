@@ -11,6 +11,7 @@ signal game_over
 
 const MAX_PARTY := 5
 const MAX_STRESS := 100
+const TREAT_PENALTY_COST := 80
 
 const SCENE_TITLE := "res://scenes/flow/title.tscn"
 const SCENE_ESTATE := "res://scenes/estate/estate.tscn"
@@ -182,7 +183,27 @@ func _check_game_over() -> void:
 		game_over.emit()
 
 
+## 건물 이름·별칭·유형을 기준으로 현재 영지 건물 레벨을 조회한다 (기본값 1).
+func building_level(name_or_type: String) -> int:
+	if buildings.has(name_or_type):
+		return int(buildings[name_or_type])
+	var alias: String = str(BuildingDb.ALIASES.get(name_or_type, ""))
+	if alias != "" and buildings.has(alias):
+		return int(buildings[alias])
+	var def := BuildingDb.by_name_or_alias(name_or_type)
+	var def_name: String = str(def.get("name", ""))
+	if def_name != "" and buildings.has(def_name):
+		return int(buildings[def_name])
+	return 1
+
+
+## 용병모집소 현재 레벨에 따른 신규 모집 용병 초기 최대 체력 보너스를 반환한다.
+func guild_recruit_hp_bonus() -> int:
+	return maxi(0, building_level("용병모집소") - 1) * 5
+
+
 # ── 용병 모집 ──
+## 지정 등급의 신규 용병을 고용하고 모집소 레벨 체력 보너스를 도메인 계층에서 직접 반영한다.
 func recruit(grade: String) -> Mercenary:
 	var cost: int = JobDb.RECRUIT_COST.get(grade, 50)
 	if action_points <= 0:
@@ -191,6 +212,10 @@ func recruit(grade: String) -> Mercenary:
 		return null
 	action_points -= 1
 	var m := Mercenary.create_random(grade, _rng)
+	var hp_bonus := guild_recruit_hp_bonus()
+	if hp_bonus > 0:
+		m.max_hp += hp_bonus
+		m.hp = m.max_hp
 	roster.append(m)
 	resources_changed.emit()
 	roster_changed.emit()
@@ -198,10 +223,11 @@ func recruit(grade: String) -> Mercenary:
 
 
 # ── 파티 편성 ──
+## 현재 원정에 대기 중이며 파티에 아직 편성되지 않은 가용 용병 목록을 반환한다.
 func available_mercs() -> Array[Mercenary]:
 	var out: Array[Mercenary] = []
 	for m in roster:
-		if m.is_available():
+		if m.is_available() and not party.has(m):
 			out.append(m)
 	return out
 
@@ -220,12 +246,12 @@ func remove_from_party(m: Mercenary) -> void:
 
 
 func party_attack_bonus() -> int:
-	return (buildings.get("대장간", 1) - 1) * 2
+	return (building_level("대장간") - 1) * 2
 
 
 # ── 치료소 ──
 func heal_success_rate() -> int:
-	var lv: int = buildings.get("치료소", 1)
+	var lv: int = building_level("치료소")
 	# Lv.1~5 에 따른 치료 성공률: 50%, 62%, 74%, 82%, 90%
 	return [50, 62, 74, 82, 90][clampi(lv, 1, 5) - 1]
 
@@ -239,7 +265,7 @@ func injured_mercs() -> Array[Mercenary]:
 
 
 ## 패널티 1건 완화 시도. 성공 시 제거, 실패 시 유지. 비용은 항상 소모.
-func treat_penalty(m: Mercenary, penalty: String, cost: int) -> bool:
+func treat_penalty(m: Mercenary, penalty: String, cost: int = TREAT_PENALTY_COST) -> bool:
 	if not m.penalties.has(penalty):
 		return false
 	if not spend(cost):
@@ -297,6 +323,22 @@ func generate_monsters() -> Array[Dictionary]:
 			"hp": hp, "max_hp": hp, "attack": atk,
 		})
 	return monsters
+
+
+## 회랑(스테이지) 번호와 최대 회랑 수에 따라 스케일링된 몬스터 무리(최대 3체)를 생성한다.
+func generate_stage_monsters(stage: int, max_stage: int = 3) -> Array[Dictionary]:
+	var out: Array[Dictionary] = generate_monsters()
+	if out.size() > 3:
+		out = out.slice(0, 3)
+	var stage_mult := 1.0 + float(maxi(0, stage - 1)) * 0.22
+	var prefix := "심연 수호자" if stage >= max_stage else "제%d회랑 괴수" % stage
+	for i in range(out.size()):
+		var m := out[i]
+		m["hp"] = maxi(1, int(round(float(m["hp"]) * stage_mult)))
+		m["max_hp"] = m["hp"]
+		m["attack"] = maxi(1, int(round(float(m["attack"]) * stage_mult)))
+		m["name"] = "%s %d" % [prefix, i + 1]
+	return out
 
 
 func rng() -> RandomNumberGenerator:
@@ -432,7 +474,7 @@ func return_to_estate() -> void:
 	day += 1
 	action_points = max_action_points
 	# 주점 효과: 매일 해소 스트레스 소폭 감소
-	var pub: int = int(buildings.get("주점", 1)) - 1
+	var pub: int = building_level("영웅숙소") - 1
 	if pub > 0:
 		stress_resolvable = max(0, stress_resolvable - pub)
 		stress_changed.emit()

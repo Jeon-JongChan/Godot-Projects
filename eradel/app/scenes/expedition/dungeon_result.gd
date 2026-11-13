@@ -67,6 +67,7 @@ func _ready() -> void:
 	ret.pressed.connect(_on_return)
 	footer.add_child(ret)
 	v.add_child(footer)
+	UiKit.attach_gothic_atmosphere(self, 0.44, 0.16, 0.55 if outcome == "wipe" else 0.0)
 
 
 ## 탐험 결과 상태(clear, retreat, wipe)에 따른 배너 색상, 타이틀, 로어 문구 테마 반환
@@ -100,22 +101,20 @@ func _build_party(r: Dictionary) -> Control:
 	return panel
 
 
-## 개별 용병 상태 표시 행 생성: 이름, 레벨/직업, 신규 패널티 목록, 생존 상태 칩
+## 개별 용병 상태 표시 행 생성: UiKit.merc_card 공용 위젯으로 통합
 func _member_line(m: Mercenary, state: String, color: Color) -> Control:
-	var p := UiKit.panel(UiKit.BG3, color.darkened(0.3), 6)
-	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 8)
-	p.add_child(h)
-	var info := VBoxContainer.new()
-	info.size_flags_horizontal = SIZE_EXPAND_FILL
-	info.add_theme_constant_override("separation", 1)
-	info.add_child(UiKit.label(m.merc_name, 12, UiKit.TEXT))
-	info.add_child(UiKit.label("%s Lv.%d" % [m.job, m.level], 10, UiKit.TEXT3))
-	if state == "생존" and m.penalties.size() > 0:
-		info.add_child(UiKit.label("새 패널티: " + ", ".join(m.penalties), 10, UiKit.RED))
-	h.add_child(info)
-	h.add_child(UiKit.chip(state, color))
-	return p
+	return UiKit.merc_card(m, {
+		"bg_color": UiKit.BG3,
+		"border_color": color.darkened(0.3),
+		"portrait_size": 32,
+		"grade_in_title": false,
+		"subtitle_mode": "job_only",
+		"subtitle_color": UiKit.TEXT3,
+		"show_penalties": (state == "생존"),
+		"penalty_prefix": "새 패널티: ",
+		"right_chip_text": state,
+		"right_chip_color": color,
+	})
 
 
 ## 원정 획득 전리품 및 던전 활성도 변화 패널 생성

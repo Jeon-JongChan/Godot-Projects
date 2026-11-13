@@ -37,11 +37,29 @@ func _rebuild() -> void:
 	content.add_theme_constant_override("separation", 10)
 	margin.add_child(content)
 
-	# 목표 던전 패널
-	var dungeon_panel := UiKit.panel(UiKit.BG2)
+	# 목표 던전 패널 (어둠의 균열 도트 일러스트 썸네일 포함)
+	var dungeon_panel := UiKit.panel(UiKit.BG2, UiKit.BORDER2)
+	var dh := HBoxContainer.new()
+	dh.add_theme_constant_override("separation", 14)
+	dungeon_panel.add_child(dh)
+
+	if ResourceLoader.exists("res://assets/sprites/interiors/dungeon_bg.png"):
+		var thumb_frame := UiKit.panel(UiKit.BG, UiKit.BORDER2, 4)
+		thumb_frame.add_theme_stylebox_override("panel", UiKit.style(UiKit.BG, UiKit.BORDER2, 4, 1, 2, 2))
+		var thumb := TextureRect.new()
+		thumb.texture = load("res://assets/sprites/interiors/dungeon_bg.png")
+		thumb.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		thumb.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		thumb.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		thumb.custom_minimum_size = Vector2(140, 74)
+		thumb_frame.add_child(thumb)
+		dh.add_child(thumb_frame)
+
 	var dv := VBoxContainer.new()
-	dungeon_panel.add_child(dv)
-	dv.add_child(UiKit.label("목표 던전 — 어둠의 균열", 14, UiKit.WHITE))
+	dv.size_flags_horizontal = SIZE_EXPAND_FILL
+	dv.alignment = BoxContainer.ALIGNMENT_CENTER
+	dh.add_child(dv)
+	dv.add_child(UiKit.label("목표 던전 — 어둠의 균열 (3개 회랑 연속 돌파)", 14, UiKit.WHITE))
 	dv.add_child(UiKit.label("\"한번 들어간 자는 같은 모습으로 돌아오지 않는다\"", 11, UiKit.TEXT3))
 	var act_color := UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GOLD
 	dv.add_child(UiKit.label("활성도 %d%% — 예상 난이도 %s" % [GameState.dungeon_activity, _difficulty_text()], 12, act_color))
@@ -125,31 +143,26 @@ func _build_available() -> Control:
 	return panel
 
 
-## 단일 용병 슬롯 UI 카드 생성: 아바타, 이름, 직업/레벨, 패널티 뱃지, 파티 추가/제거 버튼
+## 단일 용병 슬롯 UI 카드 생성: UiKit.merc_card 공용 위젯으로 통합
 func _slot(m: Mercenary, in_party: bool) -> Control:
-	var p := UiKit.panel(UiKit.BG3, UiKit.BORDER, 6)
-	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 8)
-	p.add_child(h)
-	h.add_child(UiKit.avatar(30))
-	var info := VBoxContainer.new()
-	info.size_flags_horizontal = SIZE_EXPAND_FILL
-	info.add_theme_constant_override("separation", 1)
-	info.add_child(UiKit.label(m.merc_name, 12, UiKit.TEXT))
-	info.add_child(UiKit.label("%s Lv.%d" % [m.job, m.level], 10, JobDb.category_color(m.category)))
-	if m.penalties.size() > 0:
-		info.add_child(UiKit.label("패널티 " + str(m.penalties.size()), 10, UiKit.RED))
-	h.add_child(info)
-	if in_party:
-		var rm := UiKit.button("빼기", UiKit.RED)
-		rm.pressed.connect(func(): GameState.remove_from_party(m))
-		h.add_child(rm)
-	else:
-		var add := UiKit.button("추가", UiKit.GREEN)
-		add.disabled = GameState.party.size() >= GameState.MAX_PARTY
-		add.pressed.connect(func(): GameState.add_to_party(m))
-		h.add_child(add)
-	return p
+	return UiKit.merc_card(m, {
+		"bg_color": UiKit.BG3,
+		"border_color": UiKit.BORDER2 if in_party else UiKit.BORDER,
+		"portrait_size": 44,
+		"color_name_by_grade": true,
+		"title_size": 13,
+		"show_hp_bar": true,
+		"hp_color": UiKit.RED,
+		"show_penalties": true,
+		"action_text": "빼기" if in_party else "추가",
+		"action_color": UiKit.RED if in_party else UiKit.GOLD,
+		"action_disabled": false if in_party else (GameState.party.size() >= GameState.MAX_PARTY),
+		"on_action": func(target: Mercenary):
+			if in_party:
+				GameState.remove_from_party(target)
+			else:
+				GameState.add_to_party(target),
+	})
 
 
 ## 던전 입장 실행: 파티원 상태를 '원정 중(ON_EXPEDITION)'으로 전환 후 던전 씬으로 전환

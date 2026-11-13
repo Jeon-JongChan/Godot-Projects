@@ -54,23 +54,29 @@ func _rebuild() -> void:
 		list.add_child(_merc_card(m))
 
 
+## 치료 대상 용병 카드 생성: 공용 UiKit.merc_card 헤더와 개별 페널티 치료 행을 조합한다.
 func _merc_card(m: Mercenary) -> Control:
 	var p := UiKit.panel(UiKit.BG2)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
 	p.add_child(v)
-	var head := HBoxContainer.new()
-	head.add_theme_constant_override("separation", 8)
-	head.add_child(UiKit.avatar(28))
-	head.add_child(UiKit.label("%s — %s Lv.%d" % [m.merc_name, m.job, m.level], 13, UiKit.TEXT))
-	v.add_child(head)
+	v.add_child(UiKit.merc_card(m, {
+		"bg_color": UiKit.BG2,
+		"border_color": UiKit.BG2,
+		"pad_h": 0,
+		"pad_v": 0,
+		"portrait_size": 28,
+		"grade_in_title": false,
+		"title_size": 13,
+		"subtitle_mode": "job_only",
+	}))
 	for penalty in m.penalties.duplicate():
 		v.add_child(_penalty_row(m, penalty))
 	return p
 
 
 func _penalty_row(m: Mercenary, penalty: String) -> Control:
-	var cost := 80
+	var cost := GameState.TREAT_PENALTY_COST
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", 8)
 	var p := UiKit.panel(UiKit.BG3, UiKit.RED.darkened(0.3), 6)

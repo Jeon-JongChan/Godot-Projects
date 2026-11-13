@@ -5,12 +5,24 @@ extends RefCounted
 ## 절차적 벡터/폴리곤 드로잉(CanvasItem._draw)으로 렌더링하는 시각 컴포넌트 모음.
 
 
+## pixelfx 다중 행(Multi-row) 스프라이트 시트에서 현재 시각(t)에 해당하는 정확한 프레임 영역(Rect2)을 계산한다.
+static func pixelfx_frame_rect(t: float, fps: float, total_frames: int, columns: int, frame_w: int, frame_h: int, frame_offset: int = 0) -> Rect2:
+	var safe_total := maxi(1, total_frames)
+	var safe_cols := maxi(1, columns)
+	var idx := posmod(int(t * fps) + frame_offset, safe_total)
+	var col := idx % safe_cols
+	var row := int(idx / safe_cols)
+	return Rect2(col * frame_w, row * frame_h, frame_w, frame_h)
+
+
 ## 마을 전체 배경 지형(하늘, 별, 산맥, 성벽, 잔디 언덕, 조약돌 도로, 가로등 불빛, 나무, 건물 터)을 그리는 캔버스
 class VillageTerrainCanvas extends Control:
 	var anim_time: float = 0.0
 	var building_defs: Array[Dictionary] = []
 	static var _estate_bg_tex: Texture2D = null
 	static var _road_tex: Texture2D = null
+	static var _torch_tex: Texture2D = null
+	static var _campfire_tex: Texture2D = null
 
 	## 초기화: 도트풍 텍스처 필터링(NEAREST) 및 도로 타일링(REPEAT) 활성화
 	func _ready() -> void:
@@ -47,46 +59,27 @@ class VillageTerrainCanvas extends Control:
 			draw_rect(Rect2(0, 0, w, 255), Color("281014"))
 			draw_rect(Rect2(0, 255, w, h - 255), Color("121014"))
 
-		# 우측 어둠의 균열 주변 핏빛/보랏빛 오염 오라
-		_draw_ellipse(Vector2(2180, 350), Vector2(280, 175), Color(0.18, 0.04, 0.14, 0.45))
-		_draw_ellipse(Vector2(2180, 350), Vector2(190, 120), Color(0.28, 0.06, 0.20, 0.55))
-
 		# 5. 마을 건물들을 연결하는 비에 젖은 어두운 조약돌 도로망 (Cobblestone)
 		var road_paths := [
-			[Vector2(40, 410), Vector2(230, 410), Vector2(500, 350), Vector2(840, 460), Vector2(1120, 460), Vector2(1480, 360), Vector2(1810, 440), Vector2(2180, 390)],
-			[Vector2(500, 350), Vector2(500, 260), Vector2(935, 250), Vector2(1480, 290), Vector2(1480, 360)],
-			[Vector2(500, 350), Vector2(500, 525), Vector2(850, 625), Vector2(1285, 625), Vector2(1480, 360)],
-			[Vector2(935, 250), Vector2(935, 460)],
+			[Vector2(40, 385), Vector2(185, 385), Vector2(315, 315), Vector2(600, 315), Vector2(710, 400), Vector2(1000, 315), Vector2(1292, 400), Vector2(1415, 315), Vector2(1705, 315), Vector2(1852, 410), Vector2(2182, 410)],
+			[Vector2(315, 315), Vector2(457, 270), Vector2(1000, 260), Vector2(1557, 272), Vector2(1705, 315)],
+			[Vector2(315, 315), Vector2(457, 542), Vector2(997, 542), Vector2(1552, 542), Vector2(1705, 315)],
+			[Vector2(1000, 260), Vector2(1000, 542)],
 		]
 		for path in road_paths:
 			_draw_cobblestone_path(path, 34.0)
 
-		# 중앙 석상 분수대 광장
-		_draw_ellipse(Vector2(935, 275), Vector2(115, 36), Color("1e1820"))
-		_draw_ellipse(Vector2(935, 275), Vector2(102, 30), Color("28202a"))
-		_draw_ellipse_outline(Vector2(935, 275), Vector2(102, 30), Color("44384a"), 2.0)
-
-		# 6. 각 건물 터 고딕 기단 (Dark Inked Plot Base)
+		# 6. 어둠의 균열(dungeon_gate) 주변 붉은 기단 마법진만 은은히 유지하고 일반 건물 보라색 타원 기단은 제거
 		for def in building_defs:
-			var r: Rect2 = def.rect
-			var center_bottom := Vector2(r.position.x + r.size.x * 0.5, r.position.y + r.size.y - 12.0)
-			var pad_rx := r.size.x * 0.54
-			var pad_ry := 34.0
-			var is_dungeon: bool = (def.id == "dungeon_gate")
-			_draw_ellipse(center_bottom + Vector2(0, 6), Vector2(pad_rx + 8, pad_ry + 5), Color(0, 0, 0, 0.65))
-			_draw_ellipse(center_bottom, Vector2(pad_rx, pad_ry), Color("2e1220") if is_dungeon else Color("1e1a22"))
-			_draw_ellipse(center_bottom, Vector2(pad_rx - 8, pad_ry - 5), Color("220c16") if is_dungeon else Color("28222c"))
-			_draw_ellipse_outline(center_bottom, Vector2(pad_rx - 4, pad_ry - 2), Color("8a2542") if is_dungeon else Color("423846"), 2.0)
+			if def.id == "dungeon_gate":
+				var r: Rect2 = def.rect
+				var center_bottom := Vector2(r.position.x + r.size.x * 0.5, r.position.y + r.size.y - 16.0)
+				var pad_rx := r.size.x * 0.42
+				var pad_ry := 24.0
+				_draw_ellipse(center_bottom, Vector2(pad_rx, pad_ry), Color(0.16, 0.04, 0.08, 0.36))
+				_draw_ellipse_outline(center_bottom, Vector2(pad_rx - 4, pad_ry - 2), Color("6e2036", 0.55), 1.5)
 
-		# 7. 다키스트 던전 풍 조경: 앙상한 가시나무(Dead Trees), 십자가 묘비(Tombstones), 호박빛 횃불 랜턴
-		var dead_trees := [
-			Vector2(55, 230), Vector2(295, 195), Vector2(655, 175), Vector2(1165, 175),
-			Vector2(1645, 195), Vector2(1955, 175), Vector2(2360, 195)
-		]
-		for dt in dead_trees:
-			_draw_gothic_dead_tree(dt)
-
-		# 묘지 십자가 비석들 (Cemetery Graves)
+		# 7. 묘지 십자가 비석들 (Cemetery Graves) 및 호박빛 횃불 랜턴
 		var graves := [
 			Vector2(320, 310), Vector2(350, 335), Vector2(640, 480), Vector2(1210, 245),
 			Vector2(1520, 510), Vector2(1930, 530), Vector2(2380, 520)
@@ -96,13 +89,21 @@ class VillageTerrainCanvas extends Control:
 
 		# 불타오르는 철제 가로등 횃불
 		var lamp_positions := [
-			Vector2(245, 420), Vector2(365, 275), Vector2(365, 515),
-			Vector2(685, 280), Vector2(825, 285), Vector2(1045, 285),
-			Vector2(695, 455), Vector2(975, 455), Vector2(1265, 360),
-			Vector2(1640, 390), Vector2(1960, 385)
+			Vector2(305, 315), Vector2(585, 268), Vector2(585, 535),
+			Vector2(830, 262), Vector2(1170, 262), Vector2(855, 535),
+			Vector2(1145, 535), Vector2(1415, 315), Vector2(1705, 315),
+			Vector2(1995, 405)
 		]
 		for lp in lamp_positions:
 			_draw_street_lantern(lp)
+
+		# 영웅숙소 앞마당 & 중앙 광장 pixelfx 모닥불 루프 애니메이션 (JSON 규격 통합 슬라이싱)
+		for cpos in [Vector2(585, 305), Vector2(1000, 312)]:
+			_draw_ellipse(cpos + Vector2(0, 6), Vector2(30, 12), Color(1.0, 0.55, 0.15, 0.24))
+			UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/campfire/fire/campfire/campfire.png", Rect2(cpos.x - 32, cpos.y - 56, 64, 64), anim_time, 0, Color(1.0, 0.95, 0.85, 0.92))
+
+		# 파노라마 전역을 떠다니는 미세 황혼 불티·반딧불 입자 (18개)
+		_draw_ambient_fireflies(w, h)
 
 	## 타원 채우기 헬퍼
 	func _draw_ellipse(center: Vector2, radii: Vector2, col: Color) -> void:
@@ -178,18 +179,36 @@ class VillageTerrainCanvas extends Control:
 		# 십자가 하이라이트
 		draw_line(Vector2(pos.x, pos.y - 18), Vector2(pos.x, pos.y), Color("4a4252"), 1.0)
 
-	## 마을 길가 횃불/가로등 드로잉
+	## 마을 길가 횃불/가로등 및 pixelfx 실시간 불꽃·불티 드로잉
 	func _draw_street_lantern(pos: Vector2) -> void:
 		var pulse := 0.85 + 0.15 * sin(anim_time * 5.0 + pos.x)
 		# 바닥 빛무리
-		_draw_ellipse(pos + Vector2(0, 2), Vector2(36 * pulse, 16 * pulse), Color(0.95, 0.65, 0.20, 0.12 * pulse))
+		_draw_ellipse(pos + Vector2(0, 2), Vector2(38 * pulse, 17 * pulse), Color(0.95, 0.65, 0.20, 0.14 * pulse))
 		# 기둥
 		draw_rect(Rect2(pos.x - 2, pos.y - 26, 4, 28), Color("2b241d"))
 		draw_line(Vector2(pos.x - 2, pos.y - 25), Vector2(pos.x + 7, pos.y - 25), Color("4a3e31"), 2.0)
-		# 등불 코어 및 후광
+		# 등불 코어 및 pixelfx torch 불꽃 합성
 		var glow_pos := Vector2(pos.x + 7, pos.y - 22)
-		draw_circle(glow_pos, 14.0 * pulse, Color(1.0, 0.68, 0.22, 0.22))
+		draw_circle(glow_pos, 15.0 * pulse, Color(1.0, 0.68, 0.22, 0.24))
 		draw_circle(glow_pos, 4.5, Color(1.0, 0.88, 0.45, 0.95))
+		UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/torch/fire/torch/torch.png", Rect2(glow_pos.x - 10, glow_pos.y - 22, 20, 26), anim_time, int(pos.x * 0.1), Color(1.0, 0.92, 0.80, 0.90))
+		# 가로등 위로 흩날리는 금빛 불티
+		for e in range(2):
+			var et := fmod(anim_time * 0.85 + pos.x * 0.01 + float(e) * 0.5, 1.0)
+			var epos := glow_pos + Vector2(sin(et * 6.0 + float(e)) * 4.0, -8.0 - et * 18.0)
+			draw_circle(epos, 1.4, Color(1.0, 0.82, 0.35, (1.0 - et) * 0.75))
+
+
+	## 영지 파노라마 전역을 떠다니는 반딧불·황혼 부유 입자를 그린다.
+	func _draw_ambient_fireflies(w: float, h: float) -> void:
+		for i in range(18):
+			var fi := float(i)
+			var px := fmod(fi * 139.0 + sin(anim_time * 0.45 + fi * 1.7) * 32.0 + w, w)
+			var py := 150.0 + fmod(fi * 97.0, h - 240.0) + cos(anim_time * 0.75 + fi * 1.3) * 14.0
+			var glow := 0.28 + 0.42 * (0.5 + 0.5 * sin(anim_time * 2.4 + fi * 2.1))
+			var col := Color(0.88, 0.45, 0.95, glow * 0.7) if px > 1950.0 else Color(1.0, 0.80, 0.36, glow)
+			draw_circle(Vector2(px, py), 4.5, Color(col.r, col.g, col.b, col.a * 0.25))
+			draw_circle(Vector2(px, py), 1.6, col)
 
 
 ## 개별 마을 건물을 2.5D 다키스트 던전 도트 스프라이트와 애니메이션으로 그리는 캔버스
@@ -222,10 +241,13 @@ class VillageBuildingCanvas extends Control:
 		var bid: String = def.get("id", "")
 		var btype: String = def.get("type", "guild")
 
+		# 건물 실제 바닥 접지 그림자 (보라색 타원 제거 후 은은한 검은 그림자만 유지)
+		_draw_ellipse(Vector2(w * 0.5, h - 22), Vector2(w * 0.42, 16), Color(0.02, 0.02, 0.03, 0.45))
+
 		# 호버 시 건물 바닥 황금빛 선택 오라 표시
 		if is_hovered:
-			_draw_ellipse(Vector2(w * 0.5, h - 18), Vector2(w * 0.48, 28), Color(0.95, 0.78, 0.32, 0.28))
-			_draw_ellipse_outline(Vector2(w * 0.5, h - 18), Vector2(w * 0.48, 28), UiKit.GOLD2, 3.0)
+			_draw_ellipse(Vector2(w * 0.5, h - 20), Vector2(w * 0.46, 22), Color(0.95, 0.78, 0.32, 0.24))
+			_draw_ellipse_outline(Vector2(w * 0.5, h - 20), Vector2(w * 0.46, 22), UiKit.GOLD2, 2.5)
 
 		var tex := _get_building_texture(bid)
 		if tex != null:
@@ -235,19 +257,20 @@ class VillageBuildingCanvas extends Control:
 			var draw_w := tw * fit_scale
 			var draw_h := th * fit_scale
 			var draw_x := (w - draw_w) * 0.5
-			var draw_y := (h - 14.0) - draw_h
+			# PNG 하단 투명 여백 보정으로 건물이 명패 위에 공중 부양하지 않고 땅에 착지하도록 정렬
+			var bottom_trim := 4.0
+			if bid == "general_store":
+				bottom_trim = 28.0
+			elif bid in ["hero_lodge", "manor", "memorial_hall", "mercenary_outpost", "sanatorium", "training_camp", "dungeon_gate"]:
+				bottom_trim = 10.0
+			var draw_y := (h - 14.0) - draw_h + bottom_trim
 			var tint := Color(1.16, 1.12, 1.04, 1.0) if is_hovered else Color.WHITE
 			draw_texture_rect(tex, Rect2(draw_x, draw_y, draw_w, draw_h), false, tint)
 
 			# 어둠의 균열(dungeon_gate) 위 pixelfx 차원문 에너지 애니메이션 합성
 			if bid == "dungeon_gate":
-				if _portal_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/portal/arcane/portal/portal.png"):
-					_portal_tex = load("res://assets/sprites/vfx/portal/arcane/portal/portal.png")
-				if _portal_tex != null:
-					var frame_idx := int(anim_time * 24.0) % 72
-					var src_rect := Rect2(frame_idx * 152, 0, 152, 116)
-					var p_dst := Rect2(w * 0.5 - 52, draw_y + draw_h * 0.30, 104, 80)
-					draw_texture_rect_region(_portal_tex, p_dst, src_rect, Color(1.0, 0.55, 0.75, 0.92))
+				var p_dst := Rect2(w * 0.5 - 52, draw_y + draw_h * 0.30, 104, 80)
+				UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/portal/arcane/portal/portal.png", p_dst, anim_time, 0, Color(1.0, 0.55, 0.75, 0.92))
 			# 대장간 화덕 따뜻한 점멸 글로우 & 굴뚝 도트 연기
 			elif bid == "blacksmith":
 				var pulse := 0.22 + 0.12 * sin(anim_time * 7.0)
@@ -700,16 +723,16 @@ class BuildingInteriorCanvas extends Control:
 		if bg_tex != null:
 			draw_texture_rect(bg_tex, Rect2(0, 0, w, h), false)
 
-			# 어둠의 균열일 경우 pixelfx 차원문 루프
+			# 어둠의 균열일 경우 pixelfx 차원문 루프 (JSON 규격 다중 행 자동 슬라이싱)
 			if btype == "dungeon":
-				if _dungeon_portal_tex == null and ResourceLoader.exists("res://assets/sprites/vfx/portal/arcane/portal/portal.png"):
-					_dungeon_portal_tex = load("res://assets/sprites/vfx/portal/arcane/portal/portal.png")
-				if _dungeon_portal_tex != null:
-					var f_idx := int(anim_time * 24.0) % 72
-					var src_r := Rect2(f_idx * 152, 0, 152, 116)
-					draw_texture_rect_region(_dungeon_portal_tex, Rect2(w * 0.28, h * 0.24, 152, 116), src_r, Color(1, 0.7, 0.9, 0.95))
+				UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/portal/arcane/portal/portal.png", Rect2(w * 0.28, h * 0.24, 152, 116), anim_time, 0, Color(1, 0.7, 0.9, 0.95))
 
-			# 2. 건물별 담당 NPC 도트 스프라이트 렌더링
+			# 건물 유형별 실내 분위기 광원 펄스
+			var mood_col := _interior_mood_color(btype)
+			var mood_pulse := 0.14 + 0.05 * sin(anim_time * 2.6)
+			draw_circle(Vector2(w * 0.35, h * 0.42), minf(w, h) * 0.42, Color(mood_col.r, mood_col.g, mood_col.b, mood_pulse))
+
+			# 2. 건물별 담당 NPC 도트 스프라이트 렌더링 (발밑 그림자 + 호흡 스케일 + 상하 바운스)
 			var npc_path := "res://assets/sprites/npc/npc_%s.png" % btype
 			var npc_tex: Texture2D = null
 			if _npc_cache.has(npc_path):
@@ -719,18 +742,31 @@ class BuildingInteriorCanvas extends Control:
 				_npc_cache[npc_path] = npc_tex
 
 			if npc_tex != null:
-				# 캔버스 높이(h)에 비례하도록 종횡비를 유지하며 우측 하단에 정렬
-				var target_h := h * 0.88
+				var breath := 1.0 + sin(anim_time * 2.8) * 0.012
+				var target_h := h * 0.88 * breath
 				var scale_ratio := target_h / maxf(1.0, float(npc_tex.get_height()))
 				var nw := float(npc_tex.get_width()) * scale_ratio
 				var nh := target_h
 				var bob := sin(anim_time * 2.8) * 2.0
 				var nx := w - nw - 14.0
 				var ny := (h - 6.0) - nh + bob
+				# 발밑 접촉 그림자 타원
+				_draw_interior_ellipse(Vector2(nx + nw * 0.5, h - 8.0), Vector2(nw * 0.34, 8.0), Color(0, 0, 0, 0.45))
 				draw_texture_rect(npc_tex, Rect2(nx, ny, nw, nh), false)
 
-			# 3. 고딕 황금 테두리 액자 프레임
+			# 실내 빛줄기 속을 부유하는 미세 먼지 입자 (8개)
+			for m_idx in range(8):
+				var fm := float(m_idx)
+				var mt := fmod(anim_time * 0.22 + fm * 0.13, 1.0)
+				var mx := fmod(fm * 63.0 + sin(mt * TAU + fm) * 18.0 + w, w)
+				var my := (1.0 - mt) * (h - 20.0) + 10.0
+				var ma := sin(mt * PI) * 0.48
+				draw_circle(Vector2(mx, my), 1.6, Color(mood_col.r, mood_col.g, mood_col.b, ma))
+
+			# 3. 이중 고딕 액자 프레임 및 금빛 모서리 브래킷 마감
 			draw_rect(Rect2(0, 0, w, h), UiKit.BORDER2, false, 2.0)
+			draw_rect(Rect2(4, 4, w - 8, h - 8), Color(UiKit.GOLD.r, UiKit.GOLD.g, UiKit.GOLD.b, 0.28), false, 1.0)
+			_draw_corner_brackets(w, h, UiKit.GOLD2, 12.0)
 			return
 
 		# 폴백: 내부 석조/목조 배경 액자
@@ -791,6 +827,40 @@ class BuildingInteriorCanvas extends Control:
 		# 테두리 액자 마감
 		draw_rect(Rect2(1, 1, w - 2, h - 2), UiKit.BORDER2, false, 2.0)
 
+	## 건물 유형에 어울리는 실내 조명 색상을 반환한다.
+	func _interior_mood_color(type_id: String) -> Color:
+		match type_id:
+			"blacksmith":
+				return Color(1.0, 0.52, 0.16)
+			"magic", "memorial":
+				return Color(0.45, 0.72, 1.0)
+			"treatment":
+				return Color(0.45, 0.90, 0.62)
+			"dungeon":
+				return Color(0.92, 0.24, 0.42)
+			_:
+				return Color(1.0, 0.78, 0.36)
+
+	## 실내 바닥 접촉 그림자용 타원을 그린다.
+	func _draw_interior_ellipse(center: Vector2, radii: Vector2, col: Color) -> void:
+		var pts := PackedVector2Array()
+		for i in range(16):
+			var ang := float(i) * TAU / 16.0
+			pts.append(center + Vector2(cos(ang) * radii.x, sin(ang) * radii.y))
+		draw_colored_polygon(pts, col)
+
+	## 네 모서리에 고딕 금빛 L자 브래킷 장식을 그린다.
+	func _draw_corner_brackets(w: float, h: float, col: Color, arm_len: float) -> void:
+		var c := Color(col.r, col.g, col.b, 0.85)
+		draw_line(Vector2(2, 2), Vector2(2 + arm_len, 2), c, 2.0)
+		draw_line(Vector2(2, 2), Vector2(2, 2 + arm_len), c, 2.0)
+		draw_line(Vector2(w - 2, 2), Vector2(w - 2 - arm_len, 2), c, 2.0)
+		draw_line(Vector2(w - 2, 2), Vector2(w - 2, 2 + arm_len), c, 2.0)
+		draw_line(Vector2(2, h - 2), Vector2(2 + arm_len, h - 2), c, 2.0)
+		draw_line(Vector2(2, h - 2), Vector2(2, h - 2 - arm_len), c, 2.0)
+		draw_line(Vector2(w - 2, h - 2), Vector2(w - 2 - arm_len, h - 2), c, 2.0)
+		draw_line(Vector2(w - 2, h - 2), Vector2(w - 2, h - 2 - arm_len), c, 2.0)
+
 
 ## 다키스트 던전 스타일의 16비트 도트 초상화 및 등급 프레임 위젯
 class HeroPortraitCanvas extends Control:
@@ -802,19 +872,10 @@ class HeroPortraitCanvas extends Control:
 	func _ready() -> void:
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
+	## 직업군별 초상화 텍스처를 JobDb 단일 카탈로그 및 UiKit 공용 캐시로 로드한다.
 	func _get_portrait_texture(cat: String) -> Texture2D:
-		var key := "warrior"
-		match cat:
-			"마법사": key = "mage"
-			"레인저", "도적": key = "ranger"
-			"성직자": key = "cleric"
-			_: key = "warrior"
-		if _p_tex_cache.has(key):
-			return _p_tex_cache[key]
-		var path := "res://assets/sprites/characters/portrait_%s.png" % key
-		var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
-		_p_tex_cache[key] = tex
-		return tex
+		var path := str(JobDb.visual_spec(cat).get("portrait", ""))
+		return UiKit.get_cached_texture(path)
 
 	func _draw() -> void:
 		var w := size.x
@@ -1106,10 +1167,7 @@ class BlacksmithInteriorCanvas extends Control:
 			draw_texture_rect(_bg_tex, Rect2(0, 0, w, h), false)
 
 			# 2. 화덕 위 pixelfx brazier 불꽃 애니메이션 가미
-			if _brazier_tex != null:
-				var f_idx := int(anim_time * 24.0) % 90
-				var src_r := Rect2(f_idx * 112, 0, 112, 148)
-				draw_texture_rect_region(_brazier_tex, Rect2(w * 0.44, h * 0.22, 120, 136), src_r, Color(1, 0.9, 0.8, 0.85))
+			UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/brazier/fire/brazier/brazier.png", Rect2(w * 0.44, h * 0.22, 120, 136), anim_time, 0, Color(1, 0.9, 0.8, 0.85))
 
 			# 3. 고딕 대장장이 장인 NPC 스프라이트 렌더링
 			if _npc_tex != null:

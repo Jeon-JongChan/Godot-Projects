@@ -557,33 +557,15 @@ func _draw_placeholder() -> void:
 
 	if is_ally:
 		var cat := merc_data.category if merc_data != null else "전사"
-		var key := "warrior"
-		match cat:
-			"마법사": key = "mage"
-			"레인저", "도적": key = "ranger"
-			"성직자": key = "cleric"
-			_: key = "warrior"
-		var p := "res://assets/sprites/characters/hero_%s.png" % key
-		var tex := _get_cached_tex(p)
+		var p := str(JobDb.visual_spec(cat).get("hero_sprite", ""))
+		var tex := UiKit.get_cached_texture(p)
 		if tex != null:
 			_attach_crisp_sprite(tex, false)
 			return
 		_draw_ally_silhouette(base_color)
 	else:
-		# 적군 종류 배분: 이름 끝 숫자나 해시에 따라 해골 전사 / 불타는 비행 해골 / 사교도 거구 / 저주받은 눈알 괴수 / 심연 구울
-		var m_idx := absi(unit_name.hash()) % 5
-		if m_idx == 1:
-			var fskull_tex := _get_cached_tex("res://assets/sprites/vfx/flying_skull/critters/flying-skull/flying-skull.png")
-			if fskull_tex != null:
-				_attach_animated_sheet(fskull_tex, 72, true, 1.3)
-				return
-		elif m_idx == 3:
-			var eye_tex := _get_cached_tex("res://assets/sprites/vfx/eyeball/critters/eyeball/eyeball.png")
-			if eye_tex != null:
-				_attach_animated_sheet(eye_tex, 96, true, 1.4)
-				return
-
-		var mob_keys := ["mob_skeleton", "mob_cultist", "mob_eldritch"]
+		# 고해상도 다키스트 던전 풍 4종 몬스터 정적 도트 스프라이트 배분
+		var mob_keys := ["mob_skeleton", "mob_cultist", "mob_eldritch", "mob_wraith"]
 		var mob_key: String = mob_keys[absi(unit_name.hash()) % mob_keys.size()]
 		var m_tex := _get_cached_tex("res://assets/sprites/characters/%s.png" % mob_key)
 		if m_tex != null:
@@ -913,21 +895,12 @@ func play_arrow_attack(target_unit: BattleUnit, on_impact: Callable = Callable()
 
 ## 총구 머즐플래시 pixelfx 이펙트 스폰
 func _spawn_muzzle_flash() -> void:
-	if not is_inside_tree(): return
-	var m_tex := _get_cached_tex("res://assets/sprites/vfx/muzzle_pistol/projectiles/muzzle-pistol/muzzle-pistol.png")
-	if m_tex == null: return
-	var sp := Sprite2D.new()
-	sp.texture = m_tex
-	sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sp.hframes = 55
-	sp.frame = 0
-	sp.position = Vector2(85, 95) if is_ally else Vector2(25, 95)
-	sp.flip_h = not is_ally
-	sp.scale = Vector2(1.3, 1.3)
-	add_child(sp)
-	var tw := create_tween()
-	tw.tween_property(sp, "frame", 54, 0.35)
-	tw.tween_callback(sp.queue_free)
+	if not is_inside_tree():
+		return
+	var pos := Vector2(85, 95) if is_ally else Vector2(25, 95)
+	var sp := UiKit.spawn_pixelfx_oneshot(self, "res://assets/sprites/vfx/muzzle_pistol/projectiles/muzzle-pistol/muzzle-pistol.png", pos, Vector2(1.3, 1.3))
+	if sp != null:
+		sp.flip_h = not is_ally
 
 
 ## 날아가는 화살 pixelfx 투사체 스폰
@@ -1020,65 +993,57 @@ func play_take_damage(dmg: int, is_crit: bool = false, atk_type: String = "slash
 	hit_tween.tween_property(self, "modulate", Color.WHITE if not is_dead else Color(0.3, 0.3, 0.3, 0.45), 0.15)
 
 
-## 다키스트 던전 시그니처: 공격 타입(베기/번개/총/화살)에 맞는 pixelfx 도트 애니메이션 시트를 재생합니다.
+## 다키스트 던전 시그니처: 공격 타입(베기/번개/총/화살/강타/신성)에 맞는 pixelfx 도트 애니메이션 시트를 재생합니다.
 func _spawn_hit_effect(is_crit: bool, atk_type: String = "slash") -> void:
 	var effect_holder := Node2D.new()
 	effect_holder.position = Vector2(size.x * 0.5, size.y * 0.45)
 	add_child(effect_holder)
 
 	var sheet_path := ""
-	var frame_total := 24
 	var anim_dur := 0.38
 	var sp_scale := Vector2(1.2, 1.2)
 	var sp_mod := Color.WHITE
 
 	match atk_type:
-		"lightning":
-			# 마법사 번개: lightning-strike 91f 또는 zap-hit 28f
+		"lightning", "magic", "holy":
+			# 마법사/성직자 시전 타격: lightning-strike 또는 zap-hit
 			sheet_path = "res://assets/sprites/vfx/lightning_strike/lightning/lightning-strike/lightning-strike.png" if is_crit else "res://assets/sprites/vfx/lightning_zap/lightning/zap-hit/zap-hit.png"
-			frame_total = 91 if is_crit else 28
 			anim_dur = 0.55 if is_crit else 0.32
 			sp_scale = Vector2(1.1, 1.1)
-			sp_mod = Color("cce8ff")
+			sp_mod = Color("ffe6a8") if atk_type == "holy" else Color("cce8ff")
 			effect_holder.position.y = size.y * 0.38
 		"gun":
-			# 총술사 총: bullet-impact 43f
+			# 총술사 총: bullet-impact
 			sheet_path = "res://assets/sprites/vfx/bullet_impact/impacts/bullet-impact/bullet-impact.png"
-			frame_total = 43
 			anim_dur = 0.30
 			sp_scale = Vector2(1.3, 1.3)
 			sp_mod = Color("ffe088")
-		"arrow":
-			# 궁수 화살: 화살 관통 타격
+		"arrow", "ranged":
+			# 궁수 화살: 관통 타격
 			sheet_path = "res://assets/sprites/vfx/sword_slash/melee/sword-slash/sword-slash.png"
-			frame_total = 24
 			anim_dur = 0.25
 			sp_mod = Color("70e8a0")
 		_:
-			# 전사 베기: double-slash(25f) / sword-slash(24f)
-			sheet_path = "res://assets/sprites/vfx/double_slash/melee/double-slash/double-slash.png" if is_crit else "res://assets/sprites/vfx/sword_slash/melee/sword-slash/sword-slash.png"
-			frame_total = 25 if is_crit else 24
+			# 전사 베기/강타: double-slash / sword-slash
+			var heavy := is_crit or atk_type == "crush"
+			sheet_path = "res://assets/sprites/vfx/double_slash/melee/double-slash/double-slash.png" if heavy else "res://assets/sprites/vfx/sword_slash/melee/sword-slash/sword-slash.png"
 			anim_dur = 0.42
-			sp_mod = Color(1.0, 0.85, 0.35) if is_crit else Color(1.0, 0.3, 0.3)
+			sp_mod = Color(1.0, 0.85, 0.35) if heavy else Color(1.0, 0.3, 0.3)
 
-	var slash_tex := _get_cached_tex(sheet_path)
-	if slash_tex != null and is_inside_tree():
-		var vfx_sp := Sprite2D.new()
-		vfx_sp.texture = slash_tex
-		vfx_sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		vfx_sp.hframes = frame_total
-		vfx_sp.frame = 0
-		vfx_sp.scale = sp_scale
-		vfx_sp.modulate = sp_mod
-		effect_holder.add_child(vfx_sp)
-		var anim_tw := create_tween()
-		anim_tw.tween_property(vfx_sp, "frame", frame_total - 1, anim_dur)
-	else:
-		var slash_line := Line2D.new()
-		slash_line.width = 6.0 if is_crit else 3.5
-		slash_line.default_color = Color("ff1828")
-		slash_line.points = PackedVector2Array([Vector2(-30, -40), Vector2(30, 40)])
-		effect_holder.add_child(slash_line)
+	if sheet_path != "":
+		UiKit.spawn_pixelfx_oneshot(effect_holder, sheet_path, Vector2.ZERO, sp_scale, sp_mod)
+
+	var slash_line := Line2D.new()
+	slash_line.width = 6.0 if is_crit else 3.5
+	slash_line.default_color = Color("e8b848") if is_crit else Color("c83434")
+	slash_line.points = PackedVector2Array([Vector2(-32, -42), Vector2(32, 42)])
+	effect_holder.add_child(slash_line)
+	if is_crit:
+		var cross_line := Line2D.new()
+		cross_line.width = 4.0
+		cross_line.default_color = Color("f0d890")
+		cross_line.points = PackedVector2Array([Vector2(30, -36), Vector2(-30, 36)])
+		effect_holder.add_child(cross_line)
 
 	# 혈흔 파편
 	for i in range(12 if is_crit else 6):
@@ -1155,6 +1120,17 @@ func _on_death() -> void:
 	else:
 		rotation_degrees = -25.0 if is_ally else 25.0
 		modulate = Color(0.3, 0.3, 0.3, 0.45)
+
+
+## 방어 태세 시 절제된 금속성 스틸/골드 펄스 연출을 재생한다.
+func play_defend_effect() -> void:
+	if not is_inside_tree():
+		return
+	var tw := create_tween()
+	tw.tween_property(self, "modulate", Color(1.15, 1.2, 1.35), 0.14)
+	tw.tween_property(self, "position:x", base_position.x - 6.0, 0.10)
+	tw.tween_property(self, "position:x", base_position.x, 0.14)
+	tw.parallel().tween_property(self, "modulate", Color.WHITE, 0.18)
 
 
 ## 마우스 클릭 시 시그널 전달

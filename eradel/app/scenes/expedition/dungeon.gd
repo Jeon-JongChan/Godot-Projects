@@ -12,6 +12,9 @@ const FloatingTextScene = preload("res://scenes/expedition/entities/floating_tex
 ## [유한 상태 기계] 전투 진행 단계 정의
 enum BattleState { ROUND_START, ALLY_TURN, ALLY_ACTING, MONSTER_TURN, FINISHED }
 
+## 던전 1회 원정 당 돌파해야 하는 총 구역(회랑) 수
+const MAX_STAGE: int = 3
+
 # ── 노드 및 데이터 ──
 var _root: MarginContainer
 var _stage_panel: Control
@@ -19,6 +22,7 @@ var _stage_content: Control
 var _party_units: Array = []
 var _monster_units: Array = []
 
+var _current_stage: int = 1
 var _monsters_data: Array[Dictionary] = []
 var _base_gold: int = 0
 var _round: int = 0
@@ -32,6 +36,7 @@ var _torch_bar: ProgressBar
 var _torch_value_label: Label
 var _torch_stage_label: Label
 var _quest_progress_label: Label
+var _dungeon_atmosphere: ColorRect = null
 
 # ── [유한 상태 기계 / 책임 연쇄 / 오브젝트 풀] ──
 var _fsm: StateMachine = StateMachine.new()
@@ -65,6 +70,8 @@ var _skill_buttons: Array[Button] = []
 var _tab_map_btn: Button
 var _tab_log_btn: Button
 var _minimap_container: Control
+var _minimap_layout: HBoxContainer = null
+var _minimap_area_label: Label = null
 var _log_container: Control
 var _log_vbox: VBoxContainer
 var _log_scroll: ScrollContainer
@@ -80,22 +87,24 @@ func _ready() -> void:
 	_root.set_anchors_preset(PRESET_FULL_RECT)
 	add_child(_root)
 
-	# 원정 데이터 생성 (기존 게임 로직 준수)
-	_monsters_data = GameState.generate_monsters()
+	# 1회랑 원정 데이터 생성 (기존 게임 로직 준수 + 다단계 회랑 확장)
+	_current_stage = 1
+	_monsters_data = _generate_stage_monsters(_current_stage)
 	_base_gold = 120 + GameState.dungeon_activity + GameState.rng().randi_range(0, 60)
-	_log.append("어둠의 균열에 들어섰다. 몬스터 %d마리가 모습을 드러낸다." % _monsters_data.size())
+	_log.append("어둠의 균열 제 %d 회랑에 진입했다. 몬스터 %d마리가 앞을 가로막는다." % [_current_stage, _monsters_data.size()])
 
 	_build_scene_layout()
 	_setup_fsm_and_pools()
 	_spawn_units()
+	_refresh_minimap()
 	_start_next_round()
 
 
 ## [유한 상태 기계 & 오브젝트 풀] 전투 상태 전이 표와 데미지 텍스트/효과음 풀을 초기화합니다.
 func _setup_fsm_and_pools() -> void:
-	_fsm.add(BattleState.ROUND_START, func(): _is_busy = false, Callable(), [BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
-	_fsm.add(BattleState.ALLY_TURN, func(): _is_busy = false, Callable(), [BattleState.ALLY_ACTING, BattleState.MONSTER_TURN, BattleState.FINISHED])
-	_fsm.add(BattleState.ALLY_ACTING, func(): _is_busy = true; _set_controls_enabled(false), Callable(), [BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.ROUND_START, func(): _is_busy = false, Callable(), [BattleState.ROUND_START, BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.ALLY_TURN, func(): _is_busy = false, Callable(), [BattleState.ROUND_START, BattleState.ALLY_ACTING, BattleState.MONSTER_TURN, BattleState.FINISHED])
+	_fsm.add(BattleState.ALLY_ACTING, func(): _is_busy = true; _set_controls_enabled(false), Callable(), [BattleState.ROUND_START, BattleState.ALLY_TURN, BattleState.MONSTER_TURN, BattleState.FINISHED])
 	_fsm.add(BattleState.MONSTER_TURN, func(): _is_busy = true; _set_controls_enabled(false), Callable(), [BattleState.ROUND_START, BattleState.FINISHED])
 	_fsm.add(BattleState.FINISHED, func(): _finished = true; _is_busy = false; _set_controls_enabled(false), Callable(), [BattleState.FINISHED])
 
@@ -129,6 +138,8 @@ func _build_scene_layout() -> void:
 	_stage_panel.add_child(_stage_content)
 
 	_build_stage_background(_stage_content)
+	_dungeon_atmosphere = UiKit.attach_gothic_atmosphere(_stage_panel, 0.44, 0.18, 0.0)
+	_update_torchlight_display()
 
 	# 3. 하단 2단 고딕 다키스트 던전 컨트롤 패널 (높이 256px)
 	var bottom_panel := PanelContainer.new()
@@ -306,6 +317,12 @@ func _update_torchlight_display() -> void:
 		fill_sb.bg_color = Color("5e1b1b") # 검붉은 불씨
 
 	_torch_bar.add_theme_stylebox_override("fill", fill_sb)
+	if is_instance_valid(_dungeon_atmosphere) and _dungeon_atmosphere.material is ShaderMaterial:
+		var mat := _dungeon_atmosphere.material as ShaderMaterial
+		var dark_ratio := 1.0 - clampf(float(_torchlight) / 100.0, 0.0, 1.0)
+		mat.set_shader_parameter("vignette_intensity", 0.34 + dark_ratio * 0.44)
+		mat.set_shader_parameter("torch_warmth", clampf(float(_torchlight) / 100.0 * 0.24, 0.02, 0.24))
+		mat.set_shader_parameter("danger_pulse", clampf((40.0 - float(_torchlight)) / 40.0, 0.0, 0.85))
 
 
 ## 다키스트 던전 특유의 어둡고 음산한 석조 회랑 및 원근 바닥을 그립니다.
@@ -351,21 +368,14 @@ class DungeonCombatBackgroundCanvas extends Control:
 		var torch_y := 142.0
 
 		for tx in torch_xs:
-			# 철제 브래킷
-			draw_line(Vector2(tx, torch_y), Vector2(tx, torch_y + 28.0), Color("2c241c"), 4.0)
-			draw_circle(Vector2(tx, torch_y), 6.0, Color("3a2e22"))
-
-			# 화염 빛 파동 (동적 조명 연출)
+			# 화염 빛 파동 (배경 벽면 횃불과 자연스럽게 융합)
 			var pulse := 0.22 + 0.08 * sin(anim_time * 6.0 + tx * 0.05)
-			draw_circle(Vector2(tx, torch_y - 12.0), 45.0, Color(1.0, 0.45, 0.1, pulse * 0.4))
-			draw_circle(Vector2(tx, torch_y - 12.0), 22.0, Color(1.0, 0.70, 0.2, pulse * 0.8))
+			draw_circle(Vector2(tx, torch_y - 12.0), 42.0, Color(1.0, 0.45, 0.1, pulse * 0.35))
+			draw_circle(Vector2(tx, torch_y - 12.0), 20.0, Color(1.0, 0.70, 0.2, pulse * 0.65))
 
-			# pixelfx torch 실제 화염 시트 프레임 렌더링
-			if _torch_tex != null:
-				var f_idx := int(anim_time * 24.0) % 60
-				var src_r := Rect2(f_idx * 96, 0, 96, 128)
-				var dst_r := Rect2(tx - 24.0, torch_y - 56.0, 48.0, 64.0)
-				draw_texture_rect_region(_torch_tex, dst_r, src_r, Color(1.0, 0.9, 0.8, 0.95))
+			# pixelfx torch 실제 화염 시트 프레임 렌더링 (JSON 규격 통합 슬라이싱)
+			var dst_r := Rect2(tx - 18.0, torch_y - 48.0, 36.0, 60.0)
+			UiKit.draw_pixelfx_frame(self, "res://assets/sprites/vfx/torch/fire/torch/torch.png", dst_r, anim_time, int(tx), Color(1.0, 0.9, 0.8, 0.95))
 
 
 
@@ -396,15 +406,24 @@ func _build_hero_panel() -> Control:
 	top_row.add_theme_constant_override("separation", 14)
 	main_vbox.add_child(top_row)
 
-	# 1. 영웅 사각 초상화 (어두운 고딕 프레임 + 실루엣)
+	# 1. 영웅 사각 초상화 (어두운 고딕 프레임 + 실제 도트 초상화 텍스처)
 	_hero_portrait_rect = PanelContainer.new()
-	_hero_portrait_rect.custom_minimum_size = Vector2(58, 68)
+	_hero_portrait_rect.custom_minimum_size = Vector2(64, 68)
 	var port_sb := StyleBoxFlat.new()
-	port_sb.bg_color = Color("1a1714")
-	port_sb.border_color = Color("c7a13c")
+	port_sb.bg_color = Color("15120f")
+	port_sb.border_color = UiKit.BORDER2
 	port_sb.set_border_width_all(1)
 	_hero_portrait_rect.add_theme_stylebox_override("panel", port_sb)
 	top_row.add_child(_hero_portrait_rect)
+
+	var port_tex := TextureRect.new()
+	port_tex.name = "PortraitTex"
+	port_tex.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	port_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	port_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	port_tex.set_anchors_preset(PRESET_FULL_RECT)
+	port_tex.mouse_filter = MOUSE_FILTER_IGNORE
+	_hero_portrait_rect.add_child(port_tex)
 
 	var port_label := Label.new()
 	port_label.name = "PortraitGlyph"
@@ -412,7 +431,7 @@ func _build_hero_panel() -> Control:
 	port_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	port_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	port_label.add_theme_font_size_override("font_size", 24)
-	port_label.add_theme_color_override("font_color", Color("d4af37"))
+	port_label.add_theme_color_override("font_color", UiKit.GOLD)
 	_hero_portrait_rect.add_child(port_label)
 
 	# 2. 이름, 직업, 체력 및 스트레스 게이지
@@ -514,14 +533,15 @@ func _build_hero_panel() -> Control:
 		btn.add_theme_font_size_override("font_size", 11)
 
 		var btn_sb := StyleBoxFlat.new()
-		btn_sb.bg_color = Color("1e1915")
-		btn_sb.border_color = def["color"]
-		btn_sb.set_border_width_all(2)
+		btn_sb.bg_color = Color("1a1612")
+		btn_sb.border_color = Color("4c3f30")
+		btn_sb.set_border_width_all(1)
 		btn_sb.set_corner_radius_all(3)
 		btn.add_theme_stylebox_override("normal", btn_sb)
 
 		var hover_sb := btn_sb.duplicate()
-		hover_sb.bg_color = Color("2d251f")
+		hover_sb.bg_color = Color("28211a")
+		hover_sb.border_color = UiKit.GOLD
 		btn.add_theme_stylebox_override("hover", hover_sb)
 
 		btn.pressed.connect(def["fn"])
@@ -578,15 +598,15 @@ func _build_hero_panel() -> Control:
 	var wpn_badge := PanelContainer.new()
 	wpn_badge.custom_minimum_size = Vector2(85, 30)
 	var wpn_sb := StyleBoxFlat.new()
-	wpn_sb.bg_color = Color("1a1612")
-	wpn_sb.border_color = Color("c79c38")
+	wpn_sb.bg_color = Color("181410")
+	wpn_sb.border_color = Color("4c3f30")
 	wpn_sb.set_border_width_all(1)
 	wpn_badge.add_theme_stylebox_override("panel", wpn_sb)
 	var wpn_lbl := Label.new()
 	wpn_lbl.text = "⚔ 무기 Lv.1"
 	wpn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	wpn_lbl.add_theme_font_size_override("font_size", 10)
-	wpn_lbl.add_theme_color_override("font_color", Color("f0e2b6"))
+	wpn_lbl.add_theme_color_override("font_color", UiKit.TEXT)
 	wpn_badge.add_child(wpn_lbl)
 	_gear_labels["weapon"] = wpn_lbl
 	gear_box.add_child(wpn_badge)
@@ -594,15 +614,15 @@ func _build_hero_panel() -> Control:
 	var arm_badge := PanelContainer.new()
 	arm_badge.custom_minimum_size = Vector2(85, 30)
 	var arm_sb := StyleBoxFlat.new()
-	arm_sb.bg_color = Color("1a1612")
-	arm_sb.border_color = Color("4a78a6")
+	arm_sb.bg_color = Color("181410")
+	arm_sb.border_color = Color("4c3f30")
 	arm_sb.set_border_width_all(1)
 	arm_badge.add_theme_stylebox_override("panel", arm_sb)
 	var arm_lbl := Label.new()
 	arm_lbl.text = "🛡 방어구 Lv.1"
 	arm_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	arm_lbl.add_theme_font_size_override("font_size", 10)
-	arm_lbl.add_theme_color_override("font_color", Color("b8d0e8"))
+	arm_lbl.add_theme_color_override("font_color", UiKit.TEXT)
 	arm_badge.add_child(arm_lbl)
 	_gear_labels["armor"] = arm_lbl
 	gear_box.add_child(arm_badge)
@@ -732,42 +752,52 @@ func _build_darkest_minimap() -> Control:
 	map_center.set_anchors_preset(PRESET_FULL_RECT)
 	map_root.add_child(map_center)
 
-	var layout := HBoxContainer.new()
-	layout.add_theme_constant_override("separation", 0)
-	layout.alignment = BoxContainer.ALIGNMENT_CENTER
-	map_center.add_child(layout)
-
-	# 방 구성: [방 1(탐험 완료: 체크)] --복도-- [방 2(현재 전투: 횃불)] --복도-- [방 3(보물/미탐험)] --복도-- [방 4(보스/미탐험)]
-	# 1. 방 1 (입구/탐험 완료)
-	layout.add_child(_create_room_node(false, true, "✔", Color("c79c38")))
-
-	# 복도 1-2 (통과 완료)
-	layout.add_child(_create_corridor_node(true))
-
-	# 2. 방 2 (현재 전투 구역 - 타오르는 횃불 표시)
-	layout.add_child(_create_room_node(true, false, "🔥", Color("ff7722")))
-
-	# 복도 2-3 (미탐험)
-	layout.add_child(_create_corridor_node(false))
-
-	# 3. 방 3 (미탐험 보물방)
-	layout.add_child(_create_room_node(false, false, "📦", Color("5c5142")))
-
-	# 복도 3-4 (미탐험)
-	layout.add_child(_create_corridor_node(false))
-
-	# 4. 방 4 (미탐험 보스/심연)
-	layout.add_child(_create_room_node(false, false, "☠", Color("5c5142")))
+	_minimap_layout = HBoxContainer.new()
+	_minimap_layout.add_theme_constant_override("separation", 0)
+	_minimap_layout.alignment = BoxContainer.ALIGNMENT_CENTER
+	map_center.add_child(_minimap_layout)
 
 	# 미니맵 좌측 하단 구역 텍스트
-	var area_lbl := Label.new()
-	area_lbl.position = Vector2(10, 140)
-	area_lbl.text = "현재 구역: 어둠의 균열 제 1 회랑"
-	area_lbl.add_theme_font_size_override("font_size", 10)
-	area_lbl.add_theme_color_override("font_color", Color("8a7b68"))
-	map_root.add_child(area_lbl)
+	_minimap_area_label = Label.new()
+	_minimap_area_label.position = Vector2(10, 140)
+	_minimap_area_label.add_theme_font_size_override("font_size", 10)
+	_minimap_area_label.add_theme_color_override("font_color", Color("9a8b76"))
+	map_root.add_child(_minimap_area_label)
 
+	_refresh_minimap()
 	return map_root
+
+
+## 현재 진행 단계(_current_stage: 1~3)에 맞춰 미니맵의 방·복도 상태와 구역명을 즉시 다시 그립니다.
+func _refresh_minimap() -> void:
+	if _minimap_layout == null:
+		return
+	for c in _minimap_layout.get_children():
+		_minimap_layout.remove_child(c)
+		c.queue_free()
+
+	# 0. 입구 (항상 돌파 완료)
+	_minimap_layout.add_child(_create_room_node(false, true, "✔", Color("c8a24a")))
+	_minimap_layout.add_child(_create_corridor_node(true))
+
+	# 1~3. 제 1/2/3 회랑 노드 동적 구성
+	for st in range(1, MAX_STAGE + 1):
+		var is_cur := (st == _current_stage) and not _finished
+		var is_cleared := (st < _current_stage) or (_finished and st <= _current_stage)
+		var icon := "⚔" if st < MAX_STAGE else "☠"
+		var border_col := Color("5c5142")
+		if is_cleared:
+			icon = "✔"
+			border_col = Color("c8a24a")
+		elif is_cur:
+			icon = "🔥" if st < MAX_STAGE else "☠"
+			border_col = Color("e07b39") if st < MAX_STAGE else Color("c84a42")
+		_minimap_layout.add_child(_create_room_node(is_cur, is_cleared, icon, border_col))
+		if st < MAX_STAGE:
+			_minimap_layout.add_child(_create_corridor_node(_current_stage > st))
+
+	if _minimap_area_label != null:
+		_minimap_area_label.text = "현재 구역: 어둠의 균열 제 %d 회랑 (%d / %d 단계)" % [_current_stage, _current_stage, MAX_STAGE]
 
 
 ## 미니맵 방(Room) 노드를 생성합니다.
@@ -837,7 +867,19 @@ func _spawn_units() -> void:
 		unit.clicked.connect(_on_unit_clicked)
 		_party_units.append(unit)
 
-	# 2. 적 몬스터 배치 (우측 1열 ~ 4/5열)
+	# 2. 적 몬스터 배치 (현재 회랑)
+	_spawn_stage_monsters()
+
+
+## 현재 회랑 데이터(_monsters_data)를 바탕으로 적 몬스터 유닛을 스테이지에 소환합니다.
+func _spawn_stage_monsters() -> void:
+	for old_mon in _monster_units:
+		if is_instance_valid(old_mon):
+			if old_mon.get_parent() == _stage_content:
+				_stage_content.remove_child(old_mon)
+			old_mon.queue_free()
+	_monster_units.clear()
+
 	var monster_count := _monsters_data.size()
 	for i in monster_count:
 		var mon: Dictionary = _monsters_data[i]
@@ -855,6 +897,8 @@ func _spawn_units() -> void:
 		_monster_units.append(unit)
 
 	_select_default_target()
+	if _quest_progress_label:
+		_quest_progress_label.text = "구역: %d/%d · 처치: 0 / %d" % [_current_stage, MAX_STAGE, _monsters_data.size()]
 
 
 ## 살아있는 첫 번째 적 몬스터를 기본 타겟으로 설정합니다.
@@ -887,7 +931,7 @@ func _start_next_round() -> void:
 	if _finished or not _fsm.go(BattleState.ROUND_START):
 		return
 	_round += 1
-	_round_label.text = "제 %d 라운드" % _round
+	_round_label.text = "제 %d 구역 · %d 라운드" % [_current_stage, _round]
 	_btn_retreat.disabled = _round < 1
 
 	# 라운드 경과에 따른 횃불 광원 감소 (긴장감 부여)
@@ -928,12 +972,17 @@ func _run_round_sequence() -> void:
 			_start_next_round()
 
 
-## 다음 행동할 아군 유닛을 반환합니다.
+## 다음 행동할 아군 유닛을 속도(SPD) 우선순위에 따라 반환합니다.
 func _get_next_alive_ally():
+	var best = null
+	var best_spd := -999
 	for unit in _party_units:
 		if not unit.is_dead and not unit.get_meta("acted", false):
-			return unit
-	return null
+			var spd: int = unit.merc_data.get_spd() if unit.merc_data != null else 0
+			if best == null or spd > best_spd:
+				best = unit
+				best_spd = spd
+	return best
 
 
 ## 라운드 플래그 초기화
@@ -969,6 +1018,7 @@ func _on_defend_pressed() -> void:
 
 	_add_log("🛡 %s 이(가) 방어 태세를 취하며 숨을 고른다. (스트레스 -10)" % actor.unit_name)
 	actor.heal_stress(10)
+	actor.play_defend_effect()
 
 	# 방어 자세 펄스 애니메이션
 	var tween := create_tween()
@@ -1011,22 +1061,10 @@ func _on_focus_pressed() -> void:
 		_stage_content.add_child(ft)
 	ft.popup("+%d HP" % heal_amt, Color("2ecc71"), actor.global_position + Vector2(actor.size.x * 0.5, 0), false)
 
-	# pixelfx 도트 치유 이펙트 (58프레임) 스폰
-	var heal_path := "res://assets/sprites/vfx/heal/holy/heal/heal.png"
-	if ResourceLoader.exists(heal_path):
-		var h_tex = load(heal_path)
-		if h_tex != null:
-			var h_sp := Sprite2D.new()
-			h_sp.texture = h_tex
-			h_sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			h_sp.hframes = 58
-			h_sp.frame = 0
-			h_sp.position = Vector2(actor.size.x * 0.5, actor.size.y * 0.55)
-			h_sp.scale = Vector2(1.2, 1.2)
-			actor.add_child(h_sp)
-			var h_tw := create_tween()
-			h_tw.tween_property(h_sp, "frame", 57, 0.6)
-			h_tw.tween_callback(h_sp.queue_free)
+	# 절제된 치유 펄스 연출 (어색한 pixelfx 시트 대신 영웅 본체 에메랄드 글로우 적용)
+	var heal_tw := create_tween()
+	heal_tw.tween_property(actor, "modulate", Color(0.85, 1.28, 0.92), 0.22)
+	heal_tw.tween_property(actor, "modulate", Color.WHITE, 0.28)
 
 	await get_tree().create_timer(0.55).timeout
 	actor.set_active_turn(false)
@@ -1067,15 +1105,15 @@ func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> vo
 	var actor = _current_actor
 	actor.set_meta("acted", true)
 
-	var eval := _dmg_pipeline.evaluate({
-		"rng": GameState.rng(),
-		"base_attack": int(actor.attack_power),
-		"spread": 6,
-		"is_ally": true,
-		"party_bonus": GameState.party_attack_bonus(),
-		"multiplier": multiplier,
-		"is_skill": is_skill,
-	})
+	var eval := _dmg_pipeline.resolve_attack(
+		actor.merc_data,
+		null,
+		int(actor.attack_power),
+		multiplier,
+		is_skill,
+		GameState.party_attack_bonus(),
+		GameState.rng()
+	)
 	var final_dmg: int = int(eval.get("damage", 1))
 	var is_crit: bool = eval.get("is_crit", false)
 
@@ -1084,16 +1122,11 @@ func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> vo
 		actor.unit_name, skill_text, target.unit_name, final_dmg, " (치명타!)" if is_crit else ""
 	])
 
-	# 직업별 공격 모션 및 타격 이펙트 (전사-베기, 마법사-번개, 총술사-총, 궁수-화살)
+	# 직업별 공격 모션 및 타격 이펙트 타입을 JobDb 단일 카탈로그에서 조회
 	var cat: String = String(actor.category_job)
 	if cat.is_empty() and actor.merc_data != null:
 		cat = actor.merc_data.category
-	var atk_type: String = "slash"
-	match cat:
-		"마법사": atk_type = "lightning"
-		"레인저", "도적": atk_type = "gun" if is_skill else "arrow"
-		"성직자": atk_type = "lightning"
-		_: atk_type = "slash"
+	var atk_type: String = JobDb.attack_type_for(cat, is_skill)
 
 	actor.play_attack_by_class(target, func():
 		target.play_take_damage(final_dmg, is_crit, atk_type)
@@ -1148,14 +1181,15 @@ func _run_monsters_turn() -> void:
 
 		var rng := GameState.rng()
 		var target = alive_allies[rng.randi_range(0, alive_allies.size() - 1)]
-		var eval := _dmg_pipeline.evaluate({
-			"rng": rng,
-			"base_attack": int(mon.attack_power),
-			"spread": 5,
-			"is_ally": false,
-			"multiplier": 1.0,
-			"is_skill": false,
-		})
+		var eval := _dmg_pipeline.resolve_attack(
+			null,
+			target.merc_data,
+			int(mon.attack_power),
+			1.0,
+			false,
+			0,
+			rng
+		)
 		var dmg: int = int(eval.get("damage", 1))
 		var is_crit: bool = eval.get("is_crit", false)
 
@@ -1205,10 +1239,13 @@ func _check_battle_end() -> bool:
 			alive_monster_count += 1
 
 	if _quest_progress_label:
-		_quest_progress_label.text = "처치: %d / %d" % [_monsters_data.size() - alive_monster_count, _monsters_data.size()]
+		_quest_progress_label.text = "구역: %d/%d · 처치: %d / %d" % [_current_stage, MAX_STAGE, _monsters_data.size() - alive_monster_count, _monsters_data.size()]
 
 	if alive_monster_count == 0:
-		_add_log("★ 모든 몬스터를 처치했다! 던전 정복!")
+		if _current_stage < MAX_STAGE:
+			advance_stage_now()
+			return true
+		_add_log("★ 어둠의 균열 전 구역(%d/%d) 정복 완료!" % [MAX_STAGE, MAX_STAGE])
 		_end("clear")
 		return true
 
@@ -1218,6 +1255,38 @@ func _check_battle_end() -> bool:
 		return true
 
 	return false
+
+
+## 미니맵의 지정 구역(1~3회랑)에 맞는 몬스터 무리 생성을 GameState 도메인 규칙에 위임합니다.
+func _generate_stage_monsters(stage: int) -> Array[Dictionary]:
+	return GameState.generate_stage_monsters(stage, MAX_STAGE)
+
+
+## 현재 회랑 처치 후 다음 회랑으로 전진하고 미니맵 및 다음 적군 웨이브를 갱신합니다.
+func advance_stage_now() -> void:
+	_current_stage += 1
+	_auto_play = false
+	_is_busy = false
+	_base_gold += 60 * _current_stage
+
+	# 다음 구역 이동 시 생존 아군 짧은 숨고르기 (HP 15% 회복, 스트레스 6 진정)
+	for unit in _party_units:
+		if is_instance_valid(unit) and not unit.is_dead:
+			var rec := maxi(4, int(round(float(unit.max_hp) * 0.15)))
+			unit.current_hp = mini(unit.max_hp, unit.current_hp + rec)
+			if unit.merc_data != null:
+				unit.merc_data.hp = unit.current_hp
+			unit.heal_stress(6)
+			unit.set_active_turn(false)
+			unit._update_view()
+
+	_monsters_data = _generate_stage_monsters(_current_stage)
+	_spawn_stage_monsters()
+	_refresh_minimap()
+	_switch_right_tab(true)
+	_reset_round_flags()
+	_add_log("▶ 제 %d 회랑으로 전진! (보상 +%dG, 파티 정비 완료)" % [_current_stage, 60 * _current_stage])
+	_start_next_round()
 
 
 ## 영웅 정보 패널 UI (초상화, 이름/직업, HP, 스트레스, 6대 스탯, 대장간 장비)를 갱신합니다.
@@ -1245,15 +1314,18 @@ func _update_hero_panel(unit) -> void:
 	_hero_stress_bar.value = unit.current_stress
 	_hero_stress_label.text = "%d / 100" % unit.current_stress
 
-	# 초상화 아이콘
+	# 초상화 도트 텍스처 및 폴백 글리프 갱신 (JobDb & UiKit 공용 캐시)
+	var cat: String = unit.merc_data.category if unit.merc_data != null else "전사"
+	var vs := JobDb.visual_spec(cat)
+	var ptex: TextureRect = _hero_portrait_rect.find_child("PortraitTex", true, false)
 	var glyph: Label = _hero_portrait_rect.find_child("PortraitGlyph", true, false)
+	var loaded_tex: Texture2D = UiKit.get_cached_texture(str(vs.get("portrait", "")))
+	if ptex:
+		ptex.texture = loaded_tex
+		ptex.visible = (loaded_tex != null)
 	if glyph:
-		var cat: String = unit.merc_data.category if unit.merc_data != null else "전사"
-		match cat:
-			"마법사": glyph.text = "🔮"
-			"레인저": glyph.text = "🏹"
-			"성직자": glyph.text = "✝"
-			_: glyph.text = "⚔"
+		glyph.visible = (loaded_tex == null)
+		glyph.text = str(vs.get("glyph", "⚔"))
 
 	# 6대 스탯 갱신 (ACC, CRIT, DMG, DODGE, PROT, SPD)
 	var m: Mercenary = unit.merc_data
@@ -1333,6 +1405,7 @@ func trigger_screen_shake(amount: float = 6.0, duration: float = 0.22) -> void:
 func _end(outcome: String) -> void:
 	if _finished or not _fsm.go(BattleState.FINISHED):
 		return
+	_refresh_minimap()
 	_btn_retreat.disabled = true
 	_set_controls_enabled(false)
 

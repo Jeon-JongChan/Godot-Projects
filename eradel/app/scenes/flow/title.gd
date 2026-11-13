@@ -40,12 +40,13 @@ func _ready() -> void:
 	art.mouse_filter = MOUSE_FILTER_IGNORE
 	add_child(art)
 
-	# 어두운 비네팅 오버레이
+	# 어두운 비네팅 오버레이 + 고딕 셰이더 후처리
 	var overlay := ColorRect.new()
 	overlay.color = Color(0.05, 0.04, 0.03, 0.45)
 	overlay.set_anchors_preset(PRESET_FULL_RECT)
 	overlay.mouse_filter = MOUSE_FILTER_IGNORE
 	add_child(overlay)
+	UiKit.attach_gothic_atmosphere(self, 0.48, 0.20, 0.0)
 
 	# 중앙 컨테이너 (스케치 그림 1 세로 정렬)
 	var center := CenterContainer.new()
