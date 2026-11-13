@@ -1,4 +1,4 @@
-﻿---
+---
 name: asset-audit
 description: "Audit assets against naming conventions, file size budgets, format standards. Finds orphaned assets, missing references."
 argument-hint: "[category|all]"

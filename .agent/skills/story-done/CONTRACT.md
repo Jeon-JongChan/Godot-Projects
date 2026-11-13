@@ -1,4 +1,4 @@
-﻿# /story-done ??Handoff Contract
+# /story-done ??Handoff Contract
 
 ## Role in Pipeline
 Closes the implementation loop for a single story by verifying every acceptance criterion, checking test evidence, detecting GDD/ADR deviations, and ??after user approval ??updating the story file to `Status: Complete` with a `## Completion Notes` section.

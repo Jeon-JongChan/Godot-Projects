@@ -1,4 +1,4 @@
-﻿# Director Gates ??Shared Review Pattern
+# Director Gates ??Shared Review Pattern
 
 Index of all director and lead review gates. Skills reference gate IDs from this
 index instead of embedding prompts inline ??eliminating drift when prompts need

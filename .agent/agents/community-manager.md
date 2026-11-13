@@ -1,4 +1,4 @@
-﻿---
+---
 name: community-manager
 description: "Player-facing communication ??patch notes, social posts, community updates, feedback collection, player bug triage, crisis communication."
 tools: Read, Glob, Grep, Write, Edit

@@ -1,4 +1,4 @@
-﻿# Agent Coordination Rules
+# Agent Coordination Rules
 
 1. **Vertical Delegation**: Leadership agents delegate to department leads, who
    delegate to specialists. Never skip a tier for complex decisions.

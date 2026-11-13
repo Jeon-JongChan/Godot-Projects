@@ -1,4 +1,4 @@
-﻿# Coding Standards
+# Coding Standards
 
 - All game code must include doc comments on public APIs
 - Architecture decisions are recorded as ADRs in `docs/architecture/`. **How many is

@@ -1,4 +1,4 @@
-﻿# Setup Requirements
+# Setup Requirements
 
 This template requires a few tools to be installed for full functionality.
 Hooks carry on without an optional tool and lose only the check it powers. The

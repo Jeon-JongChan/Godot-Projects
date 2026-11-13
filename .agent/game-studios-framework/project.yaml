@@ -1,4 +1,4 @@
-﻿# CCGS project configuration ??single source of truth for project settings.
+# CCGS project configuration ??single source of truth for project settings.
 # See .agent/docs/effects-map.md for full schema.
 
 schema_version: 1

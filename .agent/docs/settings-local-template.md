@@ -1,4 +1,4 @@
-﻿# settings.local.json Template
+# settings.local.json Template
 
 Create `.agent/settings.local.json` for personal overrides that should NOT
 be committed to version control. The shipped `.gitignore` already ignores it.

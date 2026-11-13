@@ -1,4 +1,4 @@
-﻿# Workflow Modes ??Shared Skill Pattern
+# Workflow Modes ??Shared Skill Pattern
 
 This document defines `modes.workflow` and `workflow_overrides` ??how much
 design documentation is REQUIRED before code can begin ??for every skill that

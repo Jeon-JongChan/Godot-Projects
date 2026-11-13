@@ -1,4 +1,4 @@
-﻿---
+---
 name: ux-design
 description: "Section-by-section UX spec authoring for a screen, flow or HUD. Reads the player journey to provide context; also project-wide accessibility."
 argument-hint: "[screen/flow name] or 'hud' or 'patterns' or 'accessibility'"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Agent, Bash(bash 
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow,docs.density`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,docs.density` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. No block ??defaults in
 `.agent/docs/config-resolution.md`.

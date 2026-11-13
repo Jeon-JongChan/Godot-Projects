@@ -1,4 +1,4 @@
-﻿# Active Hooks
+# Active Hooks
 
 Hooks are configured in `.agent/settings.json` and fire automatically:
 

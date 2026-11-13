@@ -7,12 +7,12 @@
 # Replaces the arithmetic a sprint or milestone planning step would otherwise
 # do by hand.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # `progress` prints which /sprint-status band its numbers fall in, as the
 # rule row that matched; On Track, At Risk or Behind is still the skill's to
 # say. Velocity is not computed: no skill defines it yet.
 #
-# Usage: bash .claude/scripts/plan-math.sh <command> [args] [--root DIR] [--today YYYY-MM-DD]
+# Usage: bash .agent/scripts/plan-math.sh <command> [args] [--root DIR] [--today YYYY-MM-DD]
 #   days START END          whole days from START to END (negative if END is earlier)
 #   pct PART WHOLE [--places N]
 #                           PART / WHOLE * 100, rounded half up to N places

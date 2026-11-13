@@ -1,4 +1,4 @@
-﻿# CLAUDE.local.md Template
+# CLAUDE.local.md Template
 
 Copy this file to the project root as `CLAUDE.local.md` for personal overrides.
 This file is gitignored and will not be committed.

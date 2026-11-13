@@ -1,4 +1,4 @@
-﻿# /gate-check ??Sections 4 and 4b: Assessment and Director Panel
+# /gate-check ??Sections 4 and 4b: Assessment and Director Panel
 
 > Part of `/gate-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

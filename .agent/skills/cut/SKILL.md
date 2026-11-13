@@ -1,4 +1,4 @@
-﻿---
+---
 name: cut
 description: "Proposes cuts and a polish list to finish the game from its brief and what is built; the person picks each cut. A game to sell also gets a release date and a feature freeze. Use when asked what to cut, how to finish or ship it, or for a polish list."
 argument-hint: "[no arguments]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion, Bash(bash "*/.agent/skills/cut
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. No block ??defaults in `.agent/docs/config-resolution.md`.
 

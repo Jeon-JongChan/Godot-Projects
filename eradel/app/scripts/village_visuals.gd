@@ -34,10 +34,12 @@ class VillageTerrainCanvas extends Control:
 			_road_tex = load("res://assets/sprites/textures/village_cobblestone_road.png")
 
 		if _estate_bg_tex != null:
-			# 2500x720 광폭 월드를 좌우 심리스 미러링으로 왜곡 없이 도트풍 배경 렌더링
+			# 2500x720 광폭 월드를 좌우 심리스 미러링으로 렌더링 (gl_compatibility 음수 Rect 폭 컬링 방지용 Transform2D 반전 적용)
 			var half_w := w * 0.5
-			draw_texture_rect(_estate_bg_tex, Rect2(0, 0, half_w, h), false)
-			draw_texture_rect(_estate_bg_tex, Rect2(w, 0, -half_w, h), false)
+			draw_texture_rect(_estate_bg_tex, Rect2(0.0, 0.0, half_w, h), false)
+			draw_set_transform(Vector2(w, 0.0), 0.0, Vector2(-1.0, 1.0))
+			draw_texture_rect(_estate_bg_tex, Rect2(0.0, 0.0, half_w, h), false)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 			# 상단 하늘과 지평선 톤을 어둡게 눌러 건물과 UI 가독성 확보
 			draw_rect(Rect2(0, 0, w, h), Color(0.05, 0.04, 0.06, 0.25))
 		else:
@@ -920,7 +922,7 @@ class HeroPortraitCanvas extends Control:
 
 ## 대장간의 4대 장비(무기, 갑옷, 투구, 장신구)를 고딕 도트 아이콘 텍스처로 그리는 캔버스
 class EquipmentIconCanvas extends Control:
-	var slot_type: String = "weapon" # weapon, armor, helmet, ring
+	var slot_type: String = "weapon" # weapon, armor, helmet, accessory
 	var item_level: int = 1
 	var is_selected: bool = false
 	static var _eq_tex_cache: Dictionary = {}
@@ -932,6 +934,8 @@ class EquipmentIconCanvas extends Control:
 		if _eq_tex_cache.has(stype):
 			return _eq_tex_cache[stype]
 		var path := "res://assets/sprites/ui/icon_%s.png" % stype
+		if not ResourceLoader.exists(path) and stype == "accessory":
+			path = "res://assets/sprites/ui/icon_ring.png"
 		var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
 		_eq_tex_cache[stype] = tex
 		return tex
@@ -1010,7 +1014,7 @@ class EquipmentIconCanvas extends Control:
 				# 투구 상단 금빛 브로우 밴드
 				draw_line(Vector2(cx - 15, cy - 12), Vector2(cx + 15, cy - 12), Color("d4af37"), 2.0)
 
-			"ring":
+			"ring", "accessory":
 				# 신비로운 룬이 각인된 황금 마법 반지
 				draw_circle(Vector2(cx, cy), 18.0, Color("c8982a"))
 				draw_circle(Vector2(cx, cy), 12.0, bg_c)
@@ -1307,7 +1311,7 @@ class BlacksmithInteriorCanvas extends Control:
 				draw_rect(Rect2(h_tip.x - 14, h_tip.y - 12, 28, 24), Color("828d9e"))
 
 			DwarfState.SUCCESS:
-				# 강화 대성공: 양팔을 끼고 고개를 들며 호탕하게 웃는 승리 포즈 + 찬란한 황금 아우라
+				# 강화 성공: 양팔을 끼고 고개를 들며 호탕하게 웃는 승리 포즈 + 찬란한 황금 아우라
 				draw_circle(Vector2(dx, dy - 10), 65.0, Color(0.96, 0.84, 0.32, 0.18 + 0.1 * sin(anim_time * 5.0)))
 				draw_colored_polygon(PackedVector2Array([
 					Vector2(dx - 26, dy - 20), Vector2(dx + 26, dy - 20),

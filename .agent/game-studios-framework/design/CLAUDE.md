@@ -1,4 +1,4 @@
-﻿# Design Directory
+# Design Directory
 
 When authoring or editing files in this directory, follow these standards.
 

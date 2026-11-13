@@ -1,4 +1,4 @@
-﻿# /setup-engine ??Web (a browser game: Vite and TypeScript)
+# /setup-engine ??Web (a browser game: Vite and TypeScript)
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

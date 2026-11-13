@@ -7,12 +7,12 @@
 # Replaces the hand-run parse and tiering of a flakiness review, and the
 # "which tests failed in which runs" counting done from the same logs.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # The tier row (high, moderate, low, below-low, suspected, always-fail) is the
 # rule that matched, printed with its text. Whether to quarantine, what to tell
 # the user and what "confirmed" means stay in the skill.
 #
-# Usage: bash .claude/scripts/flaky-stats.sh [--root DIR] [--format F] [--runs] [--all] [FILE ...]
+# Usage: bash .agent/scripts/flaky-stats.sh [--root DIR] [--format F] [--runs] [--all] [FILE ...]
 #   FILE        one test run per file, in run order (the order of the pattern);
 #               relative to the root. With none, the files under test-results/,
 #               reports/ and Saved/Logs/ named *.xml, *.log or *.txt, sorted by

@@ -52,6 +52,7 @@ var _buildings_layer: Control
 var _building_canvases: Array[VillageVisuals.VillageBuildingCanvas] = []
 var _active_interior_canvas: VillageVisuals.BuildingInteriorCanvas = null
 var _hud_layer: CanvasLayer
+var _modal_layer: CanvasLayer
 var _top_bar_holder: Control
 var _status_Row_holder: HBoxContainer
 var _scroll_track: Panel
@@ -90,9 +91,13 @@ func _ready() -> void:
 	_world_container.add_child(_buildings_layer)
 	_build_village_structures()
 
-	# 4. 상단 HUD 및 하단 스크롤바 레이어
+	# 4. 상단 HUD·하단 스크롤바 레이어(layer=1) 및 건물 대형 모달 전용 상위 레이어(layer=20)
 	_hud_layer = CanvasLayer.new()
+	_hud_layer.layer = 1
 	add_child(_hud_layer)
+	_modal_layer = CanvasLayer.new()
+	_modal_layer.layer = 20
+	add_child(_modal_layer)
 	_build_hud()
 
 	# 5. [옵저버] GameState 시그널 구독 — 상태가 바뀌면 자동으로 HUD 와 건물 배지가 갱신된다
@@ -397,7 +402,9 @@ func _open_large_building_popup(def: Dictionary) -> void:
 
 	_active_modal = Control.new()
 	_active_modal.set_anchors_preset(PRESET_FULL_RECT)
-	_hud_layer.add_child(_active_modal)
+	# HUD 갱신 시에도 슬라이더/상단바가 모달 위로 튀어나오지 않도록 전용 상위 CanvasLayer(layer=20)에 배치
+	var modal_host: Node = _modal_layer if _modal_layer != null else _hud_layer
+	modal_host.add_child(_active_modal)
 
 	# 배경 반투명 딤 오버레이 (바깥 영역 클릭 시 닫기)
 	var dim := ColorRect.new()
@@ -1589,7 +1596,9 @@ func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 			var cur_m: Mercenary = m
 			h_panel.gui_input.connect(func(ev: InputEvent):
 				if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
-					_selected_forge_merc = cur_m
+					if _selected_forge_merc != cur_m:
+						_selected_forge_merc = cur_m
+						_selected_forge_slot = "weapon" # 캐릭터 변경 시 강화부위 기본값 초기화
 					_open_large_building_popup(def)
 			)
 			hero_list.add_child(h_panel)
@@ -1615,7 +1624,7 @@ func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 	forge_holder.add_child(forge_interior)
 	_active_blacksmith_canvas = forge_interior
 
-	# 2-B. 중앙 하단 4칸 장비 슬롯 (WEAPON, ARMOR, HELMET, RING)
+	# 2-B. 중앙 하단 4칸 장비 슬롯 (WEAPON, ARMOR, HELMET, ACCESSORY)
 	var eq_card := UiKit.panel(Color("161318"), UiKit.BORDER2, 8)
 	eq_card.custom_minimum_size = Vector2(0, 110)
 	center_col.add_child(eq_card)
@@ -1629,32 +1638,41 @@ func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 		{"id": "weapon", "label": "WEAPON", "level": target_m.weapon_level if target_m else 1},
 		{"id": "armor", "label": "ARMOR", "level": target_m.armor_level if target_m else 1},
 		{"id": "helmet", "label": "HELMET", "level": target_m.helmet_level if target_m else 1},
-		{"id": "ring", "label": "RING", "level": target_m.ring_level if target_m else 1}
+		{"id": "accessory", "label": "ACCESSORY", "level": target_m.ring_level if target_m else 1}
 	]
 
 	for s_info in slots_data:
 		var sid: String = s_info.id
-		var is_s_sel: bool = (_selected_forge_slot == sid)
+		var is_s_sel: bool = (_selected_forge_slot == sid or (_selected_forge_slot == "ring" and sid == "accessory"))
 		var s_box := VBoxContainer.new()
 		s_box.alignment = BoxContainer.ALIGNMENT_CENTER
+		s_box.custom_minimum_size = Vector2(76, 94)
 		s_box.add_theme_constant_override("separation", 4)
-		s_box.mouse_filter = MOUSE_FILTER_PASS
+		s_box.mouse_filter = MOUSE_FILTER_STOP
+		s_box.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 		# 상단 슬롯 레이블
-		s_box.add_child(UiKit.label(s_info.label, 10, UiKit.GOLD if is_s_sel else UiKit.TEXT2))
+		var top_lbl := UiKit.label(s_info.label, 10, UiKit.GOLD if is_s_sel else UiKit.TEXT2)
+		top_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		top_lbl.mouse_filter = MOUSE_FILTER_IGNORE
+		s_box.add_child(top_lbl)
 
-		# 아이콘 캔버스
+		# 아이콘 캔버스 (내부 마우스 이벤트 무시 -> 부모 슬롯 카드가 이미지 영역 클릭을 직접 수신)
 		var icon_cv := VillageVisuals.EquipmentIconCanvas.new()
 		icon_cv.slot_type = sid
 		icon_cv.item_level = int(s_info.level)
 		icon_cv.is_selected = is_s_sel
 		icon_cv.custom_minimum_size = Vector2(58, 58)
+		icon_cv.mouse_filter = MOUSE_FILTER_IGNORE
 		s_box.add_child(icon_cv)
 
 		# 하단 레벨 레이블
-		s_box.add_child(UiKit.label("+%d강" % int(s_info.level), 11, UiKit.GOLD2 if is_s_sel else UiKit.WHITE))
+		var lv_lbl := UiKit.label("+%d강" % int(s_info.level), 11, UiKit.GOLD2 if is_s_sel else UiKit.WHITE)
+		lv_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lv_lbl.mouse_filter = MOUSE_FILTER_IGNORE
+		s_box.add_child(lv_lbl)
 
-		# 클릭 시 장비 슬롯 전환
+		# 이미지 포함 슬롯 전체 영역 클릭 시 장비 슬롯 전환
 		var clicked_sid: String = sid
 		s_box.gui_input.connect(func(ev: InputEvent):
 			if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
@@ -1692,7 +1710,7 @@ func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 			"helmet":
 				cur_slot_lv = target_m.helmet_level
 				slot_kr_name = "투구"
-			"ring":
+			"ring", "accessory":
 				cur_slot_lv = target_m.ring_level
 				slot_kr_name = "장신구"
 
@@ -1795,12 +1813,12 @@ func _populate_blacksmith_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 						"helmet":
 							target_m.helmet_level += 1
 							target_m.max_hp += 5
-						"ring":
+						"ring", "accessory":
 							target_m.ring_level += 1
 							target_m.attack += 1
 
 					forge_interior.current_state = VillageVisuals.BlacksmithInteriorCanvas.DwarfState.SUCCESS
-					_popup_notice = "🎉 강화 대성공! [%s]의 %s가 +%d강이 되었습니다!" % [target_m.merc_name, slot_kr_name, cur_slot_lv + 1]
+					_popup_notice = "✨ 강화 성공! [%s]의 %s가 +%d강이 되었습니다!" % [target_m.merc_name, slot_kr_name, cur_slot_lv + 1]
 				else:
 					forge_interior.current_state = VillageVisuals.BlacksmithInteriorCanvas.DwarfState.FAIL
 					_popup_notice = "💨 강화 실패... 아쉽게도 이번 제련은 성공하지 못했습니다."
@@ -2567,18 +2585,7 @@ func _build_hud() -> void:
 	_scroll_track.add_theme_stylebox_override("panel", UiKit.style(Color(0.08, 0.07, 0.05, 0.92), Color("b84038"), 8, 2))
 	scroll_root.add_child(_scroll_track)
 
-	# 트랙 위 건물 미니 위치 마커 표시
-	for def in _building_defs:
-		var ratio_x: float = (def.rect.position.x + def.rect.size.x * 0.5) / WORLD_WIDTH
-		var mx: float = ratio_x * _scroll_track_width
-		var dot := ColorRect.new()
-		dot.color = UiKit.RED if def.id == "dungeon_gate" else UiKit.GOLD
-		dot.size = Vector2(4, 12)
-		dot.position = Vector2(mx - 2, (_scroll_track_height - 12) * 0.5)
-		dot.mouse_filter = MOUSE_FILTER_IGNORE
-		_scroll_track.add_child(dot)
-
-	# 노란색 창 1칸 (현재 화면 1280px / 전체 2500px 비율 사각 핸들)
+	# 노란색 창 1칸 (현재 화면 1280px / 전체 2500px 비율 사각 핸들 — 내부 글씨·위치 마커 제거)
 	var thumb_w: float = _scroll_track_width * (VIEWPORT_WIDTH / WORLD_WIDTH)
 	_scroll_thumb = Panel.new()
 	_scroll_thumb.size = Vector2(thumb_w, _scroll_track_height)
@@ -2591,13 +2598,6 @@ func _build_hud() -> void:
 	thumb_sb.set_corner_radius_all(7)
 	_scroll_thumb.add_theme_stylebox_override("panel", thumb_sb)
 	scroll_root.add_child(_scroll_thumb)
-
-	var thumb_lbl := UiKit.label("◀  드래그하여 영지 화면 이동  ▶", 10, Color("ffe888"))
-	thumb_lbl.set_anchors_preset(PRESET_FULL_RECT)
-	thumb_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	thumb_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	thumb_lbl.mouse_filter = MOUSE_FILTER_IGNORE
-	_scroll_thumb.add_child(thumb_lbl)
 
 	_scroll_track.gui_input.connect(func(ev: InputEvent):
 		if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT:

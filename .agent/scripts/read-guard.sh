@@ -5,9 +5,9 @@
 # row; a skill or another tool's hook can call it the same way, because hooks
 # do not run in every tool.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 #
-# Usage: bash .claude/scripts/read-guard.sh [--root DIR] <command> <path> [options]
+# Usage: bash .agent/scripts/read-guard.sh [--root DIR] <command> <path> [options]
 #   check <path> [--bounded yes|no]
 #                what the guard sees for a read of <path> (project-relative):
 #                --bounded yes when the read gives an offset or a limit

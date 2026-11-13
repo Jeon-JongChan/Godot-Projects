@@ -1,4 +1,4 @@
-﻿# /architecture-decision ??Step 5: Generate the ADR
+# /architecture-decision ??Step 5: Generate the ADR
 
 > Part of `/architecture-decision`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

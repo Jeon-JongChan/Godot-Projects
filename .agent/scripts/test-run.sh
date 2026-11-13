@@ -7,12 +7,12 @@
 # Replaces the hand-run test command, `timeout`, exit-code reading and "looks
 # like success and is not" cases.
 #
-# OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/"). The
+# OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/"). The
 # `rule` row says which row of the ladder the exit code and output fall on, in
 # plain words; PASS, FAIL, NOT ASSESSED and "PASS WITH WARNINGS" stay with
 # /smoke-check, which also decides what an unmatched exit code means.
 #
-# Usage: bash .claude/scripts/test-run.sh <engine> [options]
+# Usage: bash .agent/scripts/test-run.sh <engine> [options]
 #   <engine>            godot, unity, unreal or web (any case)
 #   --cmd COMMAND       the test command to run, instead of project.yaml's
 #                       commands.test or the engine's default
@@ -264,7 +264,7 @@ ABS=$(pwd -W 2>/dev/null || pwd)
 RESULTS=""; BUILD=""; CMD=""; CMD_SRC="default"; PRE_FAIL=""; PRE_ID=""; PRE_WHY=""
 case "$ENGINE" in
   web)
-    # The engine table's test command (.claude/engines/engines.tsv).
+    # The engine table's test command (.agent/engines/engines.tsv).
     if [ -f "$HERE/engine-row.awk" ] && [ -f "$HERE/../engines/engines.tsv" ]; then
       CMD=$(awk -F'\t' -v engine=web -v col=test -f "$HERE/engine-row.awk" "$HERE/../engines/engines.tsv")
     fi

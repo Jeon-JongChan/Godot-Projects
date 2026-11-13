@@ -4,10 +4,10 @@
 # it asks the network for, what is missing, and what cannot be read (minified or bundled code).
 # It reads only; it writes nothing.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/"). Which Features
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/"). Which Features
 # a game has, and what to call it, is the skill's reading of the code these rows point at.
 #
-# Usage: bash .claude/scripts/game-read.sh <file or folder> [--root DIR]
+# Usage: bash .agent/scripts/game-read.sh <file or folder> [--root DIR]
 #   <file>       one .html file; <folder>: the folder with index.html at its top
 #   --root DIR   the project, for a relative path; defaults to the repo this script is in
 #   -h, --help   this text

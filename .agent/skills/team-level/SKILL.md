@@ -1,4 +1,4 @@
-﻿---
+---
 name: team-level
 description: "Orchestrate the level team ??level-designer, narrative-director, world-builder, art-director, systems-designer, qa-tester ??for complete area creation."
 argument-hint: "[level name or area to design] [--review full|lean|solo]"
@@ -26,7 +26,7 @@ in `autonomous` mode it runs end to end, recording each step outcome via
 
 ## Phase 0: Resolve Config
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,team.size`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,team.size` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
 

@@ -1,4 +1,4 @@
-﻿---
+---
 name: test-setup
 description: "Sets up the test framework and CI: tests/ directory, engine runner, GitHub Actions workflow. Use once, before the first sprint."
 argument-hint: "[force]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Bash(grep -q 'com.unity.test-framework' 
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow,qa.level`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,qa.level` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every question and
 every file write follows `.agent/docs/automation-modes.md`

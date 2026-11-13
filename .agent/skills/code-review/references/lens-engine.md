@@ -1,4 +1,4 @@
-﻿# Lens: engine review by file type (Phase 7)
+# Lens: engine review by file type (Phase 7)
 
 What the engine specialists checked, one block per file type. Use the blocks for
 the file types under review and the configured specialists only: a specialist

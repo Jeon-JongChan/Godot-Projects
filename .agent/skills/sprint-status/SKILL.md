@@ -1,4 +1,4 @@
-﻿---
+---
 name: sprint-status
 description: "Fast, concise sprint snapshot ??burndown and emerging risks for situational awareness. 'How is the sprint going?'"
 argument-hint: "[sprint-number or blank for current]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash(bash "*/.agent/skills/sprint-status/../../
 model: haiku
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys story_granularity,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys story_granularity,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 
 
@@ -46,7 +46,7 @@ at `balanced` (`rigor: standard`), **AC-sized** at `fine`.
        or `Not Started` story ??in build order), then `BLOCKED`, `OTHER`,
        `NO_STATUS` and the `COMPLETE` count:
 
-!`bash "${CLAUDE_SKILL_DIR}/../../scripts/story-status.sh"`
+> **Live Story Status:** Run `bash .agent/scripts/story-status.sh` (via Git Bash on Windows) to list story statuses.
 
     2. Print, in under 15 lines: `Build order: [N] of [M] stories complete`
        from the `COMPLETE` line (count only `Complete` and `Done` stories ??       `In Review` is not complete), then **Next**: the story on the first

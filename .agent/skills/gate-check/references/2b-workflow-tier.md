@@ -1,4 +1,4 @@
-﻿# /gate-check ??Section 2b: Workflow Tier Adjustment
+# /gate-check ??Section 2b: Workflow Tier Adjustment
 
 > Part of `/gate-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

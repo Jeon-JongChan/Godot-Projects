@@ -1,4 +1,4 @@
-﻿# [System Name]
+# [System Name]
 
 > Authoring guidance: .agent/docs/templates/guidance/game-design-document-guide.md (load per-section as you author ??do not read entirely).
 

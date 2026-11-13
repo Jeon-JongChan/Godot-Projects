@@ -1,4 +1,4 @@
-﻿# /design-system ??Phase 4: Section-by-Section Design
+# /design-system ??Phase 4: Section-by-Section Design
 
 > Part of `/design-system`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

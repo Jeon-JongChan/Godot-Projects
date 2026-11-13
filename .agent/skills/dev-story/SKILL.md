@@ -1,14 +1,13 @@
-﻿---
+---
 name: dev-story
 description: "Implements one story in code with tests, following its ADRs. Use when the user says to build, implement or start working on a story. Not for checking readiness beforehand or closing the story after."
 argument-hint: "[story-path]"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.agent/skills/dev-story/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/story-facts.sh *), Bash(bash .agent/scripts/adr-status.sh *), Bash(bash .agent/scripts/md-section.sh *), Bash(bash .agent/scripts/session-state.sh *), Bash(bash .agent/scripts/review-receipts.sh hash *), Bash(godot *), Bash(mkdir -p production/qa/evidence/*), Bash(npm run smoke), Bash(npm run build:single), Bash(bash .agent/scripts/page-shot.sh *), Bash(bash .agent/scripts/one-shot-grow.sh replay *), Bash(bash .agent/scripts/one-shot-grow.sh accept *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow,qa.level,gate_level,engine_values,specialists,perf_budgets,system_overrides`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,qa.level,gate_level,engine_values,specialists,perf_budgets,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. No block ??defaults in
 `.agent/docs/config-resolution.md`.

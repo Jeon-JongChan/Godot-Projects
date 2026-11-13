@@ -1,4 +1,4 @@
-﻿# Automation Modes ??Shared Skill Pattern
+# Automation Modes ??Shared Skill Pattern
 
 This document defines the standard `modes.automation` pattern for every skill
 that uses `AskUserQuestion` or writes files. Skills reference this document

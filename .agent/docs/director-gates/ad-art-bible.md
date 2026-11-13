@@ -1,4 +1,4 @@
-﻿> Gate definition. The spawning skill passes this file's path to the director agent; the AGENT reads it ??the parent session should not.
+> Gate definition. The spawning skill passes this file's path to the director agent; the AGENT reads it ??the parent session should not.
 
 # AD-ART-BIBLE ??Art Bible Sign-Off
 

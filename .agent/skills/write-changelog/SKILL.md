@@ -1,4 +1,4 @@
-﻿---
+---
 name: write-changelog
 description: "Writes a changelog from git commits and sprint data. Use for an internal or player-facing one."
 argument-hint: "[version|sprint-number]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Bash(bash "*/.agent/skills/write-c
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every question and
 every file write follows `.agent/docs/automation-modes.md`
@@ -20,11 +20,11 @@ every file write follows `.agent/docs/automation-modes.md`
 
 Recent commits:
 
-!`git log --oneline -30 2>/dev/null || true`
+Run `git log --oneline -30` to inspect recent commits.
 
 Recent tags (newest first):
 
-!`git tag --list --sort=-v:refname 2>/dev/null | head -5`
+Run `git tag --list --sort=-v:refname` (top 5) to inspect recent tags.
 
 ## Provenance check ??before trusting the history above
 

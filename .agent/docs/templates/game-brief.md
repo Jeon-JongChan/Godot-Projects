@@ -1,4 +1,4 @@
-﻿# Game Brief: [Working Title]
+# Game Brief: [Working Title]
 
 <!--
 THE ONE-PAGE BRIEF. At the `minimal` workflow tier this is the ENTIRE design doc ??it replaces the full concept doc, systems decomposition, and per-system GDDs. It is

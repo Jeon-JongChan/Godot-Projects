@@ -1,4 +1,4 @@
-﻿---
+---
 paths:
   - ".agent/agent-memory/**"
 ---

@@ -1,4 +1,4 @@
-﻿---
+---
 name: project-stage-detect
 description: "Analyze project state, detect stage, identify gaps, recommend next steps. 'Where are we in development?'"
 argument-hint: "[optional: role filter like 'programmer' or 'designer']"
@@ -21,7 +21,7 @@ of artifacts, and gaps that need attention. It's especially useful when:
 
 ## Workflow
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow,automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`

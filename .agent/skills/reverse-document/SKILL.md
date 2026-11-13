@@ -1,4 +1,4 @@
-﻿---
+---
 name: reverse-document
 description: "Writes missing design or architecture docs, or a game's brief, from code. Use when code or prototypes have no docs."
 argument-hint: "<type> <path> (e.g., 'design src/gameplay/combat', 'architecture Assets/Scripts/Core' or 'brief prototypes/my-game')"
@@ -41,7 +41,7 @@ appropriate design or architecture documentation. Use this when:
 - `Source/MyGame/Private/AI/` ??A module folder (Unreal)
 - `prototypes/stealth-mech/` ??Prototype directory
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow,system_overrides,automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow,system_overrides,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every question and
 every file write follows `.agent/docs/automation-modes.md`

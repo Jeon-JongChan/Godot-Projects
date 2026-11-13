@@ -1,4 +1,4 @@
-﻿---
+---
 name: brainstorm
 description: "Guides the user through finding and choosing a game concept. Use when the user wants game ideas, a new concept, a game jam idea, or to explore other directions, including dropping the current idea and starting over."
 argument-hint: "[genre or theme hint, or 'open'] [--review full|lean|solo]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, WebSearch, Agent, AskUserQuestion, Bash(
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,docs.density,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,docs.density,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above; use as-is. No block ??the defaults in `.agent/docs/config-resolution.md`
 (`workflow: minimal`, `review_mode: solo`, `automation: collaborative`, `docs.density: terse`), and

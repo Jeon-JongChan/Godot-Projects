@@ -1,4 +1,4 @@
-﻿---
+---
 name: project-settings
 description: "Shows or changes a project setting and where its value comes from. Use to check or set one."
 argument-hint: "[key | key=value | --local key=value]"
@@ -49,7 +49,7 @@ All four subcommands need `yaml-helper.sh`. Run each helper call as its own
 plain command:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" <helper call>
+bash ".agent/hooks/yaml-helper.sh" <helper call>
 ```
 
 `<helper call>` is the function each phase below names, for example

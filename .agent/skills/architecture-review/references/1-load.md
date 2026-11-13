@@ -1,4 +1,4 @@
-﻿# /architecture-review ??Phase 1: Load Everything
+# /architecture-review ??Phase 1: Load Everything
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

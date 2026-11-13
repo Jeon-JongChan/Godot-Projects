@@ -1,4 +1,4 @@
-﻿# Test Evidence: [Story Title]
+# Test Evidence: [Story Title]
 
 > **Story**: `[path to story file]`
 > **Story Type**: [Visual/Feel | UI]

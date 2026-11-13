@@ -3,8 +3,7 @@ name: settings
 description: "Old name of /project-settings. Prints one line, then runs /project-settings."
 argument-hint: "[key | key=value | --local key=value]"
 user-invocable: true
-disable-model-invocation: true
-allowed-tools: Skill(project-settings)
+allowed-tools: Read, Skill(project-settings)
 model: sonnet
 ---
 
@@ -17,7 +16,7 @@ Several AI tools keep `/settings` for a command of their own, so this skill is n
 
    /settings is now /project-settings. Running /project-settings.
 
-2. Run the `project-settings` skill with the Skill tool, passing these arguments unchanged
+2. Read `.agent/skills/project-settings/SKILL.md` and execute the `project-settings` skill workflow directly (or via the Skill tool if available), passing these arguments unchanged
    (none, if this is empty): $ARGUMENTS
 
 Do nothing else here: `/project-settings` does the work.

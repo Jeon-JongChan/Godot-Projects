@@ -1,4 +1,4 @@
-﻿---
+---
 paths:
   - "tests/**"
   - "Assets/Tests/**/*.cs"

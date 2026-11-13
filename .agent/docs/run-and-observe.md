@@ -1,4 +1,4 @@
-﻿# Run and Observe
+# Run and Observe
 
 Shared procedure for any skill that closes a story which changes something a
 player can see. Used by `/dev-story` (Phase 6) and `/story-done` (Phase 3).

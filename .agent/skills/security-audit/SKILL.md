@@ -1,4 +1,4 @@
-﻿---
+---
 name: security-audit
 description: "Security audit ??save tampering, cheat vectors, network exploits, data exposure, input validation. Before public or multiplayer release."
 argument-hint: "[full | network | save | input | quick]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Agent, Bash(bash "*/.agent/skills/securi
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`

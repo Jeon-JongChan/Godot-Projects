@@ -1,4 +1,4 @@
-﻿# /prototype ??One-shot 4: Change it
+# /prototype ??One-shot 4: Change it
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

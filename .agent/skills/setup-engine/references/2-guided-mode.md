@@ -1,4 +1,4 @@
-﻿# /setup-engine ??Section 2: Guided Mode
+# /setup-engine ??Section 2: Guided Mode
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

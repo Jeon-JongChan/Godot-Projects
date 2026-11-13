@@ -9,7 +9,7 @@
 # and Phase 3) and the "planned content" count /consistency-check and
 # /asset-spec make from the same registry.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # A band name is the rule row that matched. Whether a system is HIGH PRIORITY
 # (the skill's text does not say whether "NOT STARTED or EARLY, AND tagged MVP
 # or Vertical Slice, OR blocking" groups as (A AND B) OR C or A AND (B OR C))
@@ -17,7 +17,7 @@
 # (NOT STARTED or EARLY). The counts are of files and entries; whether a scene
 # is a gameplay level or a UI scene is not known here (see by levels).
 #
-# Usage: bash .claude/scripts/content-count.sh [--root DIR] COMMAND [ARGS]
+# Usage: bash .agent/scripts/content-count.sh [--root DIR] COMMAND [ARGS]
 #   registry        the planned named content: the entries of design/registry/
 #                   entities.yaml's entities and items sections, read through
 #                   registry.sh, deprecated ones left out

@@ -9,14 +9,14 @@
 # read with `od`, the sample rate read with `file`, and the orphan and
 # missing-asset searches.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # A row is a rule that matched a file; the counts under "hits" are rows, not
 # violations, and the words the skill ranks its report by (COMPLIANT,
 # WARNINGS, NON-COMPLIANT, NOT ASSESSED) stay in the skill. A check that did
 # not run says so in a `check` row and its hits are `-`, never 0: a scan that
 # measured nothing is not a scan that found nothing.
 #
-# Usage: bash .claude/scripts/asset-scan.sh [--root DIR] [--engine E] [--category C]
+# Usage: bash .agent/scripts/asset-scan.sh [--root DIR] [--engine E] [--category C]
 #          [--budget KEY=SIZE ...] [--max-dim N] [--sample-rates LIST]
 #          [--name-regex ERE] [--files]
 #   --root DIR          the project; defaults to the repo this script is in

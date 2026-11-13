@@ -1,4 +1,4 @@
-﻿# /reverse-document ??brief: from a game
+# /reverse-document ??brief: from a game
 
 > Part of `/reverse-document`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

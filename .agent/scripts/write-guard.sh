@@ -11,10 +11,10 @@
 # release actions). The hooks only call it. A skill that writes a guarded file
 # runs it itself as its last step, because hooks do not run in every tool.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # Whether a row stops the work is the calling skill's call, or the user's.
 #
-# Usage: bash .claude/scripts/write-guard.sh [--root DIR] COMMAND [ARGS]
+# Usage: bash .agent/scripts/write-guard.sh [--root DIR] COMMAND [ARGS]
 #   check PATH [NEW] [--tool Write|Edit] [--agent TYPE] [--existed yes|no]
 #                    every rule below that applies to PATH. NEW is a file
 #                    holding the content about to be written; without it the
@@ -372,8 +372,8 @@ rule_agent() {
   applied agent
   case "$1" in
     # Agent memory and session-state appends need no approval
-    # (.claude/rules/agent-memory.md); they are not the subagent exception.
-    .claude/agent-memory/*|production/session-state/active.md) return 0 ;;
+    # (.agent/rules/agent-memory.md); they are not the subagent exception.
+    .agent/agent-memory/*|production/session-state/active.md) return 0 ;;
   esac
   case "$1" in
     production/*|docs/*|tests/*) ;;

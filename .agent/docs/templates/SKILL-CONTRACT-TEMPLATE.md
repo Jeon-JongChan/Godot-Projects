@@ -1,4 +1,4 @@
-﻿# Skill Contract Template
+# Skill Contract Template
 
 > **Status ??read before using this template.**
 >

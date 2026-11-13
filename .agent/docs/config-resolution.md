@@ -1,4 +1,4 @@
-﻿# Config Resolution
+# Config Resolution
 
 How a skill learns its effective settings. **One command, no prose chain.**
 

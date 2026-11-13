@@ -13,10 +13,10 @@
 # Before the run it compares the pins on brief.md's Keep lines with config.js (the keep rows),
 # so a change that moves a value the person loves is caught even when the run cannot start.
 #
-# Usage: bash .claude/scripts/one-shot-check.sh <folder> --keys "<inputs>" [--root DIR]
-#        bash .claude/scripts/one-shot-check.sh <folder> --keep
-#        bash .claude/scripts/one-shot-check.sh <folder> --checklist
-#        bash .claude/scripts/one-shot-check.sh <folder> --record boots=<r> shot=<r> outlines=<r>
+# Usage: bash .agent/scripts/one-shot-check.sh <folder> --keys "<inputs>" [--root DIR]
+#        bash .agent/scripts/one-shot-check.sh <folder> --keep
+#        bash .agent/scripts/one-shot-check.sh <folder> --checklist
+#        bash .agent/scripts/one-shot-check.sh <folder> --record boots=<r> shot=<r> outlines=<r>
 #   <folder>          the game's folder, prototypes/<name>
 #   --keys TEXT       the run's inputs, in one-shot-run.sh --log's format ("Enter wait:1
 #                     ArrowRight:1.5 Space"): from the title into play, then a few of the

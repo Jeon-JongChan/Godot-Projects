@@ -1,4 +1,4 @@
-﻿# /smoke-check ??Phase 6: Write and Gate
+# /smoke-check ??Phase 6: Write and Gate
 
 > Part of `/smoke-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

@@ -1,4 +1,4 @@
-﻿# Model Tier Assignment
+# Model Tier Assignment
 
 > ### When a skill's `model:` is used ??skills only
 >

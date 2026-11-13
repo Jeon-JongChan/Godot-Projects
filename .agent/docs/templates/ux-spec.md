@@ -1,4 +1,4 @@
-﻿# UX Spec: [Screen/Flow Name]
+# UX Spec: [Screen/Flow Name]
 
 > Authoring guidance: .agent/docs/templates/guidance/ux-spec-guide.md (load per-section as you author ??do not read entirely).
 

@@ -1,4 +1,4 @@
-﻿---
+---
 name: test-helpers
 description: "Generate engine-specific test helper libraries ??assertion utilities, factory functions, mocks in the engine's test folder. Reduces boilerplate."
 argument-hint: "[system-name | all | scaffold]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/test-helpers/
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`

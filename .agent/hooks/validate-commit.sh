@@ -11,17 +11,17 @@
 # project, not this one. Resolving to the script's own location first would
 # override them. So, in order:
 #   1. cwd holds project.yaml   -> cwd   (a project root)
-#   2. cwd holds .claude/       -> cwd   (a project root not yet configured),
-#      unless cwd is itself named .claude: a stray .claude/.claude/ would
-#      make .claude/ a root, and the hooks would write .claude/production/
+#   2. cwd holds .agent/       -> cwd   (a project root not yet configured),
+#      unless cwd is itself named .claude: a stray .agent/.agent/ would
+#      make .agent/ a root, and the hooks would write .agent/production/
 #   3. CLAUDE_PROJECT_DIR       -> that  (populated in the hook environment),
-#      unless it names a .claude folder, for the same reason as rule 2
-#   4. this script's location   -> <root>/.claude/hooks/../.. by construction
+#      unless it names a .agent folder, for the same reason as rule 2
+#   4. this script's location   -> <root>/.agent/hooks/../.. by construction
 # Rule 4 always works and needs no environment at all; rules 1-2 stop it from
 # overriding a caller that legitimately means somewhere else.
 #
 # NOT an upward search: that resolves a nested project to its parent's config.
-if [ -f "project.yaml" ] || { [ -d ".claude" ] && [ "${PWD##*/}" != ".claude" ]; }; then
+if [ -f "project.yaml" ] || { [ -d ".agent" ] && [ "${PWD##*/}" != ".agent" ]; }; then
   CCGS_ROOT="$PWD"
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}" ] && case "${CLAUDE_PROJECT_DIR%/}" in */.claude|*\\.claude) false ;; *) true ;; esac; then
   CCGS_ROOT="$CLAUDE_PROJECT_DIR"
@@ -615,7 +615,7 @@ fi
 # Check design documents for the sections REQUIRED AT THIS PROJECT'S TIER.
 #
 # Demanding all 8 sections unconditionally would contradict
-# .claude/docs/coding-standards.md and workflow-modes.md: the required count is
+# .agent/docs/coding-standards.md and workflow-modes.md: the required count is
 # a function of `modes.workflow` -- 8 at `full`, 5 (+ conditional Formulas) at
 # `standard`, and no GDD requirement at all at `minimal`. A jam project on the
 # recommended `minimal` tier was being warned about six sections its own
@@ -630,8 +630,8 @@ fi
 # workflow tier silently stayed at its "standard" fallback, and the GDD section
 # check stopped scaling with the tier.
 _VC_HELPER=0
-if [ -f .claude/hooks/yaml-helper.sh ]; then
-    . .claude/hooks/yaml-helper.sh 2>/dev/null || true
+if [ -f .agent/hooks/yaml-helper.sh ]; then
+    . .agent/hooks/yaml-helper.sh 2>/dev/null || true
     command -v resolve_setting >/dev/null 2>&1 && _VC_HELPER=1
 fi
 
@@ -734,7 +734,7 @@ if out:
     sys.stdout.buffer.write(("\n".join(out) + "\n").encode("utf-8"))
 ' "$REQUIRED" "$WORKFLOW" > "$TMP_DESIGN" 2>/dev/null
         if [ -z "$TMP_DESIGN" ]; then
-            # Obligation 3 of .claude/rules/skill-authoring.md: a skipped step
+            # Obligation 3 of .agent/rules/skill-authoring.md: a skipped step
             # announces itself. Silence here is indistinguishable from a GDD
             # that already has every section its tier requires.
             WARNINGS="$WARNINGS\nSKIPPED: no writable scratch location, so the GDD section check did NOT run on the staged design doc(s)."
@@ -769,7 +769,7 @@ fi
 # the normal case and not an error.
 # --- resolve the code root before either scan below ------------------------
 #
-# Both scans use the resolved code root. Per .claude/docs/directory-structure.md,
+# Both scans use the resolved code root. Per .agent/docs/directory-structure.md,
 # `src/` is the GODOT row of the code-root table -- Unity compiles only `Assets/`,
 # Unreal builds only from `Source/` -- so a hardcoded `src/` would match nothing
 # there. A scan that cannot run and a scan that found nothing would produce the
@@ -790,7 +790,7 @@ if [ "$_VC_HELPER" = 1 ]; then
     CODE_ROOT_WHY=$(printf '%s' "$_CR" | cut -f3)
 fi
 
-# Obligation 3 of .claude/rules/skill-authoring.md -- a skipped step announces
+# Obligation 3 of .agent/rules/skill-authoring.md -- a skipped step announces
 # itself. Only fires when source code is actually being committed, so a
 # docs-only or config-only commit stays quiet and the notice keeps its meaning.
 if [ -z "$CODE_ROOT" ]; then

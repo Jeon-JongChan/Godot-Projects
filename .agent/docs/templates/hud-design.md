@@ -1,4 +1,4 @@
-﻿# HUD Design
+# HUD Design
 
 > Authoring guidance: .agent/docs/templates/guidance/hud-design-guide.md (load per-section as you author ??do not read entirely).
 

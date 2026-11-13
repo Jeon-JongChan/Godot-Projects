@@ -8,13 +8,13 @@
 # `pattern`, `min_count` and `any_of` per step; nothing consumed it
 # deterministically, so the model re-derived the same answers by opening files.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (per .claude/docs/context-management.md
+# EMITS OBSERVATIONS, NOT A VERDICT (per .agent/docs/context-management.md
 # rule 2). It reports what is on disk; the CALLER applies the workflow tier,
 # the required/optional distinction, and any per-system override. In
 # particular this script never says PASS or FAIL, and never decides that an
 # ABSENT artifact is a blocker — at `minimal` most of them are not.
 #
-# Usage: bash .claude/scripts/artifact-check.sh [--phase <id> | --path <id>] [project-root]
+# Usage: bash .agent/scripts/artifact-check.sh [--phase <id> | --path <id>] [project-root]
 #   --phase <id>  restrict output to one phase (concept, systems-design, ...)
 #   --path <id>   report one tier path instead of the phase ladder (`minimal`).
 #                 Paths live under the catalog's top-level `paths:` key with the
@@ -47,7 +47,7 @@
 #
 # Patterns are POSIX ERE and are matched with `grep -E`, never Python `re`
 # (the catalog uses classes like [[:space:]]) and never `grep -P` (unavailable
-# on Windows Git Bash — see .claude/docs/coding-standards notes).
+# on Windows Git Bash — see .agent/docs/coding-standards notes).
 
 set -u
 
@@ -82,7 +82,7 @@ else
   ROOT="$(pwd -W 2>/dev/null || pwd)"
 fi
 
-CATALOG="$ROOT/.claude/docs/workflow-catalog.yaml"
+CATALOG="$ROOT/.agent/docs/workflow-catalog.yaml"
 if [ ! -f "$CATALOG" ]; then
   echo "artifact-check: catalog not found at $CATALOG" >&2
   exit 1

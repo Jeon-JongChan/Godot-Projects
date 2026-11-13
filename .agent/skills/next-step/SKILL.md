@@ -1,4 +1,4 @@
-﻿---
+---
 name: next-step
 description: "Names the one next step: make a game, change it after play, grow it, or the next studio-mode step. Use when asked what to do next, or stuck."
 argument-hint: "[optional: what you just finished, e.g. 'finished design-review' or 'stuck on ADRs']"
@@ -20,7 +20,7 @@ audit. For a full gap analysis, use `/project-stage-detect`.
 
 ## Live Project State
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys project.stage,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys project.stage,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 These are resolved before this skill runs. Use them as-is:
 
@@ -242,7 +242,7 @@ step is the first of these that applies:
    `Ready` or `Not Started` story) in build order ??then `BLOCKED`, `OTHER`,
    `NO_STATUS` and the `COMPLETE` count:
 
-!`bash "${CLAUDE_SKILL_DIR}/../../scripts/story-status.sh"`
+> **Live Story Status:** Run `bash .agent/scripts/story-status.sh` (via Git Bash on Windows) to list story statuses.
 
    **Next up is the story on the first `IN_REVIEW`, `IN_PROGRESS` or `TODO`
    line.** The list is already current; do not run the script again, and do

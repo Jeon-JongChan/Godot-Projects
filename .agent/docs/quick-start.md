@@ -1,4 +1,4 @@
-﻿# Game Studio Agent Architecture -- Quick Start Guide
+# Game Studio Agent Architecture -- Quick Start Guide
 
 ## What Is This?
 

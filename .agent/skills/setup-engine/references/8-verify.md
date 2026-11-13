@@ -1,4 +1,4 @@
-﻿# /setup-engine ??Sections 8 and 8.5: Verify and Read Back
+# /setup-engine ??Sections 8 and 8.5: Verify and Read Back
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

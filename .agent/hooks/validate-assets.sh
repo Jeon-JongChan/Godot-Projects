@@ -11,17 +11,17 @@
 # project, not this one. Resolving to the script's own location first would
 # override them. So, in order:
 #   1. cwd holds project.yaml   -> cwd   (a project root)
-#   2. cwd holds .claude/       -> cwd   (a project root not yet configured),
-#      unless cwd is itself named .claude: a stray .claude/.claude/ would
-#      make .claude/ a root, and the hooks would write .claude/production/
+#   2. cwd holds .agent/       -> cwd   (a project root not yet configured),
+#      unless cwd is itself named .claude: a stray .agent/.agent/ would
+#      make .agent/ a root, and the hooks would write .agent/production/
 #   3. CLAUDE_PROJECT_DIR       -> that  (populated in the hook environment),
-#      unless it names a .claude folder, for the same reason as rule 2
-#   4. this script's location   -> <root>/.claude/hooks/../.. by construction
+#      unless it names a .agent folder, for the same reason as rule 2
+#   4. this script's location   -> <root>/.agent/hooks/../.. by construction
 # Rule 4 always works and needs no environment at all; rules 1-2 stop it from
 # overriding a caller that legitimately means somewhere else.
 #
 # NOT an upward search: that resolves a nested project to its parent's config.
-if [ -f "project.yaml" ] || { [ -d ".claude" ] && [ "${PWD##*/}" != ".claude" ]; }; then
+if [ -f "project.yaml" ] || { [ -d ".agent" ] && [ "${PWD##*/}" != ".agent" ]; }; then
   CCGS_ROOT="$PWD"
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}" ] && case "${CLAUDE_PROJECT_DIR%/}" in */.claude|*\\.claude) false ;; *) true ;; esac; then
   CCGS_ROOT="$CLAUDE_PROJECT_DIR"
@@ -39,7 +39,7 @@ fi
 #   exit 2 = build-breaking issue (a data file that is not valid JSON)
 #
 # A PostToolUse hook CANNOT block -- the write has already happened by the time
-# this runs (see .claude/docs/hooks-reference/hook-input-schemas.md). The only
+# this runs (see .agent/docs/hooks-reference/hook-input-schemas.md). The only
 # question is who hears about it, and that is what the exit code selects:
 #   exit 1 -> stderr goes to the USER only. Claude never sees it, so a JSON file
 #             it just corrupted looks like it wrote cleanly and it moves on.
@@ -159,7 +159,7 @@ fi
 # hook_warn in yaml-helper.sh. stderr stays as the fallback without the helper.
 if [ -n "$WARNINGS" ]; then
     _VA_MSG=$(echo -e "=== Asset Validation: Warnings ===$WARNINGS\n==================================\n(Warnings are advisory. Fix before final commit.)")
-    [ -f .claude/hooks/yaml-helper.sh ] && . .claude/hooks/yaml-helper.sh 2>/dev/null
+    [ -f .agent/hooks/yaml-helper.sh ] && . .agent/hooks/yaml-helper.sh 2>/dev/null
     if command -v hook_warn >/dev/null 2>&1; then
         hook_warn PostToolUse "$_VA_MSG"
     else

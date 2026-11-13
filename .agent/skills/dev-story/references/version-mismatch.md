@@ -1,4 +1,4 @@
-﻿# Phase 2: When the ADR or the manifest changed after the story was written
+# Phase 2: When the ADR or the manifest changed after the story was written
 
 Read only when Phase 2 found a version mismatch.
 

@@ -102,8 +102,8 @@ VERFILE="docs/engine-reference/$ENGINE_LC/VERSION.md"
 # Web: the bundler the project builds with (web-detect.sh's first bundler row),
 # so an existing project on webpack or Parcel is read as itself, not as Vite.
 WEB_BNAME=Vite; WEB_BPKG=vite
-if [ "$ENGINE_LC" = web ] && [ -f package.json ] && [ -f .claude/scripts/web-detect.sh ]; then
-  WEB_BROW="$(bash .claude/scripts/web-detect.sh --root . 2>/dev/null | awk -F'\t' '$1 == "bundler" { print $2 "\t" $3; exit }')"
+if [ "$ENGINE_LC" = web ] && [ -f package.json ] && [ -f .agent/scripts/web-detect.sh ]; then
+  WEB_BROW="$(bash .agent/scripts/web-detect.sh --root . 2>/dev/null | awk -F'\t' '$1 == "bundler" { print $2 "\t" $3; exit }')"
   case "$WEB_BROW" in
     -*|"") ;;
     *) WEB_BNAME="${WEB_BROW%%	*}"; WEB_BPKG="${WEB_BROW#*	}" ;;

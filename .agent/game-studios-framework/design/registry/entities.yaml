@@ -1,4 +1,4 @@
-﻿# Game World Entity Registry
+# Game World Entity Registry
 #
 # PURPOSE: Single source of truth for all named game-world facts that appear
 # in more than one document. Skills check this before writing new content to

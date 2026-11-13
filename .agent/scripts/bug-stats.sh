@@ -7,12 +7,12 @@
 # /bug-triage, /team-qa, /day-one-patch, /regression-suite and /team-release,
 # and the session-start note's open-bug count.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # Whether an open S2 fails a gate, which statuses a skill treats as open, and
 # when a bug is "old" stay in the skill: every status is counted as written,
 # so a skill with a different rule can still apply it.
 #
-# Usage: bash .claude/scripts/bug-stats.sh [--root DIR] [--today YYYY-MM-DD] [DIR ...]
+# Usage: bash .agent/scripts/bug-stats.sh [--root DIR] [--today YYYY-MM-DD] [DIR ...]
 #   DIR         folders to search for bug files at any depth, relative to the
 #               root or absolute; default production/qa/bugs/, one level
 #               (where /bug-report writes)

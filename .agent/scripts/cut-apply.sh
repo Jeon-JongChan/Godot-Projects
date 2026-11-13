@@ -8,7 +8,7 @@
 # by number ("Brief MVP feature N"), so the stories after it are renumbered with it; a cut item's
 # story points at its Out of scope row instead ("Brief Out of scope: <item>").
 #
-# Usage: bash .claude/scripts/cut-apply.sh --brief PATH [--brief PATH] [what to write]...
+# Usage: bash .agent/scripts/cut-apply.sh --brief PATH [--brief PATH] [what to write]...
 #   --brief PATH       a brief to write: cut-read.sh's brief rows (design/game-brief.md, and the
 #                      game's folder copy while it is the same text). Two get the same edits
 #   --cut N REASON     Features item N (cut-read.sh's numbers) leaves for the end of Out of scope

@@ -1,4 +1,4 @@
-﻿---
+---
 name: balance-check
 description: "Find balance outliers, broken progressions, degenerate strategies, economy imbalances in formulas and data. 'Check game balance'."
 argument-hint: "[system-name|path-to-data-file]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.agent/ski
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 # Balance Check
 

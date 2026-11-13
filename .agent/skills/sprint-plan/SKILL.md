@@ -1,4 +1,4 @@
-﻿---
+---
 name: sprint-plan
 description: "New or updated sprint plan from the current milestone, completed work, and available capacity."
 argument-hint: "[new|update|status] [--review full|lean|solo]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash 
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,story_granularity,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,story_granularity,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
 
@@ -16,7 +16,7 @@ Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defau
 
 ## Existing Sprints
 
-!`ls production/sprints/ 2>/dev/null || echo "(no production/sprints/ directory yet)"`
+Check `production/sprints/` (list the directory or run `ls production/sprints/`).
 
 Resolved before this skill runs ??use it to identify the previous sprint in
 Phase 1 rather than re-globbing.

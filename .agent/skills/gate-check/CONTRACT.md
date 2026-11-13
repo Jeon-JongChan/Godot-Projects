@@ -1,4 +1,4 @@
-﻿# /gate-check ??Handoff Contract
+# /gate-check ??Handoff Contract
 
 ## Role in Pipeline
 Validates whether the project is ready to advance from one development stage to the next by auditing required artifacts and quality checks, producing a PASS / NOT ASSESSED / CONCERNS / FAIL verdict (NOT ASSESSED outranks PASS ??a gate that could not check part of its scope has not established readiness; see SKILL.md's verdict section for the precedence order), and ??on PASS with user confirmation, or on CONCERNS when the user explicitly accepts the listed risks ??writing the new stage name to `project.stage` in `project.yaml` (and legacy `production/stage.txt` for backward compatibility).

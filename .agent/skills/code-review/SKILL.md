@@ -1,4 +1,4 @@
-﻿---
+---
 name: code-review
 description: "Architectural review of written code: coding standards, SOLID, testability, performance."
 argument-hint: "[path-to-file-or-directory]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash(git log *), Agent, AskUserQuestion, Bash(b
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 # Code Review
 

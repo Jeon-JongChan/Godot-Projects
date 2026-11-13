@@ -5,11 +5,11 @@
 # the game-state hook is wired in. It reads files only: it writes nothing, runs
 # no package manager and installs nothing.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # What to write, what to ask and whether to stop (a workspaces project, two
 # lockfiles, no src/) is /setup-engine's call (references/web.md, W1).
 #
-# Usage: bash .claude/scripts/web-detect.sh [--root DIR] [--pm npm|pnpm|yarn|bun]
+# Usage: bash .agent/scripts/web-detect.sh [--root DIR] [--pm npm|pnpm|yarn|bun]
 #   --root DIR   the project; defaults to the repo this script is in
 #   --pm NAME    the package manager the person chose, when the project has two
 #                lockfiles (the commands are written for it)
@@ -184,7 +184,7 @@ fi
 
 # --- files --------------------------------------------------------------------
 # Source files, outside the folders a project does not write by hand.
-PRUNE='-name node_modules -o -name .git -o -name dist -o -name dist-single -o -name build -o -name .claude -o -name coverage -o -name .cache -o -name production -o -name docs -o -name design'
+PRUNE='-name node_modules -o -name .git -o -name dist -o -name dist-single -o -name build -o -name .agent -o -name coverage -o -name .cache -o -name production -o -name docs -o -name design'
 SRCF=$(eval "find . \\( $PRUNE \\) -prune -o -type f \\( -name '*.js' -o -name '*.mjs' -o -name '*.ts' -o -name '*.tsx' -o -name '*.jsx' \\) -print" 2>/dev/null | sed 's|^\./||')
 TESTPAT='(^|/)[^/]*\.(test|spec)\.[a-z]+$'
 # An exact name match: `[ -d src ]` is also true for SRC/ on Windows and macOS.

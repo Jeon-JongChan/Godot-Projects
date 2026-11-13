@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 What's new in Claude Code Game Studios, written for the people using it.
 

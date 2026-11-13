@@ -1,4 +1,4 @@
-﻿# Accessibility Requirements
+# Accessibility Requirements
 
 > Authoring guidance: .agent/docs/templates/guidance/accessibility-requirements-guide.md (load per-section as you author ??do not read entirely).
 

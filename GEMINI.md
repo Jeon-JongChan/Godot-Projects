@@ -1,7 +1,7 @@
-# Antigravity Game Development Environment (Godot Projects)
+# Antigravity & Codex Game Development Environment (Godot Projects)
 
-본 프로젝트(`Godot-Projects`)는 Antigravity 전용 게임 개발 스튜디오 환경으로 구성되어 있습니다.
-모든 스킬과 에이전트, 규칙은 Antigravity 전용 디렉터리인 `.agent/`에 배치되어 있어 타 AI 코딩 에이전트(Claude Code 등)의 간섭 없이 Antigravity 단독으로 구동됩니다.
+본 프로젝트(`Godot-Projects`)는 **Antigravity**와 **Codex** 겸용 게임 개발 스튜디오 환경으로 구성되어 있습니다.
+모든 스킬과 에이전트, 규칙은 `.agent/`에 배치되어 있으며, Codex 검색 호환을 위해 `.agents/skills/`가 `.agent/skills/`와 연결되고 루트에 `AGENTS.md`가 제공됩니다.
 
 ---
 
@@ -9,9 +9,10 @@
 
 ```mermaid
 graph TD
-    A[Antigravity Agent] --> B[.agent/skills]
+    A[Antigravity / Codex] --> B[.agent/skills & .agents/skills]
     A --> C[.agent/agents]
     A --> D[.agent/rules]
+    A --> K[docs/engine-reference]
     
     B --> E[Awesome Gamedev Godot 16종]
     B --> F[Game Studios 워크플로 78종]
@@ -29,10 +30,12 @@ graph TD
 - **그래픽/오디오:** `godot-shaders`, `godot-audio`, `godot-3d-essentials`
 - **네트워크/인프라:** `godot-multiplayer`, `godot-export`, `godot-gdscript-headless-testing`
 
-### 2) Game Studios 프레임워크 (워크플로 스킬 78종 및 에이전트 49종)
-경로: `.agent/skills/`, `.agent/agents/`, `.agent/rules/`
-- 게임 기획/설계, 프로토타이핑, 스프린트 관리, 아트 바이블, QA, 코드 리뷰 등 게임 스튜디오의 전체 파이프라인 제공.
-- 필요 시 `invoke_subagent` 또는 스튜디오 역할을 참고하여 `godot-specialist`, `creative-director`, `game-designer` 등의 역할 수행.
+### 2) Game Studios 프레임워크 (워크플로 스킬 78종 · 에이전트 49종 · 엔진 레퍼런스)
+경로: `.agent/skills/`, `.agent/agents/`, `.agent/rules/`, `docs/`
+- 게임 기획/설계, 프로토타이핑, 스프린트 관리, 스토리 구현/종료(`dev-story`, `story-done`), 핫픽스(`hotfix`, `day-one-patch`, `launch-checklist`), 아트 바이블, QA, 코드 리뷰 등 전체 파이프라인 제공.
+- 엔진 레퍼런스(`docs/engine-reference/godot/` 등) 및 협업 원칙(`docs/COLLABORATIVE-DESIGN-PRINCIPLE.md`, `docs/WORKFLOW-GUIDE.md`) 포함.
+- 필요 시 `invoke_subagent` 또는 `.agent/agents/` 역할을 참고하여 `godot-specialist`, `creative-director`, `game-designer` 등의 역할 수행.
+- Windows 환경에서 `.agent/hooks/` 및 `.agent/scripts/` 실행 시 `C:\Program Files\Git\bin\bash.exe`를 사용합니다.
 
 ### 3) pixelfx (코드 기반 픽셀 VFX 엔진 및 스프라이트 시트 익스포터)
 경로: `.agent/skills/pixelfx/`

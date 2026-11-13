@@ -1,4 +1,4 @@
-﻿# /review-all-gdds ??Phase 6: Write Report and Flag GDDs
+# /review-all-gdds ??Phase 6: Write Report and Flag GDDs
 
 > Part of `/review-all-gdds`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

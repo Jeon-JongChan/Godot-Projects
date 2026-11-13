@@ -11,17 +11,17 @@
 # project, not this one. Resolving to the script's own location first would
 # override them. So, in order:
 #   1. cwd holds project.yaml   -> cwd   (a project root)
-#   2. cwd holds .claude/       -> cwd   (a project root not yet configured),
-#      unless cwd is itself named .claude: a stray .claude/.claude/ would
-#      make .claude/ a root, and the hooks would write .claude/production/
+#   2. cwd holds .agent/       -> cwd   (a project root not yet configured),
+#      unless cwd is itself named .claude: a stray .agent/.agent/ would
+#      make .agent/ a root, and the hooks would write .agent/production/
 #   3. CLAUDE_PROJECT_DIR       -> that  (populated in the hook environment),
-#      unless it names a .claude folder, for the same reason as rule 2
-#   4. this script's location   -> <root>/.claude/hooks/../.. by construction
+#      unless it names a .agent folder, for the same reason as rule 2
+#   4. this script's location   -> <root>/.agent/hooks/../.. by construction
 # Rule 4 always works and needs no environment at all; rules 1-2 stop it from
 # overriding a caller that legitimately means somewhere else.
 #
 # NOT an upward search: that resolves a nested project to its parent's config.
-if [ -f "project.yaml" ] || { [ -d ".claude" ] && [ "${PWD##*/}" != ".claude" ]; }; then
+if [ -f "project.yaml" ] || { [ -d ".agent" ] && [ "${PWD##*/}" != ".agent" ]; }; then
   CCGS_ROOT="$PWD"
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}" ] && case "${CLAUDE_PROJECT_DIR%/}" in */.claude|*\\.claude) false ;; *) true ;; esac; then
   CCGS_ROOT="$CLAUDE_PROJECT_DIR"
@@ -31,7 +31,7 @@ fi
 [ -n "$CCGS_ROOT" ] && cd "$CCGS_ROOT" 2>/dev/null || true
 
 # Claude Code PostToolUse hook: Advises running skill-test after skill file changes
-# Fires when any file inside .claude/skills/ is written or edited.
+# Fires when any file inside .agent/skills/ is written or edited.
 #
 # Exit behavior:
 #   exit 0 = advisory only (non-blocking)
@@ -41,7 +41,7 @@ fi
 
 INPUT=$(cat)
 
-# Only files under .claude/skills/ are named. Leave before any parsing when the
+# Only files under .agent/skills/ are named. Leave before any parsing when the
 # tool input never says skills: this hook runs on every Write and Edit.
 case "$INPUT" in *'"tool_input"'*[Ss][Kk][Ii][Ll][Ll][Ss]*) ;; *) exit 0 ;; esac
 
@@ -58,7 +58,7 @@ fi
 # arrives escaped: "C:\\Users\\x". jq unescapes it to a single backslash, but
 # the grep fallback CANNOT -- it hands back the raw two-character `\\`. A
 # single `s|\\|/|g` then turns each of those into its own slash, producing
-# `.claude//skills//help//SKILL.md`, which no path test below matches. The hook
+# `.agent//skills//help//SKILL.md`, which no path test below matches. The hook
 # went silent on every Windows edit whenever jq was absent -- and jq is absent
 # on a stock Windows Git Bash, which is this project's primary platform.
 #
@@ -68,8 +68,8 @@ fi
 FILE_PATH=$(printf '%s' "$FILE_PATH" | sed 's|\\\\|/|g; s|\\|/|g')
 
 # Make the path project-relative, as validate-assets.sh does. Claude Code sends
-# it ABSOLUTE, and a match on `/.claude/skills/` anywhere in it also fired on
-# the user's own skills in ~/.claude/skills/, naming a skill this project does
+# it ABSOLUTE, and a match on `/.agent/skills/` anywhere in it also fired on
+# the user's own skills in ~/.agent/skills/, naming a skill this project does
 # not have. Strip the project root in either spelling Git Bash gives it; a path
 # still absolute is outside the project.
 _VS_ROOT=$(pwd); _VS_ROOT_W=$(pwd -W 2>/dev/null || printf '%s' "$_VS_ROOT")
@@ -82,14 +82,14 @@ case "$FILE_PATH" in
 esac
 shopt -u nocasematch
 
-# Only act on files inside this project's .claude/skills/
+# Only act on files inside this project's .agent/skills/
 case "$REL_PATH" in
-    .claude/skills/*) ;;
+    .agent/skills/*) ;;
     *) exit 0 ;;
 esac
 
-# Extract skill name from path (.claude/skills/[skill-name]/SKILL.md)
-SKILL_NAME=$(echo "$REL_PATH" | grep -oE '^\.claude/skills/[^/]+' | sed 's|\.claude/skills/||')
+# Extract skill name from path (.agent/skills/[skill-name]/SKILL.md)
+SKILL_NAME=$(echo "$REL_PATH" | grep -oE '^\.agent/skills/[^/]+' | sed 's|\.agent/skills/||')
 
 if [ -z "$SKILL_NAME" ]; then
     exit 0
@@ -98,7 +98,7 @@ fi
 # Advisory, so exit 0 -- and therefore hook JSON, not stderr, which on exit 0
 # reaches the debug log only. See hook_warn in yaml-helper.sh.
 _VS_MSG="Skill modified: $SKILL_NAME. Run /skill-test static $SKILL_NAME to validate structural compliance."
-[ -f .claude/hooks/yaml-helper.sh ] && . .claude/hooks/yaml-helper.sh 2>/dev/null
+[ -f .agent/hooks/yaml-helper.sh ] && . .agent/hooks/yaml-helper.sh 2>/dev/null
 if command -v hook_warn >/dev/null 2>&1; then
     hook_warn PostToolUse "$_VS_MSG"
 else

@@ -22,8 +22,8 @@
 # caller decides what it means at the project's tier.
 #
 # Usage:
-#   bash .claude/scripts/gdd-structure-check.sh                    # all system GDDs
-#   bash .claude/scripts/gdd-structure-check.sh design/gdd/foo.md  # one GDD
+#   bash .agent/scripts/gdd-structure-check.sh                    # all system GDDs
+#   bash .agent/scripts/gdd-structure-check.sh design/gdd/foo.md  # one GDD
 #
 # Output (per GDD; the ABSENT and PLACEHOLDER lines are omitted when empty):
 #   combat.md PRESENT: Overview,Player Fantasy,Detailed Rules,...

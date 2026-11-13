@@ -1,9 +1,8 @@
-﻿---
+---
 name: day-one-patch
 description: "Day-one launch patch ??focused fix for known issues found after gold master. Mini-sprint with QA gate and rollback."
 argument-hint: "[scope: known-bugs | cert-feedback | all]"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion
 model: sonnet
 ---

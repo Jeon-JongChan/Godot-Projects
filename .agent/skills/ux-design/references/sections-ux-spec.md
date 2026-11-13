@@ -1,4 +1,4 @@
-﻿> Section-authoring guidance, loaded by `/ux-design` for the ACTIVE MODE ONLY.
+> Section-authoring guidance, loaded by `/ux-design` for the ACTIVE MODE ONLY.
 > Never load the other two ??one mode applies per invocation.
 
 # Section Guidance ??UX Spec Mode

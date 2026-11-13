@@ -9,13 +9,13 @@
 # new entry, scoring and prioritizing, reporting, and the "match before
 # appending" check.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # stats prints added and resolved counts and their difference, not the words
 # growing, stable or shrinking; ages are in days, because the register records
 # dates, not sprints. What "more than 3 sprints" is in days, and which items
 # go in the next sprint, stay in the skill.
 #
-# Usage: bash .claude/scripts/debt-register.sh [--root DIR] COMMAND [ARGS]
+# Usage: bash .agent/scripts/debt-register.sh [--root DIR] COMMAND [ARGS]
 #   next-id                 the next TD ID: registry.sh's `next-id td`, passed
 #                           through unchanged (the one ID rule in the codebase)
 #   score IMPACT EFFORT     the score of one pair: Low, Med (Medium), High or

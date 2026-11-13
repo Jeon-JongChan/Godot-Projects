@@ -1,4 +1,4 @@
-﻿# Hook: pre-commit-code-quality
+# Hook: pre-commit-code-quality
 
 ## Trigger
 

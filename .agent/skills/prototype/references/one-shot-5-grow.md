@@ -1,4 +1,4 @@
-﻿# /prototype ??One-shot 5: Grow it
+# /prototype ??One-shot 5: Grow it
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

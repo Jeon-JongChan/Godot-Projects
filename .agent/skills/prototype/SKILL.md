@@ -1,4 +1,4 @@
-﻿---
+---
 name: prototype
 description: "Asks a few questions, writes a one-page brief, builds a playable browser game as one HTML folder it plays and screenshots; with an engine set, a throwaway engine or paper prototype. Ends on proceed, pivot or kill. Use when the user says make me a game, wants to try a game idea or mechanic, needs a quick spike, asks to change a game it made, or says they love or hate it."
 argument-hint: "[what to make] [--from <your game>] [--path html|engine|paper] [--review full|lean|solo] [--spike]"
@@ -6,7 +6,7 @@ user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.agent/skills/prototype/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/one-shot-new.sh *), Bash(bash .agent/scripts/page-shot.sh *), Bash(bash .agent/scripts/vendor-three.sh *), Bash(bash .agent/scripts/one-shot-check.sh *), Bash(bash .agent/scripts/one-shot-run.sh *), Bash(bash .agent/scripts/one-shot-tune.sh *), Bash(bash .agent/scripts/one-shot-share.sh *), Bash(bash .agent/scripts/references-save.sh *), Bash(bash .agent/scripts/one-shot-grow.sh *), Bash(bash .agent/scripts/door-in.sh *), Bash(bash .agent/scripts/test-run.sh web*), Bash(npm ci), Bash(npm install --save-exact *), Bash(npm run *), Bash(npm test), Bash(git rev-parse *), Bash(git init), Bash(git add prototypes/*), Bash(git add -- *), Bash(git rm src/*), Bash(git tag grown/*), Bash(git tag baseline/*), Bash(git commit -m *), Bash(git tag one-shot/*), Bash(git status *), Bash(git diff *), Bash(git log *), Bash(git restore --source *), Bash(printenv CLAUDE_CODE_EFFORT_LEVEL)
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
 block ??defaults in `.agent/docs/config-resolution.md`.

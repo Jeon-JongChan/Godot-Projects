@@ -1,4 +1,4 @@
-﻿---
+---
 name: perf-profile
 description: "Performance profiling ??find bottlenecks, measure against budgets, produce ranked optimization recommendations."
 argument-hint: "[system-name or 'full']"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/perf-profile/
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys performance.enforce,automation,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys performance.enforce,automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. No block ??defaults in
 `.agent/docs/config-resolution.md`.
@@ -81,10 +81,10 @@ Read the argument:
 record of what it agreed to, and design docs are the fallback, not the source:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.target_framerate
-bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.frame_budget_ms
-bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.draw_call_limit
-bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" get_effective_yaml_key performance.memory_ceiling_mb
+bash ".agent/hooks/yaml-helper.sh" get_effective_yaml_key performance.target_framerate
+bash ".agent/hooks/yaml-helper.sh" get_effective_yaml_key performance.frame_budget_ms
+bash ".agent/hooks/yaml-helper.sh" get_effective_yaml_key performance.draw_call_limit
+bash ".agent/hooks/yaml-helper.sh" get_effective_yaml_key performance.memory_ceiling_mb
 ```
 
 Run each line as its own plain command, one key per call: the helper moves to

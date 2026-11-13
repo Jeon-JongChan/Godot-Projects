@@ -3,10 +3,10 @@
 # contents with index.html at the top of the zip, then the file count and sizes
 # against itch.io's limits for an HTML game.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # Each limit row says within or over; whether to ship is the person's call.
 #
-# Usage: bash .claude/scripts/itch-zip.sh [--root DIR] [--dist DIR] [--out FILE]
+# Usage: bash .agent/scripts/itch-zip.sh [--root DIR] [--dist DIR] [--out FILE]
 #          [--tool auto|zip|python]
 #   --root DIR    the project; defaults to the repo this script is in
 #   --dist DIR    the build folder, relative to the project; default dist
@@ -19,7 +19,7 @@
 # itch.io's limits for an HTML game (https://itch.io/docs/creators/html5): at most
 # 1,000 files, 500 MB unpacked, 200 MB for one file. Sizes are compared in
 # millions of bytes, the smaller reading of "MB", so "within" holds either way.
-# To share the zip, on a hidden itch.io page or a web link: .claude/docs/share-link.md.
+# To share the zip, on a hidden itch.io page or a web link: .agent/docs/share-link.md.
 #
 # Output: TSV.
 #   dist      <folder>  <present|absent>

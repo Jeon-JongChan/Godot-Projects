@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # session-state.sh — read and write production/session-state/active.md in the
-# layout .claude/docs/templates/session-state.md defines, so a skill hands
+# layout .agent/docs/templates/session-state.md defines, so a skill hands
 # over the words and this script places them.
 #
 # Replaces the hand-run checkpoint steps in /story-done and /dev-story.
@@ -11,7 +11,7 @@
 # the same words inside a sentence, as in the template's own HOW comment, are
 # not a marker.
 #
-# Usage: bash .claude/scripts/session-state.sh <command> [--root DIR]
+# Usage: bash .agent/scripts/session-state.sh <command> [--root DIR]
 #   show        print the STATUS block (when there is one) through the end of
 #               the CHECKPOINT block
 #   checkpoint  replace what is between the CHECKPOINT markers with stdin.
@@ -49,7 +49,7 @@ LC_ALL=C
 export LC_ALL
 
 STATE="production/session-state/active.md"
-TEMPLATE=".claude/docs/templates/session-state.md"
+TEMPLATE=".agent/docs/templates/session-state.md"
 # The template asks for a checkpoint under ~25 lines because session-start.sh
 # shows it whole in every new session; longer is allowed but warned about.
 MAX_LINES=25

@@ -1,4 +1,4 @@
-﻿# /setup-engine ??Section 11: Upgrade Subcommand
+# /setup-engine ??Section 11: Upgrade Subcommand
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

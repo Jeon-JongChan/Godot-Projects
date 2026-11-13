@@ -1,4 +1,4 @@
-﻿# Hook Input/Output Schemas
+# Hook Input/Output Schemas
 
 This documents the JSON payloads each Claude Code hook receives on stdin for every
 event type, and how a hook's output reaches the user and Claude. Every payload

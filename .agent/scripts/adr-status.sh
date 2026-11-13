@@ -10,13 +10,13 @@
 # owns the dependency graph and its cycles; this script reads the same
 # Depends On row the same way, so the two agree on every edge.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # Whether a Proposed ADR blocks a story, which sections an ADR must have, and
 # what a missing Layer row means are the calling skill's rules: the skills'
 # own lists of required sections disagree, so this script reports every
 # section of the shipped template that is missing and leaves the choice there.
 #
-# Usage: bash .claude/scripts/adr-status.sh [--root DIR] [ID|PATH ...]
+# Usage: bash .agent/scripts/adr-status.sh [--root DIR] [ID|PATH ...]
 #   ID          ADR-0003, adr-0003 or 0003: the ADR whose file name carries it
 #   PATH        an ADR file, relative to the root or absolute
 #   (none)      every docs/architecture/adr-*.md (one level, as adr-dep-graph.sh)
@@ -85,7 +85,7 @@ else
 fi
 
 ADR_DIR="docs/architecture"
-TEMPLATE=".claude/docs/templates/architecture-decision-record.md"
+TEMPLATE=".agent/docs/templates/architecture-decision-record.md"
 # adr_id PATH — adr-dep-graph.sh's id: the first adr-<digits> in the name, lower case.
 adr_id() { printf '%s\n' "${1##*/}" | tr '[:upper:]' '[:lower:]' | grep -oE 'adr-[0-9]+' | head -1; }
 

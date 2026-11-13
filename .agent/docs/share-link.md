@@ -1,4 +1,4 @@
-﻿# Share your game
+# Share your game
 
 How to let friends play a web game once its build runs: a hidden itch.io page, or a web link
 from wherever you put the files. It covers a one-shot (`prototypes/<name>/`) and a grown web

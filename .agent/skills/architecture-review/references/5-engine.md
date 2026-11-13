@@ -1,4 +1,4 @@
-﻿# /architecture-review ??Phases 5 and 5b: Engine Cross-Check and Design Revision Flags
+# /architecture-review ??Phases 5 and 5b: Engine Cross-Check and Design Revision Flags
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

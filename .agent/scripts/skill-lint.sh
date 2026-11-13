@@ -7,20 +7,20 @@
 # Replaces the by-hand reading of checks 1-7 over a skill's SKILL.md and its
 # references/, the counting that goes wrong across 75 skills.
 #
-# OBSERVATIONS, NEVER VERDICTS (CLAUDE.md, "Helpers in .claude/scripts/"). It
+# OBSERVATIONS, NEVER VERDICTS (CLAUDE.md, "Helpers in .agent/scripts/"). It
 # prints what it found, check by check, and nothing here is a PASS, WARN or
 # FAIL: whether three phase headings are enough, whether `HIGH` in a skill is a
 # severity or a word, whether a hint matches its modes, and the one verdict the
 # skill reports (COMPLIANT, WARNINGS, NON-COMPLIANT, NOT ASSESSED) stay with
 # /skill-test. The rows hold the numbers and words those calls need.
 #
-# Usage: bash .claude/scripts/skill-lint.sh <name>|all [--root DIR]
-#   <name>      one skill, the folder name under .claude/skills/
-#   all         every folder under .claude/skills/ that holds a SKILL.md
+# Usage: bash .agent/scripts/skill-lint.sh <name>|all [--root DIR]
+#   <name>      one skill, the folder name under .agent/skills/
+#   all         every folder under .agent/skills/ that holds a SKILL.md
 #   --root DIR  the project; defaults to the repo this script is in
 #   -h, --help  this text
 #
-# Output: TSV. First `skills <n> .claude/skills`, then for each skill
+# Output: TSV. First `skills <n> .agent/skills`, then for each skill
 #   skill   <name>  files=<SKILL.md + references read>  lines=<n>
 #   check1  <name>  frontmatter=<ok|missing|unclosed|bad@LINE>  missing=<list|->  name=<match|mismatch:<v>|absent>
 #   check2  <name>  phases=<distinct numbered phase headings>  h2=<distinct ## headings>  h2_total=<all of them>
@@ -49,7 +49,7 @@
 #   - the last section is the last `## ` heading of SKILL.md and the text after
 #     it; skills_named lists the /names in it that are skill folders
 #
-# Exit codes: 0 done; 1 cannot read the root or find .claude/skills; 2 usage
+# Exit codes: 0 done; 1 cannot read the root or find .agent/skills; 2 usage
 # error; 3 no such skill. Reads only; never prompts.
 #
 # bash 3.2 and BWK awk safe, no Python.
@@ -79,10 +79,10 @@ if [ -n "$ROOT_ARG" ]; then
 else
   cd "$HERE/../.." 2>/dev/null || { echo "skill-lint: cannot reach the repo root" >&2; exit 1; }
 fi
-SK=".claude/skills"
+SK=".agent/skills"
 [ -d "$SK" ] || { echo "skill-lint: no $SK folder under $(pwd)" >&2; exit 1; }
 
-# Every folder under .claude/skills/, so skills_named can tell a skill from a path.
+# Every folder under .agent/skills/, so skills_named can tell a skill from a path.
 NAMES="|"
 for d in "$SK"/*/; do
   [ -d "$d" ] || continue

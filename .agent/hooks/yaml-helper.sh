@@ -68,7 +68,7 @@
 # + quoted strings. PyYAML is NOT required.
 #
 # Usage:
-#   source .claude/hooks/yaml-helper.sh
+#   source .agent/hooks/yaml-helper.sh
 #   review_mode=$(get_yaml_key "$_YH_ROOT/project.yaml" modes.review_mode)
 #   if [ -z "$review_mode" ]; then
 #     # fall back to legacy .txt
@@ -780,7 +780,7 @@ EOF
 #   DEFAULT IS `on`. A default of `off` would contradict practice: every project
 #   runs with the pipeline active --
 #   and `production/session-state/active.md` is the documented recovery
-#   checkpoint that `.claude/docs/context-management.md` tells users to rely on.
+#   checkpoint that `.agent/docs/context-management.md` tells users to rely on.
 #   Shipping `off` as the default would have silently removed crash recovery,
 #   the session archive and the subagent spawn tally from every existing
 #   project. Users who want the checkpoint preview's tokens back (at most ~750
@@ -1419,11 +1419,11 @@ resolve_setting() {
 # The folders a code root of `.` (the project root itself: a flat web game) never
 # scans -- the framework's own, throwaway work, and build output. The same line
 # is in project-state.sh and code-markers.sh; keep the three the same.
-CODE_ROOT_SKIP=".claude .git production design docs tests studio-tests prototypes tools node_modules dist"
+CODE_ROOT_SKIP=".agent .git production design docs tests studio-tests prototypes tools node_modules dist"
 # The folders engine.code_root may not name: the framework's own or throwaway.
-CODE_ROOT_DENY=".claude .git production design docs tests studio-tests prototypes"
+CODE_ROOT_DENY=".agent .git production design docs tests studio-tests prototypes"
 
-# The engine table, .claude/engines/engines.tsv: each engine's code, test and
+# The engine table, .agent/engines/engines.tsv: each engine's code, test and
 # asset roots and its default commands (web-folder-design.md section 3). Found
 # beside this file, not under the project root, so a helper sourced from another
 # checkout reads its own table. No spawn here: this file is sourced by every hook.
@@ -1530,7 +1530,7 @@ _yh_engine_name() {
   #    project.yaml existed, and workflow-catalog's `engine-setup` step still
   #    accepts it as an `any_of` alternative — so a v1.0 project that never
   #    migrated resolves rather than falling through to "unset".
-  legacy="$_YH_ROOT/.claude/docs/technical-preferences.md"
+  legacy="$_YH_ROOT/.agent/docs/technical-preferences.md"
   if [ -z "$_YH_ENAME" ] && [ -f "$legacy" ]; then
     _YH_ENAME=$(grep -iE '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Engine\*{0,2}[[:space:]]*:' "$legacy" 2>/dev/null \
             | head -1 | sed 's/.*://' | tr -d '\r' \
@@ -1538,7 +1538,7 @@ _yh_engine_name() {
     case "$_YH_ENAME" in
       *"[TO BE CONFIGURED]"*|"["*) _YH_ENAME="" ;;
     esac
-    [ -n "$_YH_ENAME" ] && _YH_ESRC=".claude/docs/technical-preferences.md"
+    [ -n "$_YH_ENAME" ] && _YH_ESRC=".agent/docs/technical-preferences.md"
   fi
 
   return 0
@@ -1553,7 +1553,7 @@ _yh_engine_name() {
 # scripts/ that quietly read src/ would scan nothing and look clean, which is
 # the bug the override exists to fix.
 #
-# WHY THIS EXISTS. `.claude/docs/directory-structure.md` is explicit that the
+# WHY THIS EXISTS. `.agent/docs/directory-structure.md` is explicit that the
 # code root is not a style preference but a hard toolchain constraint: Unity
 # compiles only `Assets/` and `Packages/`, and UnrealBuildTool discovers modules
 # under `Source/`. `src/` is that table's GODOT row, not a universal path.
@@ -1561,7 +1561,7 @@ _yh_engine_name() {
 # Every hook that filtered staged or on-disk files with a literal `^src/`
 # therefore matched NOTHING on a Unity or Unreal project — and matching nothing
 # is indistinguishable from scanning cleanly. That is the exact row
-# `.claude/rules/skill-authoring.md` records for `/security-audit`
+# `.agent/rules/skill-authoring.md` records for `/security-audit`
 # ("Godot-only greps returned zero hits on Unity/Unreal, and zero hits read as
 # clean"), reproduced in four more places.
 #
@@ -1628,7 +1628,7 @@ resolve_code_root() {
 # engine.test_root in project.yaml beats the engine's row, with engine.code_root's
 # checks, except that it may name tests/. Unset, the engine's row decides; an
 # unknown or unset engine has none (never a guessed tests/).
-CODE_ROOT_DENY_TESTS=".claude .git production design docs studio-tests prototypes"
+CODE_ROOT_DENY_TESTS=".agent .git production design docs studio-tests prototypes"
 resolve_test_root() {
   _yaml_helper_set_root
   local ov="" chk="" line root tab
@@ -1878,7 +1878,7 @@ EOF
     if [ -n "$ename" ]; then
       echo "engine: $ename${eversion:+ $eversion} (project.yaml)"
     else
-      echo "engine: unset (fall back to .claude/docs/technical-preferences.md)"
+      echo "engine: unset (fall back to .agent/docs/technical-preferences.md)"
     fi
   fi
 
@@ -2017,14 +2017,14 @@ EOF
   # _rc_tp <label>: a `- **Label**: value` line of the legacy
   # technical-preferences.md; its `[TO BE CONFIGURED]` placeholder is unset.
   _rc_tp() {
-    local f="$_YH_ROOT/.claude/docs/technical-preferences.md"
+    local f="$_YH_ROOT/.agent/docs/technical-preferences.md"
     [ -f "$f" ] || return 0
     awk -v lbl="**$1**:" '{ gsub(/\r/, "") }
       index($0, lbl) { v = substr($0, index($0, lbl) + length(lbl))
         sub(/^[ \t]+/, "", v); sub(/[ \t]+$/, "", v)
         if (v !~ /TO BE CONFIGURED/) print v; exit }' "$f"
   }
-  local tp_src=".claude/docs/technical-preferences.md"
+  local tp_src=".agent/docs/technical-preferences.md"
 
   # gate_level: the gate level per story type, as coding-standards.md's table
   # defines it: testing.strict.<type> (project.local.yaml, then project.yaml),
@@ -2128,7 +2128,7 @@ EOF
     echo "specialists: primary=$(_rc_tag "$sp_primary" "$sp_psrc") code=${sp_code:-unset} shader=${sp_shader:-unset} ui=${sp_ui:-unset} additional=${sp_add:-none} ($sp_src; unset = skip that specialist)"
   fi
 
-  # engine_row: the engine's row of .claude/engines/engines.tsv, for a skill that
+  # engine_row: the engine's row of .agent/engines/engines.tsv, for a skill that
   # needs the engine's folders or default commands. code_root and test_root are
   # the resolved ones (engine.code_root and engine.test_root beat the row, and a
   # bad value is invalid with its reason); asset_root and the four commands are
@@ -2165,7 +2165,7 @@ EOF
     else
       er_out=" asset_root=- run=- build=- test=- smoke=-"
     fi
-    echo "engine_row: engine=$er_e code_root=$er_cr test_root=$er_tr$er_out (.claude/engines/engines.tsv; - = not in the table)"
+    echo "engine_row: engine=$er_e code_root=$er_cr test_root=$er_tr$er_out (.agent/engines/engines.tsv; - = not in the table)"
   fi
 
   # review_gate: whether a skill's own director gate runs, and whether the
@@ -2289,7 +2289,7 @@ hook_warn() {
 # Skills cannot `source` this file in their `` !`cmd` `` bootstrap line. Claude
 # Code permission-checks every injected command before the skill renders, and
 # outside auto mode anything short of "allow" ABORTS the whole invocation --
-# see .claude/docs/config-resolution.md. A `${VAR:-x}` or
+# see .agent/docs/config-resolution.md. A `${VAR:-x}` or
 # `$( )` in the command fails that check as "Contains expansion" and no grant can
 # approve it; a `source … && resolve_config` compound needs every part approved.
 # `${CLAUDE_SKILL_DIR}` is substituted as text before the check, so one plain

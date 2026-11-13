@@ -1,4 +1,4 @@
-﻿# Code Root Resolution
+# Code Root Resolution
 
 Shared procedure for any skill that reads, scans, counts or writes game source
 files. **An unresolved code root means the check did not run.** This file gives

@@ -1,4 +1,4 @@
-﻿# /create-architecture ??Phase 0: Load All Context
+# /create-architecture ??Phase 0: Load All Context
 
 > Part of `/create-architecture`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

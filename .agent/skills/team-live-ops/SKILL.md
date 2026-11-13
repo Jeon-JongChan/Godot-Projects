@@ -1,4 +1,4 @@
-﻿---
+---
 name: team-live-ops
 description: "Orchestrate the live-ops team ??live-ops-designer, economy-designer, analytics-engineer, community-manager, writer ??for a season or live event."
 argument-hint: "[season name or event description] [--review full|lean|solo]"
@@ -26,7 +26,7 @@ in `autonomous` mode it runs end to end, recording each phase outcome via
 
 ## Phase 0: Resolve Config
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,team.size,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,team.size,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
 

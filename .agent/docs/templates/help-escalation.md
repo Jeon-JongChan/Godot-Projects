@@ -1,4 +1,4 @@
-﻿---
+---
 Need more detail?
 - `/project-stage-detect` ??full gap analysis with all missing artifacts listed
 - `/gate-check` ??formal readiness check for your next stage

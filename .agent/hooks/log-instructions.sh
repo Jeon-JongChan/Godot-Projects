@@ -10,17 +10,17 @@
 # project, not this one. Resolving to the script's own location first would
 # override them. So, in order:
 #   1. cwd holds project.yaml   -> cwd   (a project root)
-#   2. cwd holds .claude/       -> cwd   (a project root not yet configured),
-#      unless cwd is itself named .claude: a stray .claude/.claude/ would
-#      make .claude/ a root, and the hooks would write .claude/production/
+#   2. cwd holds .agent/       -> cwd   (a project root not yet configured),
+#      unless cwd is itself named .claude: a stray .agent/.agent/ would
+#      make .agent/ a root, and the hooks would write .agent/production/
 #   3. CLAUDE_PROJECT_DIR       -> that  (populated in the hook environment),
-#      unless it names a .claude folder, for the same reason as rule 2
-#   4. this script's location   -> <root>/.claude/hooks/../.. by construction
+#      unless it names a .agent folder, for the same reason as rule 2
+#   4. this script's location   -> <root>/.agent/hooks/../.. by construction
 # Rule 4 always works and needs no environment at all; rules 1-2 stop it from
 # overriding a caller that legitimately means somewhere else.
 #
 # NOT an upward search: that resolves a nested project to its parent's config.
-if [ -f "project.yaml" ] || { [ -d ".claude" ] && [ "${PWD##*/}" != ".claude" ]; }; then
+if [ -f "project.yaml" ] || { [ -d ".agent" ] && [ "${PWD##*/}" != ".agent" ]; }; then
   CCGS_ROOT="$PWD"
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}" ] && case "${CLAUDE_PROJECT_DIR%/}" in */.claude|*\\.claude) false ;; *) true ;; esac; then
   CCGS_ROOT="$CLAUDE_PROJECT_DIR"
@@ -33,7 +33,7 @@ fi
 # WHY.
 #
 # WHAT THIS ANSWERS
-# `.claude/rules/*.md` files carry `paths:` frontmatter, and a path-scoped rule
+# `.agent/rules/*.md` files carry `paths:` frontmatter, and a path-scoped rule
 # loads only when Claude READS a file matching the pattern -- not on every tool
 # use, and not when it CREATES one. This framework's agents predominantly create
 # files: a new GDD, a new source file, a new test. So "does the gameplay-code
@@ -62,7 +62,7 @@ fi
 # NOT GATED ON features.session_state, deliberately. This is a diagnostic wired
 # up on purpose; silencing it from an unrelated flag would make it do nothing
 # while still looking installed -- the failure shape
-# `.claude/rules/skill-authoring.md` exists to prevent.
+# `.agent/rules/skill-authoring.md` exists to prevent.
 #
 # The exit code is ignored for this event and it cannot block a load. Fail
 # silent, stay cheap: it fires once per instruction file per load.
@@ -105,7 +105,7 @@ PARENT_VAL=$(pick "$INPUT" parent_file_path parentFilePath parent)
 # Paths arrive as absolute Windows paths with JSON-escaped separators. Left raw,
 # the readable line is the least readable thing in the log. Unescape, normalise
 # to forward slashes, strip the repo prefix -- so the column reads
-# `.claude/rules/gameplay-code.md`, which is what anyone scanning this is
+# `.agent/rules/gameplay-code.md`, which is what anyone scanning this is
 # looking for. The RAW line below keeps the original bytes untouched.
 # TWO forms of the repo root, because the payload and the shell disagree about
 # what a path looks like on Windows. Git Bash reports $PWD as `/c/Users/...`

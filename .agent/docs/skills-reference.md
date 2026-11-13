@@ -1,4 +1,4 @@
-﻿# Available Skills (Slash Commands)
+# Available Skills (Slash Commands)
 
 75 slash commands organized by phase. Type `/` in Claude Code to access any of them.
 

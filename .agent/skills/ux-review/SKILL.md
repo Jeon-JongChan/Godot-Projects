@@ -1,4 +1,4 @@
-﻿---
+---
 name: ux-review
 description: "Validate a UX spec, HUD design or pattern library ??accessibility, GDD alignment, readiness. APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED."
 argument-hint: "[file-path or 'all' or 'hud' or 'patterns']"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash(bash "*/.agent/skills/ux-review/../../hook
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. No block ??defaults in
 `.agent/docs/config-resolution.md`.

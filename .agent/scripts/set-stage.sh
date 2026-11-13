@@ -10,7 +10,7 @@
 # CONCERNS whose risks the user accepted) with the user's yes; this script
 # never decides that and never prompts. Run it after the yes.
 #
-# Usage: bash .claude/scripts/set-stage.sh <Stage> [--dry-run] [--root DIR]
+# Usage: bash .agent/scripts/set-stage.sh <Stage> [--dry-run] [--root DIR]
 #   <Stage>     one of: Concept, Systems Design, Technical Setup,
 #               Pre-Production, Production, Polish, Release (quote the
 #               two-word names)
@@ -110,7 +110,7 @@ if [ ! -f project.yaml ]; then
   # /gate-check's minimal template (references/6-update-stage.md, 6.1).
   {
     echo "# CCGS project configuration — single source of truth for project settings."
-    echo "# Schema: grep the \`## <key>\` section of .claude/docs/effects-map.md —"
+    echo "# Schema: grep the \`## <key>\` section of .agent/docs/effects-map.md —"
     echo "# it is ~31k tokens whole, ~900 per section. Do not open it entire."
     echo ""
     echo "schema_version: 1"

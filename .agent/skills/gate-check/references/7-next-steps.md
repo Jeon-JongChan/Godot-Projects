@@ -1,4 +1,4 @@
-﻿# /gate-check ??Sections 7 and 8: Next Step and Follow-Up
+# /gate-check ??Sections 7 and 8: Next Step and Follow-Up
 
 > Part of `/gate-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

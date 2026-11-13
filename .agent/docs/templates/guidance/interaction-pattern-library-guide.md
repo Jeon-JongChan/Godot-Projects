@@ -1,4 +1,4 @@
-﻿> Authoring guidance for interaction-pattern-library.md. Load only the part covering the section currently being authored ??not the whole file at once.
+> Authoring guidance for interaction-pattern-library.md. Load only the part covering the section currently being authored ??not the whole file at once.
 
 # Interaction Pattern Library ??Guidance Index
 

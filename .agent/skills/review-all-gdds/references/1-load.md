@@ -1,4 +1,4 @@
-﻿# /review-all-gdds ??Phase 1: Load Everything
+# /review-all-gdds ??Phase 1: Load Everything
 
 > Part of `/review-all-gdds`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

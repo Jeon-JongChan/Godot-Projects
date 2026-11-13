@@ -7,11 +7,11 @@
 # folder's .gitkeep, the engine's test folders or assembly definitions, the CI
 # workflow and the smoke-test seed.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # It reports what it did with each path and what is still missing; whether
 # the project may advance a gate on the strength of it is the skill's call.
 #
-# Usage: bash .claude/scripts/test-scaffold.sh ENGINE [--dry-run | --list] [--root DIR]
+# Usage: bash .agent/scripts/test-scaffold.sh ENGINE [--dry-run | --list] [--root DIR]
 #          [--module NAME] [--project NAME] [--date YYYY-MM-DD]
 #   ENGINE          godot, unity, unreal or web (the engine.name values, in any case;
 #                   UE5 is not one)
@@ -35,7 +35,7 @@
 #            Assets/Tests/PlayMode/PlayModeTests.asmdef
 #   unreal   Source/<Module>/Private/Tests/README.md
 #   web      tests/unit/.gitkeep, tests/integration/.gitkeep, playwright.config.ts
-#            (the web scaffold's own, .claude/engines/web/scaffold/)
+#            (the web scaffold's own, .agent/engines/web/scaffold/)
 #   all      .github/workflows/tests.yml, tests/smoke/critical-paths.md
 # The skill asks Godot's two test folders to hold a .gdignore_placeholder file;
 # Godot knows no such name (.gdignore would hide the folder from the editor and
@@ -241,7 +241,7 @@ under `tests/`.
 
 ## Test Naming
 
-Names follow the engine's language (`.claude/rules/test-standards.md`):
+Names follow the engine's language (`.agent/rules/test-standards.md`):
 - **Godot**: file `[system]_[feature]_test.gd`, function `test_[scenario]_[expected]`
   — `combat_damage_test.gd` → `test_base_attack_returns_expected_damage()`
 
@@ -320,7 +320,7 @@ run both.
 
 ## Test Naming
 
-Names follow the engine's language (`.claude/rules/test-standards.md`):
+Names follow the engine's language (`.agent/rules/test-standards.md`):
 - **Unity**: class `[System]Tests` in `[System]Tests.cs`, method `[Scenario]_[Expected]`
   — `CombatTests.cs` → `BaseAttack_ReturnsExpectedDamage()`
 
@@ -386,7 +386,7 @@ built or named `@DOCPROJECT@.…`.
 
 ## Test Naming
 
-Names follow the engine's language (`.claude/rules/test-standards.md`):
+Names follow the engine's language (`.agent/rules/test-standards.md`):
 - **Unreal**: class `F[System][Scenario]Test`, test name `@DOCPROJECT@.[System].[Scenario]`
   — `FCombatBaseAttackTest` → `@DOCPROJECT@.Combat.BaseAttack`
 
@@ -596,7 +596,7 @@ npm run smoke         # build:single, then the @boot test
 
 Playwright opens `dist-single/index.html` from disk (`npm run build:single`
 makes it), so no server and no port are needed. It launches the browser
-`.claude/scripts/page-shot.sh --which` prints, the one every check uses. With
+`.agent/scripts/page-shot.sh --which` prints, the one every check uses. With
 none, install one, once: `npx playwright install chromium-headless-shell`.
 Each half exits 0 when every test passed and non-zero when one failed. A half
 with no test file fails too: Vitest prints `No test files found` and Playwright
@@ -604,7 +604,7 @@ with no test file fails too: Vitest prints `No test files found` and Playwright
 
 ## Test Naming
 
-Names follow the engine's language (`.claude/rules/test-standards.md`):
+Names follow the engine's language (`.agent/rules/test-standards.md`):
 - **Web**: file `[module].test.ts` (Vitest) or `[system].spec.ts` (Playwright),
   test `'[scenario] [expected]'` — `rules.test.ts` → `it('keeps the square inside the field')`
 
@@ -655,7 +655,7 @@ jobs:
         run: npm ci
 
       # Playwright launches the runner's Chrome, the browser
-      # .claude/scripts/page-shot.sh finds, so no browser is downloaded.
+      # .agent/scripts/page-shot.sh finds, so no browser is downloaded.
       - name: Run Tests
         run: npm test
 
@@ -804,7 +804,7 @@ while IFS= read -r p; do
       fi ;;
     playwright.config.ts)
       if [ ! -f "$HERE/../engines/web/scaffold/playwright.config.ts" ]; then
-        printf 'SKIPPED\t%s\tthe web scaffold is missing (.claude/engines/web/scaffold/)\n' "$p"
+        printf 'SKIPPED\t%s\tthe web scaffold is missing (.agent/engines/web/scaffold/)\n' "$p"
         NSKIP=$((NSKIP + 1)); continue
       fi ;;
   esac

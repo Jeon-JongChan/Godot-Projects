@@ -9,7 +9,7 @@
 # is the same text (or, failing that, has the same title), else the project itself. A root with a
 # package.json is a project, a grown one-shot included.
 #
-# Usage: bash .claude/scripts/cut-read.sh [--today YYYY-MM-DD] [--target YYYY-MM-DD] [--root DIR]
+# Usage: bash .agent/scripts/cut-read.sh [--today YYYY-MM-DD] [--target YYYY-MM-DD] [--root DIR]
 #   --today    the date the rows count from; default today
 #   --target   a target date the person gave: adds the freeze proposed 70% of the way to it
 #   --root     the project; defaults to the repo this script is in

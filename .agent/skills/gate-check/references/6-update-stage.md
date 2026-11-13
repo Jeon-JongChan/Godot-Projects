@@ -1,4 +1,4 @@
-﻿# /gate-check ??Section 6: Update Stage on PASS
+# /gate-check ??Section 6: Update Stage on PASS
 
 > Part of `/gate-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

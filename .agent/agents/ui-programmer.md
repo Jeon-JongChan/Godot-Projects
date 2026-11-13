@@ -1,4 +1,4 @@
-﻿---
+---
 name: ui-programmer
 description: "Implements user interface systems ??menus, HUDs, inventory screens, dialogue boxes, UI framework code, screen flow."
 tools: Read, Glob, Grep, Write, Edit, Bash

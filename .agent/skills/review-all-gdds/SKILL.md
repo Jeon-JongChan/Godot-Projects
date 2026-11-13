@@ -1,4 +1,4 @@
-﻿---
+---
 name: review-all-gdds
 description: "Holistic cross-GDD review ??contradictions between systems, dominant strategies, economic imbalance, cognitive overload, pillar drift."
 argument-hint: "[focus: full | consistency | design-theory | since-last-review]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Agent, Bash(bash 
 model: opus
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow,system_overrides`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 # Review All GDDs
 

@@ -14,19 +14,19 @@
 # run. Whether a construct should stay, move to frontmatter or be reworded is the
 # reader's call.
 #
-# Usage: bash .claude/scripts/compat-inventory.sh [--skill <name> | --agent <name>] [project-root]
+# Usage: bash .agent/scripts/compat-inventory.sh [--skill <name> | --agent <name>] [project-root]
 #   --skill <name>  one skill's files only (SKILL.md and everything in its folder)
 #   --agent <name>  one agent file only
 #   project-root    defaults to the repo root (the test suite passes fixtures)
 #
 # Files read, in groups:
-#   skills        .claude/skills/<name>/**/*.md
-#   agents        .claude/agents/*.md
-#   instructions  CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.md, <top-level folder>/CLAUDE.md,
-#                 .claude/rules/*.md
-#   docs          .claude/docs/**/*.md
-#   hooks         .claude/hooks/*.sh and .claude/statusline.sh
-#   settings      .claude/settings.json (settings.local.json is personal and not read)
+#   skills        .agent/skills/<name>/**/*.md
+#   agents        .agent/agents/*.md
+#   instructions  CLAUDE.md, CLAUDE.local.md, .agent/CLAUDE.md, <top-level folder>/CLAUDE.md,
+#                 .agent/rules/*.md
+#   docs          .agent/docs/**/*.md
+#   hooks         .agent/hooks/*.sh and .agent/statusline.sh
+#   settings      .agent/settings.json (settings.local.json is personal and not read)
 #
 # Output:
 #   ROOT: <path>
@@ -40,26 +40,26 @@
 #   questions      AskUserQuestion
 #   subagents      Agent-tool (`Agent`, "Agent tool", Agent in a tools list), Task-tool (the
 #                  old name, on a line about agents), subagent_type, agent-type-list (Agent(...)
-#                  in an agent's tools), cc-path:.claude/agents, cc-path:.claude/agent-memory
+#                  in an agent's tools), cc-path:.agent/agents, cc-path:.agent/agent-memory
 #   skill-loading  var:CLAUDE_SKILL_DIR and the other skill substitutions, skillOverrides,
-#                  cc-path:.claude/skills, cc-path:.claude/commands
-#   shell-lines    shell-line (!`cmd` or a ```! block), shared-path:.claude/scripts
+#                  cc-path:.agent/skills, cc-path:.agent/commands
+#   shell-lines    shell-line (!`cmd` or a ```! block), shared-path:.agent/scripts
 #   arguments      $ARGUMENTS, $N (skills only: the text Claude Code substitutes them in)
 #   frontmatter    fm:<key> (a skill key beyond name, description, license, compatibility and
 #                  metadata; an agent key beyond name and description), tools-string (an
 #                  agent's tools written as one comma string)
 #   instructions   CLAUDE.md (each instruction file), @import (outside code), rule-file,
-#                  rule-paths, cc-path:.claude/rules, cc-path:.claude/CLAUDE.md,
-#                  shared-path:.claude/docs and other framework folders under .claude/
+#                  rule-paths, cc-path:.agent/rules, cc-path:.agent/CLAUDE.md,
+#                  shared-path:.agent/docs and other framework folders under .agent/
 #   hooks          hook:<Event>[<matcher>] (a registration in settings), hook-payload:<field>
 #                  and hook-answer:<token> (in hook scripts), var:CLAUDE_PROJECT_DIR,
-#                  shared-path:.claude/hooks
+#                  shared-path:.agent/hooks
 #   settings       permission:<allow|deny|ask|...> (one per rule), settings:<key>,
-#                  statusline-payload:<field>, cc-path:.claude/settings*.json, other var:CLAUDE_*
+#                  statusline-payload:<field>, cc-path:.agent/settings*.json, other var:CLAUDE_*
 #   tools          TodoWrite, task-tools (TaskCreate, TaskGet, TaskList, TaskUpdate, ...)
 #
 # cc-path is a folder or file Claude Code itself reads; shared-path is one of the
-# framework's own folders that happens to live under .claude/. Paths are reported
+# framework's own folders that happens to live under .agent/. Paths are reported
 # where a skill, agent, instruction file, doc or the settings name them, not
 # inside hook scripts.
 
@@ -95,7 +95,7 @@ else
 fi
 
 if [ ! -d "$ROOT/.claude" ]; then
-  echo "compat-inventory: no .claude folder under $ROOT" >&2
+  echo "compat-inventory: no .agent folder under $ROOT" >&2
   exit 1
 fi
 
@@ -131,20 +131,20 @@ STATIC = [
     ("questions", "AskUserQuestion"),
     ("subagents", "Agent-tool"), ("subagents", "Task-tool"), ("subagents", "subagent_type"),
     ("subagents", "agent-type-list"),
-    ("subagents", "cc-path:.claude/agents"), ("subagents", "cc-path:.claude/agent-memory"),
+    ("subagents", "cc-path:.agent/agents"), ("subagents", "cc-path:.agent/agent-memory"),
     ("skill-loading", "var:CLAUDE_SKILL_DIR"), ("skill-loading", "var:CLAUDE_SESSION_ID"),
     ("skill-loading", "var:CLAUDE_PLUGIN_ROOT"), ("skill-loading", "var:CLAUDE_PLUGIN_DATA"),
     ("skill-loading", "skillOverrides"),
-    ("skill-loading", "cc-path:.claude/skills"), ("skill-loading", "cc-path:.claude/commands"),
+    ("skill-loading", "cc-path:.agent/skills"), ("skill-loading", "cc-path:.agent/commands"),
     ("shell-lines", "shell-line"),
     ("arguments", "$ARGUMENTS"), ("arguments", "$N"),
     ("frontmatter", "tools-string"),
     ("instructions", "CLAUDE.md"), ("instructions", "@import"),
     ("instructions", "rule-file"), ("instructions", "rule-paths"),
-    ("instructions", "cc-path:.claude/rules"), ("instructions", "cc-path:.claude/CLAUDE.md"),
+    ("instructions", "cc-path:.agent/rules"), ("instructions", "cc-path:.agent/CLAUDE.md"),
     ("hooks", "var:CLAUDE_PROJECT_DIR"),
-    ("settings", "cc-path:.claude/settings.json"), ("settings", "cc-path:.claude/settings.local.json"),
-    ("settings", "cc-path:.claude/output-styles"),
+    ("settings", "cc-path:.agent/settings.json"), ("settings", "cc-path:.agent/settings.local.json"),
+    ("settings", "cc-path:.agent/output-styles"),
     ("tools", "TodoWrite"), ("tools", "task-tools"),
 ]
 # Families whose members are named by what was found; "<family>:*" prints when none was.
@@ -153,11 +153,11 @@ DYNAMIC = [("hooks", "hook"), ("hooks", "hook-payload"), ("hooks", "hook-answer"
            ("settings", "statusline-payload"), ("instructions", "shared-path"), ("settings", "var")]
 STATIC_FEATURE = dict((c, f) for f, c in STATIC)
 
-# Under .claude/: what Claude Code itself reads, and the feature each belongs to.
+# Under .agent/: what Claude Code itself reads, and the feature each belongs to.
 CC_PATHS = {"skills": "skill-loading", "commands": "skill-loading", "agents": "subagents",
             "agent-memory": "subagents", "rules": "instructions", "CLAUDE.md": "instructions",
             "settings.json": "settings", "settings.local.json": "settings", "output-styles": "settings"}
-# The framework's own folders under .claude/ (anything else defaults to instructions).
+# The framework's own folders under .agent/ (anything else defaults to instructions).
 SHARED_FEATURE = {"hooks": "hooks", "scripts": "shell-lines", "statusline.sh": "settings"}
 SKILL_VARS = {"CLAUDE_SKILL_DIR", "CLAUDE_SESSION_ID", "CLAUDE_PLUGIN_ROOT", "CLAUDE_PLUGIN_DATA"}
 SKILL_PORTABLE = {"name", "description", "license", "compatibility", "metadata"}
@@ -179,7 +179,7 @@ TASK_TOOL = re.compile(r"\bTask tool\b|\bTask\(\s*(?:subagent_type|description|p
 TASK_TICKED = re.compile(r"`Task`")
 TASK_CONTEXT = re.compile(r"(?i)\bsub-?agents?\b|\bagents?\b|\balias\b|\bsubagent_type\b")
 VAR = re.compile(r"\$\{?(CLAUDE_[A-Z][A-Z0-9_]*)\}?")
-PATH = re.compile(r"\.claude/([A-Za-z0-9_.-]+)")
+PATH = re.compile(r"\.agent/([A-Za-z0-9_.-]+)")
 IMPORT = re.compile(r"(?:^|(?<=\s))@([~\w.-]*/[\w./-]+|[\w-]+\.[A-Za-z]{1,5})\b")
 CODE_SPAN = re.compile(r"`[^`]*`")
 HOOK_PAYLOAD = re.compile(
@@ -299,9 +299,9 @@ def scan_text(path, lines, skill=False, paths=True, imports=False):
                 if not seg:
                     continue
                 if seg in CC_PATHS:
-                    add(CC_PATHS[seg], "cc-path:.claude/" + seg, path, n)
+                    add(CC_PATHS[seg], "cc-path:.agent/" + seg, path, n)
                 else:
-                    add(SHARED_FEATURE.get(seg, "instructions"), "shared-path:.claude/" + seg, path, n)
+                    add(SHARED_FEATURE.get(seg, "instructions"), "shared-path:.agent/" + seg, path, n)
 
 
 def var_feature(var):
@@ -322,7 +322,7 @@ def import_targets(path, lines):
     return out
 
 
-claude = os.path.join(root, ".claude")
+claude = os.path.join(root, ".agent")
 
 # --- groups ----------------------------------------------------------------
 skill_dir = os.path.join(claude, "skills")
@@ -505,9 +505,9 @@ print("FOUND_LINES: %d in %d of %d files read" % (len(found), len({f[2] for f in
 if scope_note:
     print(scope_note)
 if skill_filter and skill_filter not in skills:
-    print("NOT FOUND: skill %s is not a folder in .claude/skills/" % skill_filter)
+    print("NOT FOUND: skill %s is not a folder in .agent/skills/" % skill_filter)
 if agent_filter and agent_filter not in agents:
-    print("NOT FOUND: agent %s is not a file in .claude/agents/" % agent_filter)
+    print("NOT FOUND: agent %s is not a file in .agent/agents/" % agent_filter)
 for note in notes:
     print("NOTE: %s" % note)
 

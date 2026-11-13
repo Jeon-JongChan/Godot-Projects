@@ -1,4 +1,4 @@
-﻿---
+---
 paths:
   - ".agent/skills/**"
   - ".agent/agents/**"

@@ -6,10 +6,10 @@
 # scene; the self-check builds on it. It looks and reports; whether the picture reads, and
 # whether a console line matters, is the skill's call.
 #
-# Usage: bash .claude/scripts/page-shot.sh <page.html> <out.png> [--query TEXT] [--size WxH]
+# Usage: bash .agent/scripts/page-shot.sh <page.html> <out.png> [--query TEXT] [--size WxH]
 #                                          [--wait MS] [--root DIR] [--profile DIR] [--software]
 #                                          [--file-access] [--full] [--once]
-#        bash .claude/scripts/page-shot.sh --which
+#        bash .agent/scripts/page-shot.sh --which
 #   <page.html>    the page, relative to the project or absolute
 #   <out.png>      where the screenshot goes, relative to the project or absolute
 #   --query TEXT   added to the address after ?, for example scene=look or seed=7; render=cheap

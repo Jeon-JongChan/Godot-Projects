@@ -9,7 +9,7 @@
 # 2.1.300 and 2.1.301); when the session or its log cannot be found it says so and saves nothing,
 # and a picture it cannot find is reported missing, so the skill asks for the file instead.
 #
-# Usage: bash .claude/scripts/references-save.sh <N> [<N> ...] [--root DIR]
+# Usage: bash .agent/scripts/references-save.sh <N> [<N> ...] [--root DIR]
 #   <N>         the number of a pasted image, as in [Image #N]
 #   --root DIR  the project; defaults to the repo this script is in
 #   -h, --help  this text

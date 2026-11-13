@@ -1,4 +1,4 @@
-﻿# Path-Specific Rules
+# Path-Specific Rules
 
 Rules in `.agent/rules/` carry `paths:` frontmatter. Claude Code loads a
 path-scoped rule **when it READS a file matching one of those globs** ??not on

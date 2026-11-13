@@ -1,4 +1,4 @@
-﻿# /ux-design ??Section 3: Create File Skeleton
+# /ux-design ??Section 3: Create File Skeleton
 
 > Part of `/ux-design`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

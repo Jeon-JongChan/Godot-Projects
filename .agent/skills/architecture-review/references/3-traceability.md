@@ -1,4 +1,4 @@
-﻿# /architecture-review ??Phases 3 and 3b: Traceability Matrix and Story Linkage
+# /architecture-review ??Phases 3 and 3b: Traceability Matrix and Story Linkage
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

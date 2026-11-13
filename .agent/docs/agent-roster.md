@@ -1,4 +1,4 @@
-﻿# Agent Roster
+# Agent Roster
 
 The following agents are available. Each has a dedicated definition file in
 `.agent/agents/`. Use the agent best suited to the task at hand. When a task

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# web-scaffold.sh — copies the web scaffold (.claude/engines/web/scaffold/) into a
+# web-scaffold.sh — copies the web scaffold (.agent/engines/web/scaffold/) into a
 # project for /setup-engine web, never overwriting a file, and prints per path
 # whether it was created or already there; first, the Node.js the project needs.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # It reports Node, each path and what is still needed; whether to install, and
 # what to tell the person, is the skill's call.
 #
-# Usage: bash .claude/scripts/web-scaffold.sh [--dry-run | --list] [--root DIR]
+# Usage: bash .agent/scripts/web-scaffold.sh [--dry-run | --list] [--root DIR]
 #          [--title TEXT] [--gitignore] [--starter NAME]
 #   --dry-run     print what would be created (WOULD_CREATE), write nothing
 #   --list        print the project-relative paths the scaffold creates, one per
@@ -19,7 +19,7 @@
 #                 lines it lacks at its end, under one header line; without it
 #                 they are only listed (gitignore ... missing)
 #   --starter NAME  none (the default: plain Canvas 2D), three, phaser or pixi.
-#                 A starter is .claude/engines/web/starters/NAME/: its package.json,
+#                 A starter is .agent/engines/web/starters/NAME/: its package.json,
 #                 package-lock.json and src/main.ts are copied instead of the
 #                 scaffold's; every other file is the scaffold's
 #   -h, --help    this text

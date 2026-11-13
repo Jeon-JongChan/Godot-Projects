@@ -1,4 +1,4 @@
-﻿# /prototype ??One-shot 2c: The small check
+# /prototype ??One-shot 2c: The small check
 
 > Part of `/prototype`. The build file names when to read this file.
 

@@ -1,13 +1,12 @@
-﻿---
+---
 name: launch-checklist
 description: "Launch readiness across every department: code, content, store, marketing, community, infrastructure, legal, go/no-go sign-offs."
 argument-hint: "[launch-date or 'dry-run']"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.agent/skills/launch-checklist/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys rigor,workflow,project.stage,cert_tier,automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys rigor,workflow,project.stage,cert_tier,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`

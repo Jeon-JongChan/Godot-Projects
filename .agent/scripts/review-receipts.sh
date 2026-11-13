@@ -39,7 +39,7 @@
 # which this script cannot see.
 #
 # Usage:
-#   bash .claude/scripts/review-receipts.sh hash <file> [<file>...]
+#   bash .agent/scripts/review-receipts.sh hash <file> [<file>...]
 #     Prints one stamp line per file:
 #       Reviewed-Content-Hash: <path> <hash>
 #     The calling skill pastes these lines into the review report / log
@@ -48,7 +48,7 @@
 #     fail the run, so one command can name the optional inputs; a glob that
 #     matched nothing, or a file that could not be hashed, exits 2.
 #
-#   bash .claude/scripts/review-receipts.sh check <receipt-file> [<file>...]
+#   bash .agent/scripts/review-receipts.sh check <receipt-file> [<file>...]
 #     First line:  RECEIPT: <receipt-file>   (or RECEIPT: NONE if missing/empty)
 #     Then, once per path -- the files named, in order, then every other
 #     path the receipt stamps, in the order first stamped (with no files
@@ -69,7 +69,7 @@
 #     UNRESOLVED or GONE line as disqualifying: the set it compared was not
 #     the set it asked for, or not the set the last review read.
 #
-#   bash .claude/scripts/review-receipts.sh sections-hash <file>
+#   bash .agent/scripts/review-receipts.sh sections-hash <file>
 #     Per ^## section of the file (plus __preamble__ for content before the
 #     first ^##), prints:
 #       Reviewed-Section-Hash: <path>#<heading> <hash>
@@ -77,7 +77,7 @@
 #     without anything storing the old content. Duplicate headings get a
 #     " #N" suffix (same algorithm on stamp and check side, so they match).
 #
-#   bash .claude/scripts/review-receipts.sh sections-check <receipt-file> <file>
+#   bash .agent/scripts/review-receipts.sh sections-check <receipt-file> <file>
 #     Compares the file's current sections against the LATEST section stamps
 #     for that path in the receipt file. Prints, per section:
 #       SECTION-UNCHANGED: <heading>

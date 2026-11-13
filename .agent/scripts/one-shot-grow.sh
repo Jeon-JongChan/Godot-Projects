@@ -4,15 +4,15 @@
 # Everything is copied out of the one-shot; nothing in prototypes/<name>/ is edited, moved or
 # deleted. The skill does the rest: splitting the code, TypeScript, the tests, the commits.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/"). It reports what
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/"). It reports what
 # it found, wrote and compared; what to tell the person, and whether to go on, is the skill's.
 #
-# Usage: bash .claude/scripts/one-shot-grow.sh guard  <name> [--root DIR]
-#        bash .claude/scripts/one-shot-grow.sh copy   <name> [--root DIR]
-#        bash .claude/scripts/one-shot-grow.sh replay <name> --as WHICH [--stop STEP] [--log TEXT]
+# Usage: bash .agent/scripts/one-shot-grow.sh guard  <name> [--root DIR]
+#        bash .agent/scripts/one-shot-grow.sh copy   <name> [--root DIR]
+#        bash .agent/scripts/one-shot-grow.sh replay <name> --as WHICH [--stop STEP] [--log TEXT]
 #                                                     [--root DIR]
-#        bash .claude/scripts/one-shot-grow.sh record <name> [--root DIR]
-#        bash .claude/scripts/one-shot-grow.sh accept <name> [--root DIR]
+#        bash .agent/scripts/one-shot-grow.sh record <name> [--root DIR]
+#        bash .agent/scripts/one-shot-grow.sh accept <name> [--root DIR]
 #   guard    the four grow conditions (the grow's guard), each a row; writes nothing
 #   copy     the web scaffold's tooling, then the one-shot's page, script, values, assets and
 #            feel log, still JavaScript (the guard runs first; a failed check writes nothing)
@@ -159,7 +159,7 @@ guard() {
   #    engine.code_root naming another folder fails here rather than growing a game that
   #    does not build.
   why=""
-  [ -n "$CROOT" ] || why="the engine table has no code root for Web (.claude/engines/engines.tsv)"
+  [ -n "$CROOT" ] || why="the engine table has no code root for Web (.agent/engines/engines.tsv)"
   ov=$(yget engine.code_root project.yaml | tr -d '\r')
   case "$ov" in
     ""|"["*|"~"|null|Null|NULL|"$CROOT"|"$CROOT/"|"./$CROOT"|"./$CROOT/") ;;
@@ -212,7 +212,7 @@ put() { # put <path> <source file> -- a new file, never over one that is there
 
 copy() {
   local title slug rc=0 f
-  [ -f "$GROW/tune.ts" ] && [ -f "$GROW/config.js" ] || { echo "one-shot-grow: .claude/engines/web/grow/ is missing" >&2; exit 1; }
+  [ -f "$GROW/tune.ts" ] && [ -f "$GROW/config.js" ] || { echo "one-shot-grow: .agent/engines/web/grow/ is missing" >&2; exit 1; }
   t=$(mktemp -d 2>/dev/null || echo "${TMPDIR:-/tmp}/one-shot-grow-$$"); mkdir -p "$t/s" "$t/w"
   trap 'rm -rf "$t"' EXIT
   title=$(tr -d '\r' < "$OS/index.html" | sed -n 's:.*<title>\(.*\)</title>.*:\1:p' | head -1)

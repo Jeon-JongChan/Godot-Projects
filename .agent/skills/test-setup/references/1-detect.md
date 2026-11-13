@@ -1,4 +1,4 @@
-﻿# /test-setup ??Phase 1: Detect Engine and Existing State
+# /test-setup ??Phase 1: Detect Engine and Existing State
 
 > Part of `/test-setup`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

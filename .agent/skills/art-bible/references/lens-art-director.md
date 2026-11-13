@@ -1,4 +1,4 @@
-﻿# Lens: art direction
+# Lens: art direction
 
 Read at every section you draft and at the AD-ART-BIBLE sign-off. It is what the
 `art-director` agent brought to this skill when it drafted the sections. Apply

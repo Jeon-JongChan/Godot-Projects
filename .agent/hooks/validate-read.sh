@@ -3,7 +3,7 @@
 # --- work from the project root ----------------------------------------------
 # Same precedence as validate-write.sh (see there for why): a cwd that is a
 # project root wins, then CLAUDE_PROJECT_DIR, then this script's location.
-if [ -f "project.yaml" ] || { [ -d ".claude" ] && [ "${PWD##*/}" != ".claude" ]; }; then
+if [ -f "project.yaml" ] || { [ -d ".agent" ] && [ "${PWD##*/}" != ".agent" ]; }; then
   CCGS_ROOT="$PWD"
 elif [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR}" ] && case "${CLAUDE_PROJECT_DIR%/}" in */.claude|*\\.claude) false ;; *) true ;; esac; then
   CCGS_ROOT="$CLAUDE_PROJECT_DIR"
@@ -20,8 +20,8 @@ fi
 # docs/architecture/, production/session-state/; the bar is
 # features.read_guard_kb (40 KB); features.read_guard: off turns it off.
 #
-# The logic is `.claude/scripts/read-guard.sh check`, its helper twin; this
-# hook reads the payload through `.claude/scripts/hook-input.sh` and calls it.
+# The logic is `.agent/scripts/read-guard.sh check`, its helper twin; this
+# hook reads the payload through `.agent/scripts/hook-input.sh` and calls it.
 #
 # Exit behavior:
 #   exit 2 = the read is refused; stderr goes to Claude
@@ -70,22 +70,22 @@ case "$_VR_P" in
   *) exit 0 ;;
 esac
 
-[ -f .claude/hooks/yaml-helper.sh ] && . .claude/hooks/yaml-helper.sh 2>/dev/null
+[ -f .agent/hooks/yaml-helper.sh ] && . .agent/hooks/yaml-helper.sh 2>/dev/null
 vr_warn() {
   if command -v hook_warn >/dev/null 2>&1; then hook_warn PreToolUse "$1"
   else printf '%s\n' "$1" >&2; fi
   exit 0
 }
-[ -f .claude/scripts/hook-input.sh ] || vr_warn "Read guard skipped: the helper .claude/scripts/hook-input.sh is missing, so the read goes ahead unchecked."
+[ -f .agent/scripts/hook-input.sh ] || vr_warn "Read guard skipped: the helper .agent/scripts/hook-input.sh is missing, so the read goes ahead unchecked."
 
-_VR_IN=$(printf '%s' "$INPUT" | bash .claude/scripts/hook-input.sh --root . 2>/dev/null)
+_VR_IN=$(printf '%s' "$INPUT" | bash .agent/scripts/hook-input.sh --root . 2>/dev/null)
 vr_row() { printf '%s\n' "$_VR_IN" | awk -F '\t' -v k="$1" '$1 == k { print $2; exit }'; }
 [ "$(vr_row tool)" = Read ] || exit 0
 [ "$(vr_row where)" = inside ] || exit 0
 _VR_PATH=$(vr_row path)
-[ -f .claude/scripts/read-guard.sh ] || vr_warn "Read guard skipped: the helper .claude/scripts/read-guard.sh is missing, so the read of $_VR_PATH goes ahead unchecked."
+[ -f .agent/scripts/read-guard.sh ] || vr_warn "Read guard skipped: the helper .agent/scripts/read-guard.sh is missing, so the read of $_VR_PATH goes ahead unchecked."
 
-_VR_OUT=$(bash .claude/scripts/read-guard.sh --root . check "$_VR_PATH" --bounded "$(vr_row bounded)" 2>/dev/null)
+_VR_OUT=$(bash .agent/scripts/read-guard.sh --root . check "$_VR_PATH" --bounded "$(vr_row bounded)" 2>/dev/null)
 _VR_LARGE=$(printf '%s\n' "$_VR_OUT" | awk -F '\t' '$1 == "LARGE"')
 [ -n "$_VR_LARGE" ] || exit 0
 
@@ -93,7 +93,7 @@ _VR_KB=$(printf '%s\n' "$_VR_LARGE" | awk -F '\t' '{ printf "%d KB", int(($3 + 1
 _VR_BAR=$(printf '%s\n' "$_VR_LARGE" | awk -F '\t' '{ printf "%d KB", int($4 / 1024) }')
 # At most this many headings: past it the list costs what the read would.
 _VR_MAX=40
-_VR_HEADS=$(bash .claude/scripts/read-guard.sh --root . sections "$_VR_PATH" 2>/dev/null \
+_VR_HEADS=$(bash .agent/scripts/read-guard.sh --root . sections "$_VR_PATH" 2>/dev/null \
   | VR_MAX="$_VR_MAX" VR_PATH="$_VR_PATH" awk -F '\t' '
       { n++; if (n <= ENVIRON["VR_MAX"]) printf "%5s  %s\n", $1, $2 }
       END {

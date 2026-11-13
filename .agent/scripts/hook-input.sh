@@ -6,9 +6,9 @@
 # (validate-read.sh) read the payload through this script, so the JSON
 # decoding and the Edit rebuild exist once.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 #
-# Usage: bash .claude/scripts/hook-input.sh [--root DIR] [--new FILE] < payload.json
+# Usage: bash .agent/scripts/hook-input.sh [--root DIR] [--new FILE] < payload.json
 #   --new FILE   also write the content the file will hold to FILE: Write's
 #                content, or Edit's old_string replaced by new_string in the
 #                current file (first match, or every one with replace_all)

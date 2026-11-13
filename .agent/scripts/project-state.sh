@@ -8,11 +8,11 @@
 # /start (engine, concept, code root, counts, origin), /adopt, /onboard,
 # /day-one-patch, /project-stage-detect and /gate-check's read-back of the stage.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # `phase_inferred` is help's artifact ladder applied to the counts, printed with
 # the rule that matched; whether it outranks `stage` is the calling skill's call.
 #
-# Usage: bash .claude/scripts/project-state.sh [--stage] [--root DIR]
+# Usage: bash .agent/scripts/project-state.sh [--stage] [--root DIR]
 #   --stage     print only the four stage rows (no file counts; cheap)
 #   --root DIR  the project to read; defaults to the repo this script is in
 #   -h, --help  this text
@@ -24,9 +24,9 @@
 # `-` means no value. Every row is always printed, so a missing row is a bug,
 # never "nothing found".
 #   engine          engine.name: project.local.yaml, then project.yaml, then
-#                   the legacy `Engine:` line of .claude/docs/technical-preferences.md
+#                   the legacy `Engine:` line of .agent/docs/technical-preferences.md
 #   code_root       the same answer and source label as resolve_code_root in
-#                   .claude/hooks/yaml-helper.sh; never defaults to src. A bad
+#                   .agent/hooks/yaml-helper.sh; never defaults to src. A bad
 #                   engine.code_root prints `-` and `invalid: <reason>`
 #   source_files    `unknown` when code_root is unset or invalid: unknown is not zero
 #   stage_yaml      project.stage in project.yaml as written (even if invalid)
@@ -146,7 +146,7 @@ if [ -z "$ENGINE" ] && [ -f project.yaml ]; then
   ENGINE=$(yaml_get project.yaml engine.name)
   [ -n "$ENGINE" ] && { ESRC="project.yaml"; CSRC="engine.name"; }
 fi
-LEGACY=".claude/docs/technical-preferences.md"
+LEGACY=".agent/docs/technical-preferences.md"
 if [ -z "$ENGINE" ] && [ -f "$LEGACY" ]; then
   # The legacy `Engine:` line, bold or bulleted; `[TO BE CONFIGURED]` and any
   # other bracketed placeholder mean unset. The same pipeline as resolve_code_root.
@@ -181,8 +181,8 @@ fi
 # folder, and a bad value leaves the root unset with its reason, never the
 # engine's folder. code_root_check is _yh_code_root_check in yaml-helper.sh,
 # copied: keep the two the same.
-CODE_ROOT_SKIP=".claude .git production design docs tests studio-tests prototypes tools node_modules dist"
-CODE_ROOT_DENY=".claude .git production design docs tests studio-tests prototypes"
+CODE_ROOT_SKIP=".agent .git production design docs tests studio-tests prototypes tools node_modules dist"
+CODE_ROOT_DENY=".agent .git production design docs tests studio-tests prototypes"
 TAB=$(printf '\t')
 code_root_check() {
   local base="$1" v="$2" rest seg parent out first lo d actual

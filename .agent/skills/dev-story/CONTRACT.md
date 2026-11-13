@@ -1,4 +1,4 @@
-﻿# /dev-story ??Handoff Contract
+# /dev-story ??Handoff Contract
 
 ## Role in Pipeline
 Bridges planning and code by loading the full context for a single story (story file, TR registry, ADR, control manifest, engine prefs), routing to the correct programmer agent, implementing source code and tests, and leaving the story ready for `/story-done` (with `/code-review` first at `standard`/`full`).

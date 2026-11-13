@@ -1,4 +1,4 @@
-﻿# Active Session State ??[project or branch]
+# Active Session State ??[project or branch]
 
 <!--
   HOW THIS FILE WORKS. Read this before editing it.

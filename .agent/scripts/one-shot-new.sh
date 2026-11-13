@@ -9,8 +9,8 @@
 # never overwrites: a folder that already exists is reported and left alone, so a second game
 # or a resumed build is the skill's question, not this script's.
 #
-# Usage: bash .claude/scripts/one-shot-new.sh <name> [--question TEXT] [--title TEXT] [--root DIR]
-#        bash .claude/scripts/one-shot-new.sh <name> --add tune.js [--root DIR]
+# Usage: bash .agent/scripts/one-shot-new.sh <name> [--question TEXT] [--title TEXT] [--root DIR]
+#        bash .agent/scripts/one-shot-new.sh <name> --add tune.js [--root DIR]
 #   <name>           the folder name: lower-case letters, digits and hyphens, at most 40
 #   --question TEXT  the prototype's question, written into each file's header
 #   --title TEXT     the game's title; defaults to the name with spaces for hyphens

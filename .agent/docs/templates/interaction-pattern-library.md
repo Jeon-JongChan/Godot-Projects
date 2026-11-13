@@ -1,4 +1,4 @@
-﻿# Interaction Pattern Library
+# Interaction Pattern Library
 
 > Authoring guidance: .agent/docs/templates/guidance/interaction-pattern-library-guide.md (load per-section as you author ??do not read entirely).
 

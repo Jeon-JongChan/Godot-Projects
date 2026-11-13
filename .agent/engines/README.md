@@ -1,4 +1,4 @@
-﻿# Engine table
+# Engine table
 
 `engines.tsv` holds one row per engine `engine.name` can name: Godot, Unity,
 Unreal and Web. The hooks, helpers and skills read it instead of keeping their

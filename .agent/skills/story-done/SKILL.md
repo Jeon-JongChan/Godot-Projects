@@ -1,14 +1,13 @@
-﻿---
+---
 name: story-done
 description: "Closes a finished story: verifies each acceptance criterion, checks for design or ADR deviations and updates its status. Use when the user says a story is done, finished or ready to close."
 argument-hint: "[story-file-path] [--review full|lean|solo]"
 user-invocable: true
-disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Agent, Bash(bash "*/.agent/skills/story-done/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/story-facts.sh *), Bash(bash .agent/scripts/story-status.sh*), Bash(bash .agent/scripts/adr-status.sh *), Bash(bash .agent/scripts/md-section.sh *), Bash(bash .agent/scripts/review-receipts.sh check *), Bash(bash .agent/scripts/session-state.sh *), Bash(git status --porcelain*), Bash(git add -- *), Bash(git commit -m *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,review_gate,automation,automation_always_ask,workflow,qa.level,gate_level,system_overrides`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation,automation_always_ask,workflow,qa.level,gate_level,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
 

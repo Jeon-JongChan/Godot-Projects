@@ -1,4 +1,4 @@
-﻿---
+---
 name: asset-spec
 description: "Per-asset visual specs plus AI generation prompts from GDDs and character profiles. After the art bible."
 argument-hint: "[system:<name> | level:<name> | character:<name>] [--review full|lean|solo]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash 
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 # Asset Spec
 

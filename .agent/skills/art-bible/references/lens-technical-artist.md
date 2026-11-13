@@ -1,4 +1,4 @@
-﻿# Lens: technical art (Section 8 only)
+# Lens: technical art (Section 8 only)
 
 Read at Section 8, after drafting its art side. It is what the
 `technical-artist` agent checked there: the hard limits the art wishes must fit.

@@ -3,8 +3,7 @@ name: changelog
 description: "Old name of /write-changelog. Prints one line, then runs /write-changelog."
 argument-hint: "[version|sprint-number]"
 user-invocable: true
-disable-model-invocation: true
-allowed-tools: Skill(write-changelog)
+allowed-tools: Read, Skill(write-changelog)
 model: sonnet
 ---
 
@@ -17,7 +16,7 @@ Several AI tools keep `/changelog` for a command of their own, so this skill is 
 
    /changelog is now /write-changelog. Running /write-changelog.
 
-2. Run the `write-changelog` skill with the Skill tool, passing these arguments unchanged
+2. Read `.agent/skills/write-changelog/SKILL.md` and execute the `write-changelog` skill workflow directly (or via the Skill tool if available), passing these arguments unchanged
    (none, if this is empty): $ARGUMENTS
 
 Do nothing else here: `/write-changelog` does the work.

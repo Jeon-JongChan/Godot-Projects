@@ -1,4 +1,4 @@
-﻿# Context Management
+# Context Management
 
 Context is the most critical resource in a Claude Code session. Manage it actively.
 

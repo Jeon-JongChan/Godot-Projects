@@ -1,4 +1,4 @@
-﻿---
+---
 name: tech-debt
 description: "Track, categorize and prioritize technical debt across the codebase ??scans for debt indicators, maintains a register."
 argument-hint: "[scan|add|prioritize|report]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Bash(bash "*/.age
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 # Tech Debt
 

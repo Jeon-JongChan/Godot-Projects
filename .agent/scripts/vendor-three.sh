@@ -8,7 +8,7 @@
 # THREE. Without Node.js but with curl it downloads the module files instead, and the game
 # must then be served (it prints the command). It fetches once; the game never does.
 #
-# Usage: bash .claude/scripts/vendor-three.sh <game-folder> [add-on ...] [--dry-run] [--root DIR]
+# Usage: bash .agent/scripts/vendor-three.sh <game-folder> [add-on ...] [--dry-run] [--root DIR]
 #   <game-folder>  the one-shot's folder, for example prototypes/beacon-storm
 #   add-on         a path under three.js's examples/jsm, without .js, for example
 #                  controls/OrbitControls or loaders/GLTFLoader; each becomes THREE.<name>

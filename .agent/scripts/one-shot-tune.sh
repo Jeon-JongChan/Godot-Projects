@@ -15,7 +15,7 @@
 # in data/config.json, one entry a line, its log in design/feel-log.md, with no prototype header
 # (the grown files are the game now).
 #
-# Usage: bash .claude/scripts/one-shot-tune.sh <folder> <line>... [--why TEXT] [--said] [--widen]
+# Usage: bash .agent/scripts/one-shot-tune.sh <folder> <line>... [--why TEXT] [--said] [--widen]
 #   <folder>     the game's folder, prototypes/<name> (a grown game: the project, .)
 #   <line>       a line of the pasted block as it was pasted, one argument each: the first line
 #                "Tuned in the panel: <name>", then "<key> <from> → <to>" ("->" is read too)

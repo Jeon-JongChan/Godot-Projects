@@ -1,4 +1,4 @@
-﻿# Web scaffold
+# Web scaffold
 
 What `/setup-engine web` copies into a new web project (`scaffold/`, through
 `.agent/scripts/web-scaffold.sh`). Plain Canvas 2D and Web Audio, TypeScript,

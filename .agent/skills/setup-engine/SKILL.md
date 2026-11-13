@@ -1,4 +1,4 @@
-﻿---
+---
 name: setup-engine
 description: "Sets up and pins the engine version: web for a new project unless Godot, Unity or Unreal is named. Use to choose or upgrade it."
 argument-hint: "[engine] | [engine version] | refresh | upgrade [old-version] [new-version] | no args for guided selection"
@@ -11,7 +11,7 @@ model: sonnet
 
 When this skill is invoked:
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 **Tier awareness.** The `workflow` tier resolved above governs which design
 artifact this skill expects and the finish path it recommends in 짠12:

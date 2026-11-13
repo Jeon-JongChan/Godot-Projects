@@ -1,4 +1,4 @@
-﻿# /architecture-review ??Phase 8: Write and Update Traceability Index
+# /architecture-review ??Phase 8: Write and Update Traceability Index
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

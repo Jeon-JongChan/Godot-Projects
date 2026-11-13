@@ -5,7 +5,7 @@
 # finds the most recent cross-review report, lists GDDs changed since it, and
 # lists each changed GDD's declared dependencies (which must also be in scope).
 #
-# Usage: bash .claude/scripts/review-scope.sh
+# Usage: bash .agent/scripts/review-scope.sh
 #
 # Output:
 #   PRIOR_REVIEW: <path>          (or "NONE (full review required)")

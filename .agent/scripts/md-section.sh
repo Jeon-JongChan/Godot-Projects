@@ -7,11 +7,11 @@
 # Replaces the hand-run section steps in /create-control-manifest, /create-epics,
 # /create-stories, /dev-story, /propagate-design-change and /story-done.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # A section's status is the rule below applied to its lines; whether a
 # Placeholder section blocks anything is the calling skill's call.
 #
-# Usage: bash .claude/scripts/md-section.sh <command> FILE [args]
+# Usage: bash .agent/scripts/md-section.sh <command> FILE [args]
 #   list FILE                       every heading: level, first and last line, title
 #   status FILE [HEADING ...]       COMPLETE / EMPTY / PLACEHOLDER per section
 #                                   (every section when no HEADING is given)

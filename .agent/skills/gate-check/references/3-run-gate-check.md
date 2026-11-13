@@ -1,4 +1,4 @@
-﻿# /gate-check ??Section 3: Run the Gate Check
+# /gate-check ??Section 3: Run the Gate Check
 
 > Part of `/gate-check`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

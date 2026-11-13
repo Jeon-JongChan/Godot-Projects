@@ -8,7 +8,7 @@
 # of a run by playing it again, and the cold play run plays one turn at a time this way. It
 # reports; what a row means is the skill's call.
 #
-# Usage: bash .claude/scripts/one-shot-run.sh <folder> <out.png> [--log TEXT | --bot end|lose]
+# Usage: bash .agent/scripts/one-shot-run.sh <folder> <out.png> [--log TEXT | --bot end|lose]
 #            [--stop STEP] [--quiet STEP [--press KEY]] [--trace STEP] [--cap SECONDS]
 #            [--seed N] [--limit SECONDS] [--audio SECONDS] [--profile DIR] [--cold [--prev PNG]]
 #            [--hookless] [--size WxH] [--root DIR]

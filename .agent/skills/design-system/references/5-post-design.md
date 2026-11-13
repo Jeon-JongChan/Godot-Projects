@@ -1,4 +1,4 @@
-﻿# /design-system ??Phase 5: Post-Design Validation
+# /design-system ??Phase 5: Post-Design Validation
 
 > Part of `/design-system`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

@@ -1,4 +1,4 @@
-﻿# /architecture-decision ??Handoff Contract
+# /architecture-decision ??Handoff Contract
 
 ## Role in Pipeline
 Authors a new Architecture Decision Record (ADR) by guiding a collaborative design session, cross-referencing the engine reference library and existing architectural stances, and writing a fully-structured ADR file to `docs/architecture/` as `Proposed`. Its `accept` mode is the only route to `Accepted`, and acceptance is what unblocks the stories and epics that depend on the decision.

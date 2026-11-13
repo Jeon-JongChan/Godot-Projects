@@ -1,4 +1,4 @@
-﻿# /test-setup ??Phase 3: Create Directory Structure
+# /test-setup ??Phase 3: Create Directory Structure
 
 > Part of `/test-setup`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

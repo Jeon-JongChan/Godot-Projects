@@ -1,4 +1,4 @@
-﻿# /adopt ??Phase 1: Detect Project State
+# /adopt ??Phase 1: Detect Project State
 
 > Part of `/adopt`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

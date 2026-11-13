@@ -1,4 +1,4 @@
-﻿# project.yaml ??Effects Map
+# project.yaml ??Effects Map
 
 > ## READ ONE SECTION, NEVER THIS WHOLE FILE
 >

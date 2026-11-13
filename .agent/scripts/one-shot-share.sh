@@ -8,9 +8,9 @@
 # folder is copied as it is. An old dist/ is replaced. The game's own folder is never changed.
 # Afterwards the copied pages, scripts, styles and data are searched for "tune.js": a reference
 # the script could not take out is a found row. To put dist/ online, on a hidden itch.io page or
-# a web link: .claude/docs/share-link.md.
+# a web link: .agent/docs/share-link.md.
 #
-# Usage: bash .claude/scripts/one-shot-share.sh <folder> [--root DIR]
+# Usage: bash .agent/scripts/one-shot-share.sh <folder> [--root DIR]
 #   <folder>     the game's folder, prototypes/<name>
 #   --root DIR   the project; defaults to the repo this script is in
 #   -h, --help   this text

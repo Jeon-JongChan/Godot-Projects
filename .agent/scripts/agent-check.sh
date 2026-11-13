@@ -15,7 +15,7 @@
 # whether a brief is good enough: the reader decides. The delegation markers are
 # word counts, not grades.
 #
-# Usage: bash .claude/scripts/agent-check.sh [--agent <name>] [--skill <name>] [project-root]
+# Usage: bash .agent/scripts/agent-check.sh [--agent <name>] [--skill <name>] [project-root]
 #   --agent <name>  one agent: its block, the overlap pairs it is in, and the
 #                   delegation blocks that name it
 #   --skill <name>  one skill: its delegation blocks only
@@ -74,8 +74,8 @@ else
   ROOT="$(pwd -W 2>/dev/null || pwd)"
 fi
 
-if [ ! -d "$ROOT/.claude/agents" ]; then
-  echo "agent-check: no .claude/agents folder under $ROOT" >&2
+if [ ! -d "$ROOT/.agent/agents" ]; then
+  echo "agent-check: no .agent/agents folder under $ROOT" >&2
   exit 1
 fi
 
@@ -209,8 +209,8 @@ def words(text):
 
 
 # --- agents ---------------------------------------------------------------
-agent_dir = os.path.join(root, ".claude", "agents")
-skill_dir = os.path.join(root, ".claude", "skills")
+agent_dir = os.path.join(root, ".agent", "agents")
+skill_dir = os.path.join(root, ".agent", "skills")
 agents = {}
 for fn in sorted(os.listdir(agent_dir)):
     if fn.endswith(".md"):
@@ -265,7 +265,7 @@ for name, path in agents.items():
         for sk in split_list(fm.get("skills", "")):
             off = model_invocation_off(sk)
             if off is None:
-                rec["notes"].append("preload-off skills: lists %s, which is not a skill in .claude/skills/" % sk)
+                rec["notes"].append("preload-off skills: lists %s, which is not a skill in .agent/skills/" % sk)
             elif off:
                 rec["notes"].append("preload-off skills: lists %s, which sets disable-model-invocation: true" % sk)
     body = text.splitlines()[body_start:]
@@ -352,10 +352,10 @@ print("ROOT: %s" % root)
 print("AGENTS: %d  SKILLS: %d  SKILL_FILES: %d  DELEGATION_BLOCKS: %d"
       % (len(agents), len(skills), len(skill_files), len(blocks)))
 if agent_filter and agent_filter not in agents:
-    print("NOT FOUND: agent %s is not a file in .claude/agents/" % agent_filter)
+    print("NOT FOUND: agent %s is not a file in .agent/agents/" % agent_filter)
     show_agents = []
 if skill_filter and skill_filter not in skills:
-    print("NOT FOUND: skill %s is not a folder in .claude/skills/" % skill_filter)
+    print("NOT FOUND: skill %s is not a folder in .agent/skills/" % skill_filter)
 
 for name in show_agents:
     r = records[name]

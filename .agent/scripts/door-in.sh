@@ -4,13 +4,13 @@
 # tool export into references/<name>/, and check every file's SHA-256, source against copy and
 # later against the baseline tag. The original is only ever read.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/"). It says what it
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/"). It says what it
 # found and wrote; what to ask the person, and whether to go on, is the skill's.
 #
-# Usage: bash .claude/scripts/door-in.sh <path> [--name NAME] [--dry-run] [--root DIR]
-#        bash .claude/scripts/door-in.sh --verify <name> <path> [--root DIR]
-#        bash .claude/scripts/door-in.sh --after <name> <path> [--root DIR]
-#        bash .claude/scripts/door-in.sh --shots <name> --start KEYS --play LOG [--check] [--root DIR]
+# Usage: bash .agent/scripts/door-in.sh <path> [--name NAME] [--dry-run] [--root DIR]
+#        bash .agent/scripts/door-in.sh --verify <name> <path> [--root DIR]
+#        bash .agent/scripts/door-in.sh --after <name> <path> [--root DIR]
+#        bash .agent/scripts/door-in.sh --shots <name> --start KEYS --play LOG [--check] [--root DIR]
 #   <path>       one .html file, or a folder with index.html at its top (in the project or not)
 #   --name NAME  the folder name to use, in place of the one made from the page's <title>
 #   --dry-run    say what would be copied and where; write nothing (the bring-in question's facts)

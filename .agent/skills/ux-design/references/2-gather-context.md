@@ -1,4 +1,4 @@
-﻿# /ux-design ??Sections 2 and 2b: Gather Context and Retrofit Detection
+# /ux-design ??Sections 2 and 2b: Gather Context and Retrofit Detection
 
 > Part of `/ux-design`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.

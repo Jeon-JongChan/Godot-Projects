@@ -1,4 +1,4 @@
-﻿---
+---
 name: adopt
 description: "Brownfield audit ??do existing artifacts actually work? Numbered migration plan. Unlike /project-stage-detect, checks compliance not existence."
 argument-hint: "[focus: full | gdds | adrs | stories | infra]"
@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.agent/ski
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,automation_always_ask,workflow`
+> **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,automation_always_ask,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
 
 Resolved above ??use as-is. `/adopt` also inspects `project.yaml` and the legacy
 config files directly when reporting and writing migration state; that raw

@@ -7,11 +7,11 @@
 # /sprint-status inject; the status column here applies its rule word for
 # word, so the two never disagree.
 #
-# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .claude/scripts/").
+# EMITS OBSERVATIONS, NOT A VERDICT (CLAUDE.md, "Helpers in .agent/scripts/").
 # A LINT row is a rule that matched, with the numbers that made it match;
 # READY, NEEDS WORK or BLOCKED is still the skill's to say.
 #
-# Usage: bash .claude/scripts/story-facts.sh [--root DIR] [--all | --sprint | PATH ...] [--lint]
+# Usage: bash .agent/scripts/story-facts.sh [--root DIR] [--all | --sprint | PATH ...] [--lint]
 #                                          [--granularity coarse|balanced|fine]
 #   --all       every production/epics/**/story-*.md (the default)
 #   --sprint    the stories production/sprint-status.yaml lists in its file:
