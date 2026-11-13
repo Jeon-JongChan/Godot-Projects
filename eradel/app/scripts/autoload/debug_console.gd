@@ -3,6 +3,8 @@ extends CanvasLayer
 ## F1 디버그/치트 콘솔 오토로드.
 ## 기능 테스트 시 자원 부족이나 상태 조건 제약을 즉시 해제할 수 있는 오버레이 창과 명령어 실행기를 제공한다.
 
+signal cheat_applied
+
 var _root: Control
 var _panel: PanelContainer
 var _status_label: Label
@@ -156,8 +158,8 @@ func execute_command(cmd_line: String) -> String:
 					m.hp = m.max_hp
 					m.stress = 0
 					m.penalties.clear()
-					m.status = Mercenary.Status.READY
 					count += 1
+			_sync_active_dungeon_units()
 			GameState.roster_changed.emit()
 			GameState.party_changed.emit()
 			result = "[OK] 생존 용병 %d명 체력·스트레스·패널티 완전 회복" % count
@@ -178,7 +180,26 @@ func execute_command(cmd_line: String) -> String:
 
 	_refresh_status()
 	_append_log("> %s\n  %s" % [trimmed, result])
+	if result.begins_with("[OK]"):
+		cheat_applied.emit()
 	return result
+
+
+## 던전 전투 중 heal_all 실행 시 활성 아군 BattleUnit 의 표시 체력·스트레스도 즉시 동기화한다.
+func _sync_active_dungeon_units() -> void:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+	var scene := tree.current_scene
+	if not ("_party_units" in scene):
+		return
+	for u in scene.get("_party_units"):
+		if is_instance_valid(u) and not u.is_dead:
+			u.current_hp = u.max_hp
+			if "current_stress" in u:
+				u.current_stress = 0
+			if u.has_method("_update_view"):
+				u._update_view()
 
 
 ## 콘솔 오버레이 UI(반투명 배경, 빠른 치트 버튼, 로그 창, 명령어 입력창)를 생성한다.

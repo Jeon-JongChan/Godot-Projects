@@ -106,6 +106,9 @@ func _ready() -> void:
 	GameState.party_changed.connect(_on_state_updated)
 	GameState.roster_changed.connect(_on_state_updated)
 	GameState.game_over.connect(_on_game_over)
+	var dc := get_node_or_null("/root/DebugConsole")
+	if dc != null and dc.has_signal("cheat_applied"):
+		dc.connect("cheat_applied", _on_debug_cheat_applied)
 
 	# 시작 시 마을 중심부(용병모집소~영주저택~창고가 한눈에 들어오는 구도)로 스크롤 설정
 	_target_scroll_x = 180.0
@@ -2463,6 +2466,8 @@ func _zoom_out_and_return() -> void:
 		_active_modal.queue_free()
 		_active_modal = null
 	_active_interior_canvas = null
+	_active_blacksmith_canvas = null
+	_current_open_def = {}
 
 	_view_fsm.go(ViewState.ZOOMING_OUT)
 	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -2740,6 +2745,15 @@ func _handle_scrollbar_motion(global_mouse_x: float) -> void:
 func _on_state_updated() -> void:
 	_build_hud()
 	_build_village_structures()
+
+
+## F1 디버그 치트 적용 시 열려 있는 건물 팝업 UI(버튼 활성 상태·보유 자원)도 즉시 재구성한다.
+func _on_debug_cheat_applied() -> void:
+	if _active_modal == null or not is_instance_valid(_active_modal) or _current_open_def.is_empty():
+		return
+	if is_instance_valid(_active_blacksmith_canvas) and _active_blacksmith_canvas.current_state == VillageVisuals.BlacksmithInteriorCanvas.DwarfState.HAMMERING:
+		return
+	_open_large_building_popup(_current_open_def)
 
 
 func _on_game_over() -> void:
