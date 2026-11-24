@@ -8,7 +8,6 @@ model: opus
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
 # Architecture Review
 
 The architecture review validates that the complete body of architectural decisions
@@ -20,68 +19,68 @@ and Pre-Production.
 from `references/lens-engine.md`.
 
 **Argument modes:**
-- **No argument / `full`**: Full review ??all phases
-- **`coverage`**: Traceability only ??which GDD requirements have no ADR
+- **No argument / `full`**: Full review — all phases
+- **`coverage`**: Traceability only — which GDD requirements have no ADR
 - **`consistency`**: Cross-ADR conflict detection only
 - **`engine`**: Engine compatibility audit only
 - **`single-gdd [path]`**: Review architecture coverage for one specific GDD
-- **`rtm`**: Requirements Traceability Matrix ??extends the standard matrix
+- **`rtm`**: Requirements Traceability Matrix — extends the standard matrix
   to include story file paths and test file paths; outputs
   `docs/architecture/requirements-traceability.md` with the full
-  GDD requirement ??ADR ??Story ??Test chain. Use in Production phase when
+  GDD requirement → ADR → Story → Test chain. Use in Production phase when
   stories and tests exist.
 
 ---
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 **`workflow`** (see `.agent/docs/workflow-modes.md`):
-- `full` ??full traceability matrix across all GDDs and all ADRs.
-- `standard` ??reduced scope: architecture doc + critical ADRs only.
-- `minimal` ??not applicable (no architecture doc required).
+- `full` — full traceability matrix across all GDDs and all ADRs.
+- `standard` — reduced scope: architecture doc + critical ADRs only.
+- `minimal` — not applicable (no architecture doc required).
 
 ## Phase 1: Load Everything
 
-**Read `references/1-load.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/1-load.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 2: Extract Technical Requirements from Every GDD
 
-**Read `references/2-extract-requirements.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/2-extract-requirements.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 3: Build the Traceability Matrix
 
-**Read `references/3-traceability.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/3-traceability.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 4: Cross-ADR Conflict Detection
 
-**Read `references/4-conflicts.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/4-conflicts.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 5: Engine Compatibility Cross-Check
 
-**Read `references/5-engine.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5-engine.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 6: Architecture Document Coverage
 
-**Read `references/6-document-coverage.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/6-document-coverage.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 7: Output the Review Report
 
-**Read `references/7-report.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/7-report.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 8: Write and Update Traceability Index
 
-**Read `references/8-write.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/8-write.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 9: Handoff
 
-**Read `references/9-handoff.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/9-handoff.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Error Recovery Protocol
 
 **First, verify the artifact.** When a phase names a file it writes, check the
-path exists before treating the phase as done ??**a named artifact that is not
+path exists before treating the phase as done — **a named artifact that is not
 on disk is a failed phase, however fluent the response reads.**
 
 If a phase is blocked or cannot finish: **surface it immediately, don't proceed
@@ -94,22 +93,21 @@ here = fewer GDDs / single-system). Full procedure:
 ## Collaborative Protocol
 
 **Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `.agent/docs/automation-modes.md` ??the rules below
+`autonomous` modes, see `.agent/docs/automation-modes.md` — the rules below
 describe what collaborative mode requires, not universal behavior.
 
-1. **Read silently** ??do not narrate every file read
-2. **Show the matrix** ??present the full traceability matrix before any write
+1. **Read silently** — do not narrate every file read
+2. **Show the matrix** — present the full traceability matrix before any write
    approval; let the user see the state
-3. **Don't guess** ??if a requirement is ambiguous, ask: "Is [X] a technical
+3. **Don't guess** — if a requirement is ambiguous, ask: "Is [X] a technical
    requirement or a design preference?"
-4. **Draft before approval** ??always show the content that will be written (the
+4. **Draft before approval** — always show the content that will be written (the
    report, the updated ADR section, the systems-index row) inline in the conversation
    before requesting approval. Never ask to write something the user has not yet seen.
-5. **Use `AskUserQuestion` for write approvals** ??plain text "May I?" is not
+5. **Use `AskUserQuestion` for write approvals** — plain text "May I?" is not
    sufficient. Use the structured tool with labeled options [A]/[B]/[C] so the
    user can choose between "write now", "show full draft first", and "not yet".
    Multi-file changesets must list every file and what changes, then ask once
-   with grouped options ??not a separate plain-text question per file.
-6. **Non-blocking** ??the verdict is advisory; the user decides whether to continue
+   with grouped options — not a separate plain-text question per file.
+6. **Non-blocking** — the verdict is advisory; the user decides whether to continue
    despite CONCERNS or even FAIL findings
-

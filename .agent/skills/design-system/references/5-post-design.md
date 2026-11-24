@@ -1,4 +1,4 @@
-# /design-system ??Phase 5: Post-Design Validation
+# /design-system — Phase 5: Post-Design Validation
 
 > Part of `/design-system`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -20,14 +20,14 @@ After all sections are written:
 
 ### 5-pre: Author the Summary
 
-Write `## Summary` and its `> **Quick reference**` line now ??after the design
+Write `## Summary` and its `> **Quick reference**` line now — after the design
 exists, so the summary distils real content rather than intentions. This runs
 **at every tier**, including `standard` and a voluntary `minimal` GDD: the
 Summary is what lets a later skill scan 20 GDDs and decide which to read in full
 (`/create-epics`, `/architecture-review`, `/review-all-gdds` all grep it), so a
 GDD without it silently forces those consumers back to full reads.
 
-- **Summary body**: 2?? sentences ??what this system is, what it does for the
+- **Summary body**: 2–3 sentences — what this system is, what it does for the
   player, why it exists in this game. No jargon; a reader who has not seen the
   GDD should learn whether it is relevant to their task.
 - **Quick reference**: `Layer` and `Priority` from the systems index
@@ -39,13 +39,13 @@ the section cycle's Write step as for any other section.
 
 ### 5a: Self-Check
 
-Read back the complete GDD from file (not from conversation memory ??the file is
+Read back the complete GDD from file (not from conversation memory — the file is
 the source of truth). This step needs the whole GDD: read it in ranges by its
 headings (found with the Grep tool: pattern `^#`, content mode), since a whole-file
 Read over 40 KB is refused. Verify:
 - The `## Summary` and its Quick reference are populated (not the placeholder)
 - Every section **required at this system's effective tier** has real content
-  (not placeholders) ??짠1: 8 at `full`, 5 + conditional Formulas at `standard`,
+  (not placeholders) — §1: 8 at `full`, 5 + conditional Formulas at `standard`,
   5 at a voluntary `minimal`. Do not verify against a fixed count of 8: below
   `full` that reports a correctly-authored GDD as incomplete
 - Formulas reference defined variables
@@ -55,22 +55,22 @@ Read over 40 KB is refused. Verify:
 
 ### 5a-bis: Creative Director Pillar Review
 
-**Review mode check** ??apply before running CD-GDD-ALIGN:
-- `solo` ??skip. Note: "CD-GDD-ALIGN skipped ??Solo mode." Proceed to Step 5b.
-- `lean` ??skip (not a PHASE-GATE). Note: "CD-GDD-ALIGN skipped ??Lean mode." Proceed to Step 5b.
-- `full` ??run it as below.
+**Review mode check** — apply before running CD-GDD-ALIGN:
+- `solo` → skip. Note: "CD-GDD-ALIGN skipped — Solo mode." Proceed to Step 5b.
+- `lean` → skip (not a PHASE-GATE). Note: "CD-GDD-ALIGN skipped — Lean mode." Proceed to Step 5b.
+- `full` → run it as below.
 
-Before finalizing the GDD, run gate **CD-GDD-ALIGN** yourself, in this conversation ??do not spawn `creative-director` or any agent for it; the gate file's note that a spawned agent reads it, and the gate index's spawn steps, do not apply in this skill. Read `.agent/docs/director-gates/cd-gdd-align.md` and apply its Prompt as a checklist, with the CD-GDD-ALIGN part of `references/lens-creative-director.md`, to the GDD as written on disk (re-read it by section), against the game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`; if there is neither, the pitch and "what they feel" line of `design/game-brief.md`), the MDA aesthetics target, and the GDD's Player Fantasy section ??or, when this tier did not author one, say so. Name the section behind every finding.
+Before finalizing the GDD, run gate **CD-GDD-ALIGN** yourself, in this conversation — do not spawn `creative-director` or any agent for it; the gate file's note that a spawned agent reads it, and the gate index's spawn steps, do not apply in this skill. Read `.agent/docs/director-gates/cd-gdd-align.md` and apply its Prompt as a checklist, with the CD-GDD-ALIGN part of `references/lens-creative-director.md`, to the GDD as written on disk (re-read it by section), against the game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`; if there is neither, the pitch and "what they feel" line of `design/game-brief.md`), the MDA aesthetics target, and the GDD's Player Fantasy section — or, when this tier did not author one, say so. Name the section behind every finding.
 
 Handle the verdict (APPROVE / CONCERNS / REJECT) per the standard rules in `director-gates.md`.
 On `Revise flagged items`, or to resolve a REJECT, each flagged section runs its
-section cycle again ??its specialist consulted as that section's review-mode
-check says ??and is re-approved through its "Approve the [Section Name]
+section cycle again — its specialist consulted as that section's review-mode
+check says — and is re-approved through its "Approve the [Section Name]
 section?" widget before the Edit that writes it; then record `REVISED [date]`.
 A `NOT ASSESSED` answer is never an approval: name the missing input, then
 supply it and re-run the gate, or record `NOT ASSESSED`.
 After resolution, record the verdict in the GDD Status header:
-`> **Creative Director Review (CD-GDD-ALIGN)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date] / NOT ASSESSED [date] ??[missing input]`
+`> **Creative Director Review (CD-GDD-ALIGN)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date] / NOT ASSESSED [date] — [missing input]`
 
 ---
 
@@ -82,25 +82,25 @@ Scan the completed GDD for cross-system facts that should be registered:
 - Named formulas with defined variables and output ranges
 - Named constants referenced by value in more than one place
 
-**First check the registry exists** ??짠2a reads it *"if it exists"*, and this
+**First check the registry exists** — §2a reads it *"if it exists"*, and this
 step needs the same guard. At `standard` and below the file is often
 absent, and a grep against a missing path returns nothing, which is
 indistinguishable from "no candidate is registered yet":
 
-- **Absent** ??say so, and ask whether to create it:
+- **Absent** — say so, and ask whether to create it:
   *"`design/registry/entities.yaml` does not exist. May I create it with these
   [N] entries?"* If the user declines, skip 5b and say the registry was not
-  written ??do not treat the skip as a clean pass.
-- **Present but empty** ??every list is `[]`, or the only matches are inside
+  written — do not treat the skip as a clean pass.
+- **Present but empty** — every list is `[]`, or the only matches are inside
   comment blocks. Treat it as present, register the candidates, but say which
-  state you found: *"registry exists and is empty ??all [N] entries are new."*
+  state you found: *"registry exists and is empty — all [N] entries are new."*
   The shipped template's comments carry fully-formed examples referencing
   `design/gdd/inventory.md` with real-looking values (`base_inventory_slots: 20`,
-  `gold_carry_limit: 9999`), so 짠2a's registry greps return **comment
-  lines** on an empty registry ??and 짠2d would then present those invented numbers to the user as
+  `gold_carry_limit: 9999`), so §2a's registry greps return **comment
+  lines** on an empty registry — and §2d would then present those invented numbers to the user as
   *"These values are locked."* Match entries under a live `entities:`/`items:`/
   `formulas:`/`constants:` key, never a commented example.
-- **Present** ??for each candidate, check whether it is already registered:
+- **Present** — for each candidate, check whether it is already registered:
 
 ```
 Grep pattern="  - name: [candidate_name]" path="design/registry/entities.yaml"
@@ -112,9 +112,10 @@ Registry candidates from this GDD:
   NEW (not yet registered):
     - [entity_name] [entity]: [attribute]=[value], [attribute]=[value]
     - [item_name] [item]: [attribute]=[value], [attribute]=[value]
-    - [formula_name] [formula]: variables=[list], output=[min?뱈ax]
+    - [formula_name] [formula]: variables=[list], output=[min–max]
   ALREADY REGISTERED (referenced_by will be updated):
-    - [constant_name] [constant]: value=[N] ??matches registry ??```
+    - [constant_name] [constant]: value=[N] ← matches registry ✅
+```
 
 Ask: "May I update `design/registry/entities.yaml` with these [N] new entries
 and update `referenced_by` for the existing entries?" (If the file was absent
@@ -153,26 +154,26 @@ Present a completion summary:
 
 After the GDD is complete (and optionally reviewed):
 
-**First check the systems index exists.** 짠2a skips it at `minimal` because it is
-never written at that tier, and this step needs the same guard as 짠5b. It
+**First check the systems index exists.** §2a skips it at `minimal` because it is
+never written at that tier, and this step needs the same guard as §5b. It
 matters most on a `minimal` project with a
 `system_overrides` bump, where the effective tier is `standard` or `full` and
-nothing else in 짠5 hints the file may be absent.
+nothing else in §5 hints the file may be absent.
 
-- **Absent** ??say so in one line (*"no `design/gdd/systems-index.md` at this
-  workflow tier; nothing to update"*) and skip to 짠5e. Do **not** offer to create
+- **Absent** — say so in one line (*"no `design/gdd/systems-index.md` at this
+  workflow tier; nothing to update"*) and skip to §5e. Do **not** offer to create
   one: `/map-systems` owns that file, and a stub written here would be a systems
   index listing exactly one system.
-- **Present** ??continue:
+- **Present** — continue:
 
 - Read the systems index by section: find the headings you need with
   the Grep tool (pattern `^#`, content mode) and Read those ranges with
   offset and limit
 - Update the target system's row:
-  - If design-review was run and verdict is APPROVED: Status ??"Approved"
-  - If design-review was run and verdict is NEEDS REVISION or MAJOR REVISION NEEDED: Status ??"Needs Revision" (that exact string ??`/design-review` sets "In Review" only once the revisions are applied)
-  - If design-review was skipped: Status ??"Designed" (pending review)
-  - If the user chose "I'll review it myself first": Status ??"Designed"
+  - If design-review was run and verdict is APPROVED: Status → "Approved"
+  - If design-review was run and verdict is NEEDS REVISION or MAJOR REVISION NEEDED: Status → "Needs Revision" (that exact string — `/design-review` sets "In Review" only once the revisions are applied)
+  - If design-review was skipped: Status → "Designed" (pending review)
+  - If the user chose "I'll review it myself first": Status → "Designed"
   - Design Doc: link to `design/gdd/[system-name].md`
 - Update the Progress Tracker counts
 
@@ -184,8 +185,8 @@ Update `production/session-state/active.md` with:
 - Task: [system-name] GDD
 - Status: Complete (or In Review if design-review was run)
 - File: design/gdd/[system-name].md
-- Sections: [list the sections actually authored, by name] ??**never a fixed
-  count**; 짠5a forbids verifying against `/8`, and the same reasoning applies to
+- Sections: [list the sections actually authored, by name] — **never a fixed
+  count**; §5a forbids verifying against `/8`, and the same reasoning applies to
   recording it. Below `full` a correctly-authored GDD has fewer than 8 sections,
   and writing "All 8 written" into session state makes the next reader believe
   a complete GDD is incomplete
@@ -193,18 +194,17 @@ Update `production/session-state/active.md` with:
 
 ### 5f: Suggest Next Steps
 
-At `workflow: minimal`, when a story sent you here (a `deepen ??<system>` story), say
+At `workflow: minimal`, when a story sent you here (a `deepen — <system>` story), say
 "Next: type `/dev-story <that story>`" and ask nothing: leave out `/consistency-check` and
 `/gate-check` unless the person asks for them. Otherwise:
 
 Use `AskUserQuestion`:
 - "What's next?"
   - Options:
-    - "Run `/consistency-check` ??verify this GDD's values don't conflict with existing GDDs (recommended before designing the next system)"
-    - "Design next system ([next-in-order])" ??if undesigned systems remain
-    - "Fix review findings" ??if design-review flagged issues
+    - "Run `/consistency-check` — verify this GDD's values don't conflict with existing GDDs (recommended before designing the next system)"
+    - "Design next system ([next-in-order])" — if undesigned systems remain
+    - "Fix review findings" — if design-review flagged issues
     - "Stop here for this session"
-    - "Run `/gate-check`" ??if enough MVP systems are designed
+    - "Run `/gate-check`" — if enough MVP systems are designed
 
 ---
-

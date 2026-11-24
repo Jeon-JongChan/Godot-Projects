@@ -1,16 +1,15 @@
 ---
 name: create-control-manifest
 description: "Builds a short list of must-do and never-do coding rules per system from accepted ADRs. Use when the user wants programmer rules or a cheat sheet from the ADRs, or needs it regenerated after ADR changes."
-argument-hint: "[update ??regenerate from current ADRs] [--review full|lean|solo]"
+argument-hint: "[update — regenerate from current ADRs] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.agent/skills/create-control-manifest/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/adr-status.sh*), Bash(bash .agent/scripts/md-section.sh *)
 model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
-block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.agent/docs/config-resolution.md`.
 
 Ask with the question tool. Without one, list the options numbered and end your turn
 to wait. A skipped or dismissed question is not an answer: ask again in plain text.
@@ -42,12 +41,12 @@ reading any ADR:
 
 | Counts | Meaning | Action |
 |---|---|---|
-| `adrs 0` | No ADRs. | "No ADRs found ??run `/architecture-decision` before building a control manifest." Stop. |
-| `accepted` ??1 | Normal. | The Accepted rows are the set **A**. Name every other ADR, with its status, in the Phase 4 preview: the user approves a manifest knowing what it leaves out. |
+| `adrs 0` | No ADRs. | "No ADRs found — run `/architecture-decision` before building a control manifest." Stop. |
+| `accepted` ≥ 1 | Normal. | The Accepted rows are the set **A**. Name every other ADR, with its status, in the Phase 4 preview: the user approves a manifest knowing what it leaves out. |
 | `accepted 0`, some with a status | No Accepted ADRs. | "[N] ADRs found, none Accepted. A manifest built from Proposed ADRs would encode decisions that may still change." Ask whether to go on with the Proposed ones or stop. **Never write an empty manifest silently.** |
 | every ADR `no_status` | **Malformed ADRs, not an empty Accepted set.** | "[N] ADRs found, none has a `## Status` section, so acceptance cannot be told. Run `/architecture-decision retrofit [file]` on each." Stop. Never treat them as Accepted. |
 
-Each stop above ends with `Verdict: BLOCKED ??[the reason]`. Note the number and
+Each stop above ends with `Verdict: BLOCKED — [the reason]`. Note the number and
 title of every ADR a rule comes from.
 
 ### Project config
@@ -83,7 +82,7 @@ and the same for `Alternatives Considered`, `Performance Implications` and `Engi
 Compatibility`. Context, Consequences, Migration Plan and Validation Criteria say why
 a decision was made; the manifest records what to do. A section an ADR lacks: note
 it for that ADR and go on. A section missing from **every** ADR in A: report "No
-Accepted ADR has a `[section]` section ??the manifest's [category] rules will be
+Accepted ADR has a `[section]` section — the manifest's [category] rules will be
 empty. Verify this is intended." Read beyond the four only when a section points
 outside itself ("subject to the constraints in Context"), and then that one section.
 
@@ -123,10 +122,10 @@ Rules for every layer, each with its source (the `project.yaml` key,
 - **Performance budgets** from `performance.*`: target frame rate, frame budget,
   draw calls, memory ceiling.
 - **Forbidden APIs** from `deprecated-apis.md`, **only those that apply to what this
-  project builds.** Never copy the table whole: its `GodotPhysics3D ??Jolt Physics
+  project builds.** Never copy the table whole: its `GodotPhysics3D → Jolt Physics
   3D` row is 3D-only, and a 2D project does not use that engine. When you cannot
   tell whether an entry applies (2D or 3D, a module the project may not include),
-  scope the rule ("when using 3D physics: ??) or leave it out and list it as
+  scope the rule ("when using 3D physics: …") or leave it out and list it as
   unresolved. `/create-stories` reads this file, and rules that do not apply are
   rules nobody reads.
 - **Required patterns** from `current-best-practices.md`, when it exists.
@@ -138,19 +137,22 @@ Rules for every layer, each with its source (the `project.yaml` key,
 ## Control Manifest Preview
 Engine: [name + version]
 ADRs covered: [ADR numbers]
-ADRs left out: [ADR-NNNN ([status]), ????every ADR not in A, or "None"]
+ADRs left out: [ADR-NNNN ([status]), … — every ADR not in A, or "None"]
 Rules extracted:
   - Foundation layer: [N] required, [M] forbidden, [P] guardrails
   - Core layer: [N] required, [M] forbidden, [P] guardrails
-  - Feature layer: ??  - Presentation layer: ??  - Global: [N] naming conventions, [M] forbidden APIs, [P] approved libraries
+  - Feature layer: …
+  - Presentation layer: …
+  - Global: [N] naming conventions, [M] forbidden APIs, [P] approved libraries
 Unresolved: [engine entries left out because whether they apply is unclear, or "None"]
 ```
 
-Ask: "Does this rule summary look complete?" Options: Yes ??review and write it /
-Add rules ??I have more to include / Remove rules ??some should be dropped / Stop ??I need to review the ADRs first.
+Ask: "Does this rule summary look complete?" Options: Yes — review and write it /
+Add rules — I have more to include / Remove rules — some should be dropped / Stop —
+I need to review the ADRs first.
 
 **The technical review.** Read the `review_gate` line above. `skill-gates=skip`
-(solo or lean): no agent; note `TD-MANIFEST skipped ??[Solo | Lean] mode`.
+(solo or lean): no agent; note `TD-MANIFEST skipped — [Solo | Lean] mode`.
 `skill-gates=run`: hand the review to the `technical-director` agent with gate
 **TD-MANIFEST** (`.agent/docs/director-gates/td-manifest.md`; the agent reads it
 itself). Brief:
@@ -173,12 +175,13 @@ Act on the verdict:
 - **REJECT:** write nothing; fix the flagged rules and show the summary again.
 - **NOT ASSESSED:** it is not an approval (`.agent/docs/director-gates.md`). Name
   what was missing, then supply it and run the review again; or, when the user
-  chooses to go on without it, go to Phase 5 and state `TD-MANIFEST: NOT ASSESSED ??  [input]` in the reply and the final verdict line.
+  chooses to go on without it, go to Phase 5 and state `TD-MANIFEST: NOT ASSESSED —
+  [input]` in the reply and the final verdict line.
 
 ## Phase 5: Write the control manifest
 
 Ask: "May I write the control manifest to `docs/architecture/control-manifest.md`?"
-Options: Yes, write it / Show me the full draft first, then ask again / Not yet ??I
+Options: Yes, write it / Show me the full draft first, then ask again / Not yet — I
 want more changes. Write only on an explicit yes.
 
 ```markdown
@@ -188,7 +191,7 @@ want more changes. Write only on an explicit yes.
 > **Last Updated**: [date]
 > **Manifest Version**: [date]
 > **ADRs Covered**: [ADR-NNNN, ADR-MMMM, ...]
-> **Status**: Active ??regenerate with `/create-control-manifest update` when ADRs change
+> **Status**: Active — regenerate with `/create-control-manifest update` when ADRs change
 
 `Manifest Version` is the date this manifest was generated. Stories embed it when
 they are written, and `/story-readiness` compares a story's version with this one
@@ -206,13 +209,13 @@ read its ADR.
 *Applies to: scene management, event architecture, save/load, engine start-up*
 
 ### Required Patterns
-- **[rule]** ??source: [ADR-NNNN]
+- **[rule]** — source: [ADR-NNNN]
 
 ### Forbidden Approaches
-- **Never [anti-pattern]** ??[brief reason] ??source: [ADR-NNNN]
+- **Never [anti-pattern]** — [brief reason] — source: [ADR-NNNN]
 
 ### Performance Guardrails
-- **[system]**: max [N]ms/frame ??source: [ADR-NNNN]
+- **[system]**: max [N]ms/frame — source: [ADR-NNNN]
 
 ---
 
@@ -275,15 +278,15 @@ read its ADR.
 | Memory ceiling | [value] | [`performance.memory_ceiling_mb` in project.yaml, or technical-preferences.md] |
 
 ### Approved Libraries / Addons
-- [library] ??approved for [purpose] ??source: technical-preferences.md
+- [library] — approved for [purpose] — source: technical-preferences.md
 
 ### Forbidden APIs ([engine version])
 These APIs are deprecated or unverified for [engine + version]:
-- `[api name]` ??deprecated since [version] / unverified post-cutoff
+- `[api name]` — deprecated since [version] / unverified post-cutoff
 - Source: `docs/engine-reference/[engine]/deprecated-apis.md`
 
 ### Cross-Cutting Constraints
-- [constraint that applies in every layer] ??source: [ADR-NNNN, preference key or engine-reference file]
+- [constraint that applies in every layer] — source: [ADR-NNNN, preference key or engine-reference file]
 ```
 
 ## Phase 6: Next steps
@@ -295,6 +298,5 @@ These APIs are deprecated or unverified for [engine + version]:
 
 Every rule traces to an ADR, a technical preference or an engine reference doc;
 none is invented, and none is paraphrased in a way that changes its meaning. End
-with `Verdict: COMPLETE ??control manifest written` after the write, or `Verdict:
-BLOCKED ??user declined the write` when declined.
-
+with `Verdict: COMPLETE — control manifest written` after the write, or `Verdict:
+BLOCKED — user declined the write` when declined.

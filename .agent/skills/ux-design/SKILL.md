@@ -8,8 +8,7 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,docs.density` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is. No block ??defaults in
+Resolved above — use as-is. No block → defaults in
 `.agent/docs/config-resolution.md`.
 
 # UX Design
@@ -17,10 +16,10 @@ Resolved above ??use as-is. No block ??defaults in
 When this skill is invoked:
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-**Authoring guidance**: the skeletons below are self-contained ??author from them
+**Authoring guidance**: the skeletons below are self-contained — author from them
 directly. When a section needs depth (worked examples, pattern catalogs,
 accessibility criteria), the matching guide has it:
 
@@ -31,15 +30,15 @@ accessibility criteria), the matching guide has it:
 | Interaction patterns | `.agent/docs/templates/guidance/interaction-pattern-library-guide.md` (routes to three topic files) |
 | Accessibility requirements | `.agent/docs/templates/guidance/accessibility-requirements-guide.md` |
 
-**Load a guide per-section, never whole** ??each is organised by section and the
+**Load a guide per-section, never whole** — each is organised by section and the
 pointers in the templates name the exact section to read.
 
 **`workflow`** (see `.agent/docs/workflow-modes.md`):
-- `full` ??a UX spec is required per screen.
-- `standard` ??core screens only (main menu, HUD, primary game loop).
-- `minimal` ??not required. Can still be run voluntarily.
+- `full` — a UX spec is required per screen.
+- `standard` — core screens only (main menu, HUD, primary game loop).
+- `minimal` — not required. Can still be run voluntarily.
 
-**`docs.density`** ??it controls per-section *depth*, where `workflow`
+**`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which screens are specced. `modes.rigor` sets both together; set
 `docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = wireframe descriptions +
 interaction bullets; `balanced` = wireframes + paragraph descriptions of flows
@@ -60,15 +59,15 @@ Four authoring modes exist based on the argument:
 
 > **`accessibility` is the only mode that writes outside `design/ux/`.** Its
 > output is a project-wide standard the per-screen specs consult, not a spec for
-> one screen ??`.agent/docs/workflow-catalog.yaml`, the Pre-Production and
+> one screen — `.agent/docs/workflow-catalog.yaml`, the Pre-Production and
 > Polish gates, and `/architecture-review` all check
 > `design/accessibility-requirements.md` at that exact path. Do not "tidy" it
 > under `design/ux/`: every one of those checks would stop matching, and the
-> Technical Setup ??Pre-Production gate would become unpassable.
+> Technical Setup → Pre-Production gate would become unpassable.
 
-**If no argument is provided**, do not fail ??ask instead. Use `AskUserQuestion`:
+**If no argument is provided**, do not fail — ask instead. Use `AskUserQuestion`:
 - "What are we designing today?"
-  - Options: "A specific screen or flow (I'll name it)", "The game HUD", "The interaction pattern library", "The project-wide accessibility requirements", "I'm not sure ??help me figure it out"
+  - Options: "A specific screen or flow (I'll name it)", "The game HUD", "The interaction pattern library", "The project-wide accessibility requirements", "I'm not sure — help me figure it out"
 
 If the user selects "I'll name it" or types a screen name, normalize it to kebab-case
 for the filename (e.g., "Main Menu" becomes `main-menu`).
@@ -77,17 +76,17 @@ for the filename (e.g., "Main Menu" becomes `main-menu`).
 
 ## 2. Gather Context (Read Phase)
 
-**Read `references/2-gather-context.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/2-gather-context.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 3. Create File Skeleton
 
-**Read `references/3-file-skeleton.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/3-file-skeleton.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 4. Section-by-Section Authoring
 
-**Read `references/4-authoring.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/4-authoring.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
-### Section guidance ??read the ONE file for the active mode
+### Section guidance — read the ONE file for the active mode
 
 Per-section authoring guidance lives in its own file per mode. **When you reach
 Phase 4, read only the file matching the mode resolved in Section 1; never load
@@ -106,22 +105,22 @@ the other two.**
 > `/ux-review` and the gate files too. Same rule applies: load only the part
 > covering the section you are authoring, never the whole file.
 
-Apply `docs.density` (Section 1) to whatever that file tells you to author ??it
+Apply `docs.density` (Section 1) to whatever that file tells you to author — it
 controls the depth of each section, not which sections exist.
 
 ## 5. Cross-Reference Check
 
-**Read `references/5-crossref-handoff.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5-crossref-handoff.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 7. Recovery & Resume
 
 If the session is interrupted (compaction, crash, new session):
 
-1. Read `production/session-state/active.md` ??it records the current screen
+1. Read `production/session-state/active.md` — it records the current screen
    and which sections are complete.
-2. Read `design/ux/[filename].md` ??sections with real content are done;
+2. Read `design/ux/[filename].md` — sections with real content are done;
    sections with `[To be designed]` still need work.
-3. Resume from the next incomplete section ??no need to re-discuss completed ones.
+3. Resume from the next incomplete section — no need to re-discuss completed ones.
 
 This is why incremental writing matters: every approved section survives any
 disruption.
@@ -135,25 +134,25 @@ specific sub-topics, additional context or coordination may be needed:
 
 | Topic | Coordinate with |
 |-------|----------------|
-| Visual aesthetics, color, layout feel | `art-director` ??UX spec defines zones; art defines how they look |
-| Implementation feasibility (engine constraints) | `ui-programmer` ??before finalizing component inventory |
-| Gameplay data requirements | `game-designer` ??when data ownership is unclear |
-| Narrative/lore visible in the UI | `narrative-director` ??for flavor text, item names, lore panels |
-| Accessibility tier decisions | Recorded by this session (`/ux-design accessibility`; the user picks the tier) against the criteria `accessibility-specialist` defines and audits ??consult it when a requirement's criterion is unclear |
+| Visual aesthetics, color, layout feel | `art-director` — UX spec defines zones; art defines how they look |
+| Implementation feasibility (engine constraints) | `ui-programmer` — before finalizing component inventory |
+| Gameplay data requirements | `game-designer` — when data ownership is unclear |
+| Narrative/lore visible in the UI | `narrative-director` — for flavor text, item names, lore panels |
+| Accessibility tier decisions | Recorded by this session (`/ux-design accessibility`; the user picks the tier) against the criteria `accessibility-specialist` defines and audits — consult it when a requirement's criterion is unclear |
 
 When delegating to another agent via the `Agent` tool:
 - Provide: screen name, game concept summary, the specific question needing expert input
 - The agent returns analysis to this session
 - This session presents the agent's output to the user
 - The user decides; this session writes to file
-- Agents do NOT write to files directly ??this session owns all file writes
+- Agents do NOT write to files directly — this session owns all file writes
 
 ---
 
 ## Collaborative Protocol
 
 **In `collaborative` mode (the default).** For `guided` and `autonomous` modes,
-see the per-mode rules in `.agent/docs/automation-modes.md` ??the steps below
+see the per-mode rules in `.agent/docs/automation-modes.md` — the steps below
 describe what collaborative mode requires, not what applies universally.
 
 This skill follows the collaborative design principle at every step:
@@ -169,7 +168,7 @@ This skill follows the collaborative design principle at every step:
 5. **Session state updates**: After every section write
 
 **Aesthetic deference**: When layout or visual choices come down to personal taste,
-present the options and ask. Do not select a layout because it is "standard" ??always
+present the options and ask. Do not select a layout because it is "standard" — always
 confirm. The user is the creative director.
 
 **Conflict surfacing**: When a GDD requirement and the available screen real estate
@@ -181,7 +180,7 @@ a requirement. Never silently expand the layout without flagging it.
 **Never** contradict an existing approved UX spec without flagging the conflict.
 **Always** show where decisions come from (GDD requirements, player journey, user choices).
 
-Verdict: **COMPLETE** ??UX spec written and approved section by section.
+Verdict: **COMPLETE** — UX spec written and approved section by section.
 
 ---
 
@@ -190,4 +189,3 @@ Verdict: **COMPLETE** ??UX spec written and approved section by section.
 - Run `/ux-review [filename]` to validate this spec before it enters the implementation pipeline
 - Run `/ux-design [next-screen]` to continue designing remaining screens or flows
 - Run `/gate-check production` once all key screens have approved UX specs
-

@@ -1,6 +1,6 @@
 ---
 name: test-flakiness
-description: "Find flaky tests from CI logs ??aggregates pass rates, spots intermittent failures, recommends quarantine. After multiple runs."
+description: "Find flaky tests from CI logs — aggregates pass rates, spots intermittent failures, recommends quarantine. After multiple runs."
 argument-hint: "[ci-log-path | scan | registry]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(ls -t *), Bash(bash "*/.agent/skills/test-flakiness/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,16 +8,16 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Test Flakiness Detection
 
 A flaky test is one that sometimes passes and sometimes fails without any code
-change. Flaky tests are worse than no tests in some ways ??they train the team
+change. Flaky tests are worse than no tests in some ways — they train the team
 to ignore red CI runs, masking genuine failures. This skill identifies them,
 explains likely causes, and recommends whether to quarantine or fix each one.
 
@@ -34,19 +34,19 @@ explains likely causes, and recommends whether to quarantine or fix each one.
 ## 1. Parse Arguments
 
 **Modes:**
-- `/test-flakiness [ci-log-path]` ??analyse a specific CI run log file
-- `/test-flakiness scan` ??scan all available CI logs in `.github/` or
+- `/test-flakiness [ci-log-path]` — analyse a specific CI run log file
+- `/test-flakiness scan` — scan all available CI logs in `.github/` or
   standard log output directories
-- `/test-flakiness registry` ??read existing regression-suite.md quarantine
+- `/test-flakiness registry` — read existing regression-suite.md quarantine
   section and provide remediation guidance for already-known flaky tests
-- No argument ??auto-detect: run `scan` if CI logs are accessible, else
+- No argument — auto-detect: run `scan` if CI logs are accessible, else
   `registry`
 
 ---
 
 ## 2. Locate CI Log Data
 
-### Option A ??GitHub Actions (preferred)
+### Option A — GitHub Actions (preferred)
 
 Check for test result artifacts:
 ```bash
@@ -62,15 +62,15 @@ For Unity projects: game-ci test runner outputs NUnit XML to `test-results/`
 by default.
 
 For Unreal projects: automation logs go to `Saved/Logs/`. Grep for
-`Result={Success}` and `Result={Fail}` ??each test prints
+`Result={Success}` and `Result={Fail}` — each test prints
 `Test Completed. Result={<status>}`
 (`docs/engine-reference/unreal/current-best-practices.md`, "Command Line").
 
-### Option B ??Local log files
+### Option B — Local log files
 
 If a path argument is provided, read that file directly.
 
-### Option C ??No log data available
+### Option C — No log data available
 
 If no logs found:
 > "No CI log data found. To detect flaky tests, this skill needs test result
@@ -93,7 +93,7 @@ For each CI log or result file found, parse:
 - Grep for `<failure` or `<error` to identify failures
 - Parse `classname` and `name` attributes for full test identifiers
 
-**NUnit XML format** (Unity ??the file whose `<test-run>` element `/smoke-check`
+**NUnit XML format** (Unity — the file whose `<test-run>` element `/smoke-check`
 reads):
 - Each test is a `<test-case` element; its `fullname` attribute is the identifier
 - Its `result` attribute is `Passed`, `Failed`, `Inconclusive` or `Skipped`
@@ -106,7 +106,7 @@ reads):
   - Unreal: `Result={Success}` / `Result={Fail}`
   - Unity: `Test passed` / `Test failed`
 
-Build a table: `test_id ??[run1_result, run2_result, run3_result, ...]`
+Build a table: `test_id → [run1_result, run2_result, run3_result, ...]`
 
 ---
 
@@ -116,9 +116,9 @@ A test is **flaky** if it appears in the result history with both PASS and
 FAIL outcomes across runs with no code changes between them.
 
 Flakiness thresholds:
-- **High flakiness**: Fails in >25% of runs ??quarantine immediately
-- **Moderate flakiness**: Fails in 5??5% of runs ??investigate and fix soon
-- **Low/suspected flakiness**: Fails in 1??% of runs ??monitor; may be
+- **High flakiness**: Fails in >25% of runs — quarantine immediately
+- **Moderate flakiness**: Fails in 5–25% of runs — investigate and fix soon
+- **Low/suspected flakiness**: Fails in 1–5% of runs — monitor; may be
   genuinely rare failure
 
 **With fewer than 3 runs, every finding is *suspected*, whatever its fail rate.**
@@ -154,24 +154,25 @@ For each flaky test:
 > log it in the `tests/regression-suite.md` quarantine section, and fix the root
 > cause before removing quarantine."
 
-Skip mechanisms, by engine ??name only the one for the project's engine:
-- **Godot (gdUnit4), GDScript**: a skip parameter on the test function ??  `func test_x(_do_skip := true, _skip_reason := "flaky: [cause]")`. gdUnit4 reads
+Skip mechanisms, by engine — name only the one for the project's engine:
+- **Godot (gdUnit4), GDScript**: a skip parameter on the test function —
+  `func test_x(_do_skip := true, _skip_reason := "flaky: [cause]")`. gdUnit4 reads
   the argument names `do_skip` and `skip_reason` (a leading `_` is allowed) in
   `addons/gdUnit4/src/core/GdUnitTestSuiteScanner.gd`, as of gdUnit4 6.2.2;
   confirm them there for the installed version.
-- **Godot (gdUnit4), C#**: **NOT SOURCEABLE** ??gdUnit4's C# test attributes are
+- **Godot (gdUnit4), C#**: **NOT SOURCEABLE** — gdUnit4's C# test attributes are
   not in the `addons/gdUnit4/` source, and `docs/engine-reference/godot/` does not
   cover them. Log it in the quarantine section and ask the user how their C#
   tests are skipped; do not invent an attribute.
-- **Unity (NUnit)**: `[Ignore("flaky: [cause]")]` ??NUnit 3 requires the reason
-- **Unreal**: **NOT SOURCEABLE** ??`docs/engine-reference/unreal/` documents no way
+- **Unity (NUnit)**: `[Ignore("flaky: [cause]")]` — NUnit 3 requires the reason
+- **Unreal**: **NOT SOURCEABLE** — `docs/engine-reference/unreal/` documents no way
   to skip an automation test. Log it in the quarantine section and ask the user
   how their CI excludes a test; do not invent a flag.
 
 **Investigate and fix soon (Moderate):**
 > "This test is intermittently unreliable. Root cause appears to be [cause].
 > Suggested fix: [specific fix based on cause classification]. Do not quarantine
-> yet ??fix the test directly."
+> yet — fix the test directly."
 
 **Monitor (Low/suspected):**
 > "This test shows suspected flakiness. Collect more run data before
@@ -199,11 +200,11 @@ Skip mechanisms, by engine ??name only the one for the project's engine:
 
 ### Clean Tests (no flakiness detected)
 
-[N] tests ran across [N] runs with consistent results ??no flakiness detected.
+[N] tests ran across [N] runs with consistent results — no flakiness detected.
 
 ### Data Limitations
 
-[Note if fewer than 5 runs were available ??fewer runs = less statistical confidence]
+[Note if fewer than 5 runs were available — fewer runs = less statistical confidence]
 ```
 
 ---
@@ -214,7 +215,7 @@ Ask: "May I update the quarantine section of `tests/regression-suite.md`
 with the flaky tests found?"
 
 If yes: use `Edit` to append entries to the Quarantined Tests table.
-Never remove existing quarantine entries ??only add new ones.
+Never remove existing quarantine entries — only add new ones.
 
 Ask (separately): "May I write a full flakiness report to
 `production/qa/flakiness-report-[date].md`?"
@@ -226,7 +227,8 @@ After writing:
 
 - For each quarantined test: "Add the engine-specific skip annotation to
   disable this test in CI. Re-enable after the root cause is fixed."
-- For fix-eligible tests: "The fix for [test] is straightforward ??  change the equality comparison on line [N] to use `is_equal_approx`."
+- For fix-eligible tests: "The fix for [test] is straightforward —
+  change the equality comparison on line [N] to use `is_equal_approx`."
 - Summary: "Once all quarantine annotations are applied, CI should run green.
   Schedule fix work for the [N] quarantined tests before the release gate."
 
@@ -234,13 +236,12 @@ After writing:
 
 ## Collaborative Protocol
 
-- **Never delete test files** ??quarantine means annotate + list, not remove
-- **Statistical confidence matters** ??with < 3 runs, flag findings as
+- **Never delete test files** — quarantine means annotate + list, not remove
+- **Statistical confidence matters** — with < 3 runs, flag findings as
   "suspected" not "confirmed"; ask if more run data is available
-- **Fix is always the goal** ??quarantine is temporary; surface the fix
+- **Fix is always the goal** — quarantine is temporary; surface the fix
   direction even when recommending quarantine
-- **Ask before writing** ??both the regression-suite update and the report
-  file require explicit approval. On write: Verdict: **COMPLETE** ??flakiness report written. On decline: Verdict: **BLOCKED** ??user declined write.
-- **Flakiness in CI is a team problem** ??surface the list and recommended
+- **Ask before writing** — both the regression-suite update and the report
+  file require explicit approval. On write: Verdict: **COMPLETE** — flakiness report written. On decline: Verdict: **BLOCKED** — user declined write.
+- **Flakiness in CI is a team problem** — surface the list and recommended
   actions clearly; do not just silently quarantine without the team knowing
-

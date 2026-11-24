@@ -1,4 +1,4 @@
-# /prototype ??One-shot 1: The questions and the brief
+# /prototype — One-shot 1: The questions and the brief
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -8,8 +8,8 @@ the effort. So the one-shot asks one round of questions drawn from the genre's s
 brief from the answers, and shows it. **The brief is the card:** **Build it** is the person's
 yes to everything this route writes; nothing is built or written before it.
 
-**In this file:** 1 What to build from 쨌 2 Match the genres 쨌 3 Ask 쨌 4 Write the brief 쨌 5 Show
-the brief 쨌 6 On Build it
+**In this file:** 1 What to build from · 2 Match the genres · 3 Ask · 4 Write the brief · 5 Show
+the brief · 6 On Build it
 
 ## 1. What to build from
 
@@ -63,7 +63,7 @@ dice contradict.
 
 Each row under `chipsets:` in `.agent/genres/chipsets.yaml` is a genre, matched by meaning on
 its name, `is` and `matches` lines and never shown as a menu. Match every genre in the person's
-words: "a Pok챕mon-like with auto-battles" is creature-collector and auto-battler. Read the sheet of
+words: "a Pokémon-like with auto-battles" is creature-collector and auto-battler. Read the sheet of
 each match, `.agent/genres/chipsets/<name>.md`, and no other. A sheet holds what the
 questions and the brief draw on:
 
@@ -121,7 +121,7 @@ round:** what is still open, skipped or "you pick" takes the default, *provision
 brief.
 
 **A vague idea gets pitches first.** When their words name a genre or a game and little more ("a
-game like Pok챕mon", "a racing game"), the message opens with two or three pitches, numbered, each
+game like Pokémon", "a racing game"), the message opens with two or three pitches, numbered, each
 one line: what you do, how you lose, what you see, and the feeling. Each picks differently among
 the sheet's Choices and Feel variants, and the first takes the defaults throughout. It is still
 the one round: a pitch's number, a mix or their own idea answers the questions the pitch covers,
@@ -151,7 +151,7 @@ because a question was skipped, left open or answered "you pick" is *(provisiona
 *(guessed)*: *(guessed)* is for a field nobody asked about.
 
 - **In your words:** their words exactly as typed, then each answer after its number and a short
-  name ("3. Look: like Pok챕mon Black and White"). Every look, view and reference word in them
+  name ("3. Look: like Pokémon Black and White"). Every look, view and reference word in them
   ("2.5D", "flat vector", "like Manor Lords") is built as written.
 - **Look and references:** the look in words (the view, the camera, the shapes, the palette with
   its roles, one signature detail), written as `art-direction.md` says: their named look built
@@ -188,8 +188,8 @@ because a question was skipped, left open or answered "you pick" is *(provisiona
   line under Core loop names each.
 - **Intent:** only the person's words (*you said*), a named reference (from <reference>), or, for
   a "you pick" goal or failure, *no goal to reach* or *soft or no failure* (*provisional*). Its
-  entries: *no goal to reach* 쨌 *soft or no failure* 쨌 *payoff builds* 쨌 *staged failure* 쨌
-  *needs N players* 쨌 *outside the window*. Often empty.
+  entries: *no goal to reach* · *soft or no failure* · *payoff builds* · *staged failure* ·
+  *needs N players* · *outside the window*. Often empty.
 - **A game they ask to copy** ("make X", "a clone of X", "X with the same UI", "X's
   characters"): never build the copy. Ask one question first: "An original game in the genre of
   X, or X with your own twist?", build what they pick, and Avoid gets "X's name, art, characters
@@ -201,9 +201,9 @@ because a question was skipped, left open or answered "you pick" is *(provisiona
 Show the whole brief, then these lines under it:
 
 ```text
-Effort: this session's 쨌 "build it at medium" is cheaper and quicker, with a thinner game
-Engine: web (<mark>) 쨌 Your goal: <goal> (<mark>)
-Model: <the model you run on> 쨌 the one-shot is tuned on Opus: /model switches before Build it
+Effort: this session's · "build it at medium" is cheaper and quicker, with a thinner game
+Engine: web (<mark>) · Your goal: <goal> (<mark>)
+Model: <the model you run on> · the one-shot is tuned on Opus: /model switches before Build it
 Guessed: <each field you filled, in a few words>
 Writes: design/game-brief.md, prototypes/<name>/
 ```
@@ -259,4 +259,3 @@ Ask with the question tool: "Build this?" Options: Build it / Change something.
    it was not saved and why, ask them to drop the file into `references/` to keep it, and build
    from what you saw. It never holds the build up.
 4. Go on to One-shot 2.
-

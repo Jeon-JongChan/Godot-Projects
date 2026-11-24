@@ -7,9 +7,8 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash 
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
-block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.agent/docs/config-resolution.md`.
 
 # Prototype
 
@@ -28,7 +27,7 @@ Every route ends on PROCEED, PIVOT or KILL, or NOT ASSESSED when nobody has play
 Ask with the question tool. Without one, list the options numbered and end your turn to wait. The
 question is the last thing in the reply: nothing after it. A skipped or dismissed question is
 not an answer: ask again in plain text. Every ask follows
-`.agent/docs/automation-modes.md` (collaborative asks always 쨌 guided major-only 쨌 autonomous
+`.agent/docs/automation-modes.md` (collaborative asks always · guided major-only · autonomous
 logs and proceeds; `automation_always_ask` categories always prompt).
 
 ## Choose the route
@@ -96,45 +95,45 @@ Phases 1-9 are the engine and paper route.
 
 ## Phase 1: Define the Question
 
-**Read `references/1-question.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/1-question.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 2: Load Concept Context
 
-**Read `references/2-load-context.md` now and follow it** (its fallback is `.agent/docs/technical-preferences.md`) ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/2-load-context.md` now and follow it** (its fallback is `.agent/docs/technical-preferences.md`) — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 3: Choose the Prototype Path
 
-**Read `references/3-choose-path.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/3-choose-path.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 4: Plan the Prototype
 
-**Read `references/4-plan.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/4-plan.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 5: Implement
 
-**Read `references/5-implement.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5-implement.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 6: Playtest Debrief
 
-**Read `references/6-debrief.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/6-debrief.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 7: Generate Prototype Report
 
-**Read `references/7-report.md` and `.agent/docs/templates/prototype-report.md` now, and follow the first** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/7-report.md` and `.agent/docs/templates/prototype-report.md` now, and follow the first** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 8: Creative Director Review
 
-**Read `references/8-cd-review.md` now and follow it** (the gates are in `.agent/docs/director-gates.md`) ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/8-cd-review.md` now and follow it** (the gates are in `.agent/docs/director-gates.md`) — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Phase 9: Summary and Next Steps
 
-**Read `references/9-summary.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/9-summary.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Spike Mode
 
 **Triggered by:** `--spike` typed after the skill name, or "Mid-production spike" chosen in Phase 1.
 
-**Read `references/spike-mode.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/spike-mode.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Important Constraints
 
@@ -160,4 +159,3 @@ Phases 1-9 are the engine and paper route.
 - If stuck after 2 hours of engine iteration, reframe the question or switch paths.
 - On PROCEED, production code is written from scratch; the prototype's code is never refactored
   into production. (A one-shot instead may grow into the project, on PROCEED's grow question.)
-

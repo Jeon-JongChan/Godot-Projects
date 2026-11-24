@@ -1,4 +1,4 @@
-# /setup-engine ??Web (a browser game: Vite and TypeScript)
+# /setup-engine — Web (a browser game: Vite and TypeScript)
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -7,8 +7,8 @@ Read when the engine is **Web** (`/setup-engine web`). For Web it replaces
 Sections 3, 6, 7 and 7.5 and gives the values Sections 4, 5 and 5.5 write;
 Sections 8 and 12 still apply. Never load `godot-language-config.md`.
 
-**In this file:** W1 An existing web project 쨌 W2 Node, the starter and the versions 쨌 W3 The
-values to write 쨌 W4 The reference docs 쨌 W5 The scaffold 쨌 W6 Build, test and look 쨌
+**In this file:** W1 An existing web project · W2 Node, the starter and the versions · W3 The
+values to write · W4 The reference docs · W5 The scaffold · W6 Build, test and look ·
 W7 No engine specialist agent
 
 Web is a toolchain, not one engine (`docs/engine-reference/web/VERSION.md`): Vite,
@@ -38,8 +38,8 @@ language and tests stay its own. W1 replaces W2 to W6 for it (W7, and Sections
    the code root, test root, language, bundler and version, test runner,
    library and hook. Then:
    - **`code_root -`** (no `src/`): ask where the game's code is, offering each
-     `code_root_candidate` (`.` is a flat game) ??it becomes `engine.code_root`.
-   - **`test_root ??write`**: `engine.test_root` is that folder. `table`:
+     `code_root_candidate` (`.` is a flat game) — it becomes `engine.code_root`.
+   - **`test_root … write`**: `engine.test_root` is that folder. `table`:
      nothing to write.
    - **`test_runner other`**: say its results are read by exit code only, so a
      run of zero tests looks like a pass. **`none`**: say the checks that run
@@ -49,7 +49,7 @@ language and tests stay its own. W1 replaces W2 to W6 for it (W7, and Sections
      ```markdown
      - **Engine**: Web (<bundler> <engine_version>; <library> <range>, when there is one)
      - **Language**: <language>
-     - **Build System**: <bundler> ??`<build command>` (the project's own scripts; no single-file build)
+     - **Build System**: <bundler> — `<build command>` (the project's own scripts; no single-file build)
      - **Asset Pipeline**: the project's own, as it is
      ```
      With no bundler: `Web (no bundler: the files as they are)`.
@@ -75,7 +75,7 @@ language and tests stay its own. W1 replaces W2 to W6 for it (W7, and Sections
    the dependencies your usual way, then run `/smoke-check`". Then run the
    `build` command and `bash .agent/scripts/test-run.sh web`, and report each:
    command, exit code, the `runner` and `rule` rows. `web:no-test-script` is
-   `NOT ASSESSED ??no tests`. A build writes only to the project's own output
+   `NOT ASSESSED — no tests`. A build writes only to the project's own output
    folder.
 9. **Look:** shoot the build's own `index.html` from disk:
    `bash .agent/scripts/page-shot.sh <build folder>/index.html
@@ -84,8 +84,8 @@ language and tests stay its own. W1 replaces W2 to W6 for it (W7, and Sections
    its own images and data, as it does from a server. Read the image and say
    what is on screen, with any `uncaught` lines (the game's own errors, which
    Claude Code Game Studios reports and does not fix here). A blank page whose console says a file
-   from the root (`/assets/??, Vite's default `base`) did not load is
-   `NOT ASSESSED ??the build asks for files from the server's root, which a
+   from the root (`/assets/…`, Vite's default `base`) did not load is
+   `NOT ASSESSED — the build asks for files from the server's root, which a
    page opened from disk cannot reach`; never start `commands.run` and never
    change the game's config to get round it.
 10. **The game-state hook** (`hook absent`): say which checks read NOT ASSESSED
@@ -149,7 +149,7 @@ example `Web (Vite 8.3.4, TypeScript 7.0.2, Phaser 4.2.1)`.
 ```markdown
 - **Engine**: Web (Vite 8.3.4, TypeScript 7.0.2)
 - **Language**: TypeScript
-- **Build System**: Vite ??`npm run build` for `dist/`, `npm run build:single` for one self-contained HTML file
+- **Build System**: Vite — `npm run build` for `dist/`, `npm run build:single` for one self-contained HTML file
 - **Asset Pipeline**: plain files in `assets/`, imported in the code
 ```
 
@@ -214,9 +214,9 @@ differs. Do not edit `VERSION.md`: its
 
 1. Show what would be made:
    `bash .agent/scripts/web-scaffold.sh --dry-run --title "<the game's name>" --starter <starter>`
-   ??the brief's working title, else the project folder's name; the starter from
+   — the brief's working title, else the project folder's name; the starter from
    W2 (its `starter` row names the library and version). Each
-   `WOULD_CREATE` row is a file; each `gitignore ??missing` row is a line the
+   `WOULD_CREATE` row is a file; each `gitignore … missing` row is a line the
    project's `.gitignore` lacks (build output, test reports).
 2. Ask: "May I create these files and add the missing lines to `.gitignore`?"
    On a yes, run it again without `--dry-run`, with `--gitignore` and the same
@@ -239,7 +239,7 @@ After `npm ci`, run each and report its command, exit code and result:
      browser `page-shot.sh --which` finds. Ask before
      `npx playwright install chromium-headless-shell` (a download of about
      100 MB to your home folder), then run the tests again. Declined: the
-     browser tests are `NOT ASSESSED ??no browser`, by name.
+     browser tests are `NOT ASSESSED — no browser`, by name.
 3. Keep one screenshot: `bash .agent/scripts/page-shot.sh dist-single/index.html
    production/qa/evidence/setup-engine-web/01-title.png`. Read the image and say
    what is on screen; the title screen shows the game's name and its controls.
@@ -252,4 +252,3 @@ After `npm ci`, run each and report its command, exit code and result:
 Web has no engine specialist agent: skip Section 9 and say so in one line.
 Engine work and API checks go to `lead-programmer` against
 `docs/engine-reference/web/`.
-

@@ -8,8 +8,7 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is. No block → defaults in `.agent/docs/config-resolution.md`.
 
 # Cut
 
@@ -60,7 +59,7 @@ Build order give the reasons.
     in one line. Fix nothing: each error, bot stop and `changed` or `gone` keep row becomes a
     polish row.
 
-  These rows end `쨌 from: light check of <date>`. The stale `record` row stays; its `open` rows
+  These rows end `· from: light check of <date>`. The stale `record` row stays; its `open` rows
   still count.
 - **A project:** `smoke <command>`: run `timeout 900 <command>` once, as it is: no pipe, redirect
   or second command (the permission is for that command alone). A failure is a polish row
@@ -83,7 +82,7 @@ it". **Never propose an item a Keep line names.** The person can still name any 
 marked `[x]` with the other writes.
 
 **Polish rows** come from what exists, never invented: each `open` row, each smoke failure, and what the person adds. Each row ends
-`쨌 from: <source>`: `<check> check of <date>`, `smoke run of <date>` or `you said`. The person's rows and ticks stay; a row whose
+`· from: <source>`: `<check> check of <date>`, `smoke run of <date>` or `you said`. The person's rows and ticks stay; a row whose
 source now passes is ticked, said in one line. Rows about a cut item go with the cut.
 
 ## Phase 3: Dates, for sell, early_access and publisher only
@@ -106,14 +105,14 @@ Any other goal gets no date, asked or shown.
 ## Phase 4: The screen and the pick
 
 ```text
-/cut 쨌 <title> 쨌 Goal: <goal> (set | guessed)
+/cut · <title> · Goal: <goal> (set | guessed)
 Cut? You pick; nothing is cut without your pick.
   1. [ ] <item>
-     쨌 <reason>
-Staying: <n> built features 쨌 Never offered: your <n> Keep lines
+     · <reason>
+Staying: <n> built features · Never offered: your <n> Keep lines
 Polish: <n> rows, from <the sources>
-Dates: target <date> (<what>) 쨌 freeze <date>
-Writes: <the briefs>, <the polish list>, <each story> 쨌 one commit
+Dates: target <date> (<what>) · freeze <date>
+Writes: <the briefs>, <the polish list>, <each story> · one commit
 ```
 
 Leave out the Dates line for a goal that gets none, and Cut? when there is nothing to propose.
@@ -128,8 +127,8 @@ freeze as Phase 3 says.
 Run `bash .agent/scripts/cut-apply.sh` with `--brief <path>` for each `brief` row and:
 
 - `--cut <n> "<reason>"` for each picked item: it leaves Features for the end of Out of scope as
-  `- [-] <item> 쨌 cut: <reason> (<date>)`, plus ` 쨌 was built` when it was `[x]`; its story's
-  Status becomes `Blocked ??BLOCKED: cut by /cut <date>: <reason>`, a status `/dev-story` stops on
+  `- [-] <item> · cut: <reason> (<date>)`, plus ` · was built` when it was `[x]`; its story's
+  Status becomes `Blocked — BLOCKED: cut by /cut <date>: <reason>`, a status `/dev-story` stops on
   (a Complete story keeps its status: `story moved`).
 - `--mark <n>` for each mark brought up to date.
 - `--dates <target> <freeze> "<what>"` when dates were given.
@@ -141,9 +140,9 @@ nothing was written: fix the arguments and run it again. A cut built item stays 
 it is taken out, an ordinary change: say "say 'take out <item>' to remove it".
 
 Commit when `git rev-parse --is-inside-work-tree` succeeds, the pick being the commit instruction:
-`git add <each wrote path, design/ ones first>`, then `git commit -m "docs: cut <items> 쨌 dates 쨌
+`git add <each wrote path, design/ ones first>`, then `git commit -m "docs: cut <items> · dates ·
 polish list (<n> rows)" -m "Brief: design/game-brief.md" -- <the same paths>`. Leave out
-`cut <items> 쨌 ` when nothing was cut, and `dates 쨌 ` when the Dates line did not change. No git:
+`cut <items> · ` when nothing was cut, and `dates · ` when the Dates line did not change. No git:
 "Not committed: this project has no git." Say in one line what was written.
 
 Next step: build what is left before the freeze (`/create-stories` writes a story for each
@@ -157,4 +156,3 @@ not-yet item in a project), and work down the polish list.
 - **"Move the dates":** Phase 3 again, with the recorded dates shown, then write and commit as
   Phase 5 does.
 - Nothing blocks or warns on the freeze date in this version: only /cut reads it back.
-

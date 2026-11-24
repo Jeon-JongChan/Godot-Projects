@@ -1,6 +1,6 @@
 ---
 name: content-audit
-description: "Audit GDD content counts against what's implemented ??planned vs built."
+description: "Audit GDD content counts against what's implemented — planned vs built."
 argument-hint: "[system-name | --summary | (no arg = full audit)]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/content-audit/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,13 +8,13 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-Resolved above ??use as-is. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is. No block → defaults in `.agent/docs/config-resolution.md`.
 
 # Content Audit
 
@@ -22,54 +22,55 @@ Resolved above ??use as-is. No block ??defaults in `.agent/docs/config-resolutio
 > ("audit only specs in the required sections") follows the resolved tier, never
 > an assumed one. When a required input such as `design/gdd/systems-index.md` is
 > absent, report
-> **`NOT ASSESSED ??NO DATA`** rather than computing a gap percentage (which
+> **`NOT ASSESSED — NO DATA`** rather than computing a gap percentage (which
 > divides by zero when nothing is specified).
 
 
 When this skill is invoked:
 
 Parse the argument:
-- No argument ??full audit across all systems
-- `[system-name]` ??audit that single system only
-- `--summary` ??summary table only, no file write
+- No argument → full audit across all systems
+- `[system-name]` → audit that single system only
+- `--summary` → summary table only, no file write
 
 ---
 
 **`workflow`** (see `.agent/docs/workflow-modes.md`):
-- `full` ??full content-count audit against all GDD specs.
-- `standard` ??audit only specs in the required sections; list any count found
+- `full` — full content-count audit against all GDD specs.
+- `standard` — audit only specs in the required sections; list any count found
   outside them as not audited at this tier.
-- `minimal` ??cannot run (no systems index exists).
+- `minimal` — cannot run (no systems index exists).
 
-## Insufficient input ??check this before producing any report
+## Insufficient input — check this before producing any report
 
-**If the inputs this skill needs do not exist, the answer is "could not run" ??not a filled-in report.** Check first, and stop if the check fails.
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
 
 1. List the inputs this skill reads (data files, prior reports, profiler output,
    test results, registries, source code).
-2. For each, record `FOUND` or `ABSENT` ??not "assumed present".
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
 3. If any input required for a section is ABSENT, that section is
-   **`NOT ASSESSED ??NO DATA`**. Do not estimate it, do not infer it from an
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
    adjacent artifact, and do not leave a mandated cell to be filled by whoever
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
-   **`NOT ASSESSED ??NO DATA`** as the whole verdict, naming what was missing and
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
    which skill produces it (`/map-systems` for `design/gdd/systems-index.md`, `/design-system` for the GDDs).
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
 specific: a report whose verdict enum has no "could not run" state produces
-**false clean passes** ??an asset audit returning COMPLIANT on a project with no
+**false clean passes** — an asset audit returning COMPLIANT on a project with no
 assets and no standards, or a performance profile reporting ">99% headroom against
 a 16.67ms budget" with zero profiler data and no budget ever set.
 
 **Absence of evidence is never evidence of absence.** A scan that finds no
 matches because there are no files to scan has not verified anything. Say which of
-the two happened ??a reader cannot tell from a green result.
+the two happened — a reader cannot tell from a green result.
 
 ---
 
-## Phase 1 ??Context Gathering
+## Phase 1 — Context Gathering
 
 1. **Read `design/gdd/systems-index.md`** for the full list of systems, their
    categories, and MVP/priority tier. Read it by section: find the headings you need
@@ -84,13 +85,13 @@ the two happened ??a reader cannot tell from a green result.
    ```
    `- name:` appears in all four registry sections; keep only the names whose
    `-A 2` context shows they sit under `entities:` or `items:` (the named
-   content this audit counts ??not `formulas:`/`constants:`). Use those as the
+   content this audit counts — not `formulas:`/`constants:`). Use those as the
    **planned** named-content set without full-reading the GDDs that own them.
    **If `design/registry/entities.yaml` does not exist or has no entries** (it
    ships as an empty stub until `/design-system` populates it), skip this step
-   and rely on the GDD scan below ??behaviour is unchanged, only more expensive.
+   and rely on the GDD scan below — behaviour is unchanged, only more expensive.
 
-3. **L0 pre-scan**: Before full-reading any GDDs, run **two** greps ??they
+3. **L0 pre-scan**: Before full-reading any GDDs, run **two** greps — they
    answer different questions and must not share a pattern:
 
    a. Which GDDs carry a Summary (the denominator / fail-open check):
@@ -110,14 +111,14 @@ the two happened ??a reader cannot tell from a green result.
 
    **Fail open on a missing Summary.** Establish the denominator: glob
    `design/gdd/*.md` and count **N**. **Scan (a)** matching fewer than N means
-   those GDDs predate `## Summary` ??never treat an absent Summary as a system
+   those GDDs predate `## Summary` — never treat an absent Summary as a system
    out of scope; a zero-match (a) means "no GDD carries a Summary yet", not "no
    auditable content". Full-read the unmatched in-scope GDDs.
 
    For a single-system audit: skip this step and go straight to full-read.
    For a full audit: full-read the GDDs that **scan (b)** matched
    **and are not already fully covered by the registry entries from step 2**,
-   plus every GDD scan (a) missed ??**the fail-open rule wins over this
+   plus every GDD scan (a) missed — **the fail-open rule wins over this
    narrowing**: a GDD with no `## Summary` is full-read even when scan (b) did
    not match it. Only a GDD that has a Summary and no content-count language (a
    pure mechanics GDD) is noted as "No auditable content counts" without a full
@@ -128,7 +129,7 @@ the two happened ??a reader cannot tell from a green result.
    headings (found with the Grep tool: pattern `^#`, content mode), since a
    whole-file Read over 40 KB is refused.
 
-5. **For each GDD, extract explicit content counts or lists**, noting the `##` section each sits under ??at `standard`, a count outside the required sections (`.agent/docs/workflow-modes.md`) goes on the "Not audited at this tier" list, never into the inventory. Look for patterns
+5. **For each GDD, extract explicit content counts or lists**, noting the `##` section each sits under — at `standard`, a count outside the required sections (`.agent/docs/workflow-modes.md`) goes on the "Not audited at this tier" list, never into the inventory. Look for patterns
    like:
    - "N enemies" / "enemy types:" / list of named enemies
    - "N levels" / "N areas" / "N maps" / "N stages"
@@ -144,31 +145,32 @@ the two happened ??a reader cannot tell from a green result.
    |--------|-------------|---------------------|------------|
 
    Note: If a GDD describes content qualitatively but gives no count, record
-   "Unspecified" and flag it ??unspecified counts are a design gap worth noting.
+   "Unspecified" and flag it — unspecified counts are a design gap worth noting.
 
 ---
 
-## Phase 2 ??Implementation Scan
+## Phase 2 — Implementation Scan
 
 For each content type found in Phase 1, scan the relevant directories to count
 what has been implemented. Use Glob and Grep to locate files.
 
-**On Unreal, content lives in `Content/`** ??maps and data assets both ??and the
-code root (`Source/<Module>/`) holds only C++. So on Unreal, every `assets/?? glob
+**On Unreal, content lives in `Content/`** — maps and data assets both — and the
+code root (`Source/<Module>/`) holds only C++. So on Unreal, every `assets/…` glob
 below also runs under `Content/` (`*.uasset` in place of the data extensions),
 and levels are `Content/**/*.umap`. Skipping this finds zero levels on every
 Unreal project and reports them NOT STARTED.
 
-**On Unity, content lives under `Assets/`** (compare the case exactly ??`.agent/docs/code-root-resolution.md`), and rarely in a `data/` folder. So on
-Unity every `assets/?? glob below also runs under `Assets/`, without requiring
-a `data/` segment ??for items, `Assets/**/items/**`, `Assets/**/Items/**` and
-`Assets/**/*Item*.asset` ??and data files include `.asset` (ScriptableObjects)
+**On Unity, content lives under `Assets/`** (compare the case exactly —
+`.agent/docs/code-root-resolution.md`), and rarely in a `data/` folder. So on
+Unity every `assets/…` glob below also runs under `Assets/`, without requiring
+a `data/` segment — for items, `Assets/**/items/**`, `Assets/**/Items/**` and
+`Assets/**/*Item*.asset` — and data files include `.asset` (ScriptableObjects)
 and `.prefab`. Skipping this finds zero items, abilities, quests and dialogue
 on a Unity project and reports them NOT STARTED.
 
 **Levels / Areas / Maps:**
 - Glob `assets/**/*.tscn`, `assets/**/*.unity`, `assets/**/*.umap`
-- Glob the **code root** for scene files: `*.tscn` (Godot), `*.unity` (Unity); on Unreal, `Content/**/*.umap` instead (above). Web has no scene files: its levels are data files in a `levels/` folder under `data/` or `assets/data/`. Resolve the root per `.agent/docs/code-root-resolution.md`. **If the code root is unresolved, report `NOT ASSESSED ??code root unresolved` rather than zero hits.**
+- Glob the **code root** for scene files: `*.tscn` (Godot), `*.unity` (Unity); on Unreal, `Content/**/*.umap` instead (above). Web has no scene files: its levels are data files in a `levels/` folder under `data/` or `assets/data/`. Resolve the root per `.agent/docs/code-root-resolution.md`. **If the code root is unresolved, report `NOT ASSESSED — code root unresolved` rather than zero hits.**
 - Look for scene files in subdirectories named `levels/`, `areas/`, `maps/`,
   `worlds/`, `stages/`
 - Count unique files that appear to be level/scene definitions (not UI scenes)
@@ -198,14 +200,14 @@ on a Unity project and reports them NOT STARTED.
 - Look for `.json`, `.yaml` definition files
 
 **Engine-specific notes (acknowledge in the report):**
-- Counts are approximations ??the skill cannot perfectly parse every engine
+- Counts are approximations — the skill cannot perfectly parse every engine
   format or distinguish editor-only files from shipped content
 - Scene files may include both gameplay content and system/UI scenes; the scan
   counts all matches and notes this caveat
 
 ---
 
-## Phase 3 ??Gap Report
+## Phase 3 — Gap Report
 
 Produce the gap table:
 
@@ -215,10 +217,10 @@ Produce the gap table:
 ```
 
 **Status categories:**
-- `COMPLETE` ??Found ??Specified (100%+)
-- `IN PROGRESS` ??Found is 50??9% of Specified
-- `EARLY` ??Found is 1??9% of Specified
-- `NOT STARTED` ??Found is 0
+- `COMPLETE` — Found ≥ Specified (100%+)
+- `IN PROGRESS` — Found is 50–99% of Specified
+- `EARLY` — Found is 1–49% of Specified
+- `NOT STARTED` — Found is 0
 
 **Priority flags:**
 Flag a system as `HIGH PRIORITY` in the report if:
@@ -236,7 +238,7 @@ Status, is never `NOT STARTED`, and stays out of both totals; the summary names 
 
 ---
 
-## Phase 4 ??Output
+## Phase 4 — Output
 
 ### Full audit and single-system modes
 
@@ -245,14 +247,14 @@ Present the gap table and summary to the user. Ask: "May I write the full report
 If yes, write the file:
 
 ```markdown
-# Content Audit ??[Date]
+# Content Audit — [Date]
 
 ## Summary
 - **Total specified**: [N] content items across [M] systems
 - **Total found**: [N]
 - **Gap**: [N] items ([X%] unimplemented)
-- **Scope**: [Full audit | System: name] ??[all GDD sections | required sections only (workflow: standard)]
-- **Not audited at this tier**: [counts found only outside the required sections ??or "none"; omit at `full`]
+- **Scope**: [Full audit | System: name] — [all GDD sections | required sections only (workflow: standard)]
+- **Not audited at this tier**: [counts found only outside the required sections — or "none"; omit at `full`]
 
 > Note: Counts are approximations based on file scanning.
 > The audit cannot distinguish shipped content from editor/test assets.
@@ -302,21 +304,20 @@ End with: "Run `/content-audit` without `--summary` to write the full report."
 
 ---
 
-## Phase 5 ??Next Steps
+## Phase 5 — Next Steps
 
 After the audit, recommend the highest-value follow-up actions:
 
-- If any system is `NOT STARTED` and MVP-tagged ??"Run `/design-system [name]` to
+- If any system is `NOT STARTED` and MVP-tagged → "Run `/design-system [name]` to
   add missing content counts to the GDD before implementation begins."
-- If total gap is >50% ??"Run `/sprint-plan` to allocate content work across upcoming sprints."
-- If any system is flagged HIGH PRIORITY ??"Run `/create-stories [epic-slug]` for each HIGH PRIORITY gap."
-- If `--summary` was used ??"Run `/content-audit` (no flag) to write the full report to `docs/`."
+- If total gap is >50% → "Run `/sprint-plan` to allocate content work across upcoming sprints."
+- If any system is flagged HIGH PRIORITY → "Run `/create-stories [epic-slug]` for each HIGH PRIORITY gap."
+- If `--summary` was used → "Run `/content-audit` (no flag) to write the full report to `docs/`."
 
 Close with the verdict that matches the run:
-- Verdict: **COMPLETE** ??content audit finished.
-- Verdict: **NOT ASSESSED ??NO DATA** ??a required input was absent (see the note at
+- Verdict: **COMPLETE** — content audit finished.
+- Verdict: **NOT ASSESSED — NO DATA** — a required input was absent (see the note at
   the top), nothing in scope gives a count (no registry entry, and every GDD is
   "Unspecified" or "No auditable content counts"), or a Found count could not be taken
-  (`NOT ASSESSED ??code root unresolved`); name which, and for missing counts
+  (`NOT ASSESSED — code root unresolved`); name which, and for missing counts
   name `/design-system`. Never print COMPLETE for a run that could not compute a gap.
-

@@ -73,4 +73,3 @@ could not read. An input the bible should contain and does not (a missing UI
 palette, say) is a finding, not a missing input. Put the verdict token first,
 on its own line (`AD-ART-BIBLE: CONCERNS`), then the reasons, each naming its
 section.
-

@@ -1,6 +1,6 @@
 ---
 name: soak-test
-description: "Soak test protocol for extended play ??what to observe and log for slow leaks, fatigue, late-appearing edge cases."
+description: "Soak test protocol for extended play — what to observe and log for slow leaks, fatigue, late-appearing edge cases."
 argument-hint: "[duration: 30m | 1h | 2h | 4h] [focus: memory | stability | balance | all]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/soak-test/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,10 +8,10 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Soak Test
@@ -21,21 +21,21 @@ with specific observation goals. Unlike a smoke check (broad critical path,
 ~10 min) or a single-feature playtest (~30 min), a soak test runs for **30
 minutes to several hours** to surface:
 
-- **Memory leaks** ??gradual heap growth that only appears after scene transitions
-- **Performance drift** ??frame time degradation that worsens over time
-- **State accumulation bugs** ??issues that only appear after N repetitions
+- **Memory leaks** — gradual heap growth that only appears after scene transitions
+- **Performance drift** — frame time degradation that worsens over time
+- **State accumulation bugs** — issues that only appear after N repetitions
   of a mechanic (inventory full, score overflow, AI state corruption)
-- **Fun fatigue** ??mechanics that feel good in a first session but grow
+- **Fun fatigue** — mechanics that feel good in a first session but grow
   repetitive over extended play
-- **Content exhaustion** ??the point where players run out of novel content
+- **Content exhaustion** — the point where players run out of novel content
 
-**This skill generates the observation protocol and analysis harness ??the
+**This skill generates the observation protocol and analysis harness — the
 human does the actual playing.**
 
 **Output:** `production/qa/soak-test-[date]-[duration].md`
 
 **When to run:**
-- Polish phase ??before `/gate-check release`
+- Polish phase — before `/gate-check release`
 - After fixing a memory or stability issue (regression soak)
 - When extended play has not been formally tracked
 
@@ -44,35 +44,35 @@ human does the actual playing.**
 ## 1. Parse Arguments
 
 **Duration** (default: `1h`):
-- `30m` ??short soak; suitable for testing a single mechanic or scene
-- `1h` ??standard soak; covers most common leak categories
-- `2h` ??extended soak; recommended for first full Polish soak
-- `4h` ??deep soak; required for games with long session design (RPGs, sims)
+- `30m` — short soak; suitable for testing a single mechanic or scene
+- `1h` — standard soak; covers most common leak categories
+- `2h` — extended soak; recommended for first full Polish soak
+- `4h` — deep soak; required for games with long session design (RPGs, sims)
 
 **Focus** (default: `all`):
-- `memory` ??focus on heap size, object count, leak patterns
-- `stability` ??focus on crash/freeze/hang detection
-- `balance` ??focus on fun fatigue, content exhaustion, difficulty perception
-- `all` ??all of the above
+- `memory` — focus on heap size, object count, leak patterns
+- `stability` — focus on crash/freeze/hang detection
+- `balance` — focus on fun fatigue, content exhaustion, difficulty perception
+- `all` — all of the above
 
 ---
 
 ## 2. Load Context
 
 Read:
-- `project.yaml` ??`engine.name` (for engine-specific memory monitoring
+- `project.yaml` — `engine.name` (for engine-specific memory monitoring
   guidance) and `performance.*` budgets (memory ceiling, target FPS); for any
   key absent or empty (including when `project.yaml` has no `performance` or
   `engine` block), fall back to `.agent/docs/technical-preferences.md`
-- `design/gdd/game-concept.md` ??intended session length (for comparison against
+- `design/gdd/game-concept.md` — intended session length (for comparison against
   soak duration), core loop description (or `design/game-brief.md`, the one-page
-  brief that replaces it at `rigor: minimal` ??core loop, and session length only
+  brief that replaces it at `rigor: minimal` — core loop, and session length only
   if its "Who it's for" line states one). Read it by section: find the headings you
   need with the Grep tool (pattern `^#`, content mode) and Read those ranges
   with offset and limit.
-- Most recent file in `production/qa/playtests/` ??prior playtest findings
+- Most recent file in `production/qa/playtests/` — prior playtest findings
   (to avoid re-documenting known issues)
-- Most recent file in `production/qa/qa-plan-*.md` ??current sprint test coverage
+- Most recent file in `production/qa/qa-plan-*.md` — current sprint test coverage
   (to understand what has been formally tested vs. what the soak covers)
 
 Note any performance budget targets (`performance.*` from `project.yaml`, else `.agent/docs/technical-preferences.md`):
@@ -104,20 +104,20 @@ Engine-specific monitoring guidance.
 
 > **Record the unit the tool shows; never convert, and never assume one.**
 > A soak test looks for **growth**, so every threshold below is a *ratio or a
-> delta against this session's own T+0 baseline* ??which is unit-agnostic and
+> delta against this session's own T+0 baseline* — which is unit-agnostic and
 > stays correct however the editor reports the number. Write the unit down at
 > T+0 exactly as displayed and use it consistently for the rest of the run.
 
-> **NOT SOURCEABLE ??the tool, panel and counter names below are not covered by
-> `docs/engine-reference/`**: Godot's Debugger ??Monitors and its memory
+> **NOT SOURCEABLE — the tool, panel and counter names below are not covered by
+> `docs/engine-reference/`**: Godot's Debugger → Monitors and its memory
 > counters, Unity's Memory Profiler and its fields, Unreal's `stat memory`. Mark
 > them so in the protocol: they are pointers for the tester to confirm in their
 > own editor at T+0, not verified paths. If no memory tool can be found, nothing
 > was measured, and the Verdict section's NOT ASSESSED applies.
 
 **Godot 4:**
-- Open Debugger ??Monitors tab; track `Memory ??Static Memory` and
-  `Object Count ??Objects` across checkpoints
+- Open Debugger → Monitors tab; track `Memory → Static Memory` and
+  `Object Count → Objects` across checkpoints
 - Record: Static Memory (**unit as displayed**), Object Count, Orphan Nodes count
 - Alert threshold: Memory growth > 20% from T+0 after the first 15 minutes
   (some growth on load is expected; sustained growth indicates a leak)
@@ -126,17 +126,18 @@ Engine-specific monitoring guidance.
   keeps rising is a leak regardless of units
 
 **Unity:**
-- Open Memory Profiler (Window ??Analysis ??Memory Profiler)
+- Open Memory Profiler (Window → Analysis → Memory Profiler)
 - Record: Total Reserved Memory, GC Allocated, Object Count at each checkpoint
   (**units as displayed**)
-- Alert threshold: GC Allocated growing monotonically across 3+ checkpoints ??  a monotonicity check, deliberately unit-free
+- Alert threshold: GC Allocated growing monotonically across 3+ checkpoints —
+  a monotonicity check, deliberately unit-free
 
 **Unreal Engine:**
 - Use `stat memory` console command at each checkpoint
 - Record: Physical Memory Used, Physical Memory Available (**units as displayed**)
 - Alert threshold: Physical Memory Used growth **> 20% over the full soak**,
   measured against this run's T+0. An absolute threshold such as "> 50MB"
-  silently assumes both the unit *and* a project scale ??50MB is a rounding
+  silently assumes both the unit *and* a project scale — 50MB is a rounding
   error for one game and a catastrophe for another
 
 ### Stability observation items (if focus = stability or all)
@@ -179,17 +180,17 @@ Before starting the soak:
 - [ ] Game is running from a **fresh launch** (not resumed from a prior session)
 - [ ] All background applications closed (minimise OS memory interference)
 - [ ] Performance monitoring tool open and recording:
-  - **Godot**: Debugger ??Monitors tab ??Memory section visible
+  - **Godot**: Debugger → Monitors tab → Memory section visible
   - **Unity**: Memory Profiler window open
   - **Unreal**: `stat memory` ready in console
-  - Tool actually used, as named in this editor: [record it ??the names above
-    are NOT SOURCEABLE from `docs/engine-reference/`; none found ??NOT ASSESSED]
+  - Tool actually used, as named in this editor: [record it — the names above
+    are NOT SOURCEABLE from `docs/engine-reference/`; none found → NOT ASSESSED]
 - [ ] Soak target confirmed: [session design intent from game concept]
 - [ ] Prior known issues to watch for: [from most recent playtest / qa-plan]
 
 ---
 
-## Baseline (T+0) ??Record Before Playing
+## Baseline (T+0) — Record Before Playing
 
 | Metric | Baseline Value |
 |--------|---------------|
@@ -206,7 +207,7 @@ Before starting the soak:
 
 **Memory / Stability** *(if applicable)*:
 
-| Metric | Value | ? from Baseline | Alert? |
+| Metric | Value | Δ from Baseline | Alert? |
 |--------|-------|-----------------|--------|
 | Memory / Heap | | | |
 | Object Count | | | |
@@ -224,7 +225,7 @@ Before starting the soak:
 - Core mechanic still rewarding: Y / N
 - Difficulty perception: too easy / appropriate / too hard
 - Notable moments: [note any peak engagement or frustration]
-- Content exhaustion signs: Y / N ??[describe]
+- Content exhaustion signs: Y / N — [describe]
 
 **Free observations**:
 *(Note anything unexpected observed since the last checkpoint)*
@@ -239,7 +240,7 @@ Before starting the soak:
 
 ### Memory Trend
 
-| Checkpoint | Memory | ?/hr extrapolated |
+| Checkpoint | Memory | Δ/hr extrapolated |
 |------------|--------|-------------------|
 | T+0 | | |
 | [T+N] | | |
@@ -273,27 +274,27 @@ Difficulty arc: [appropriate / too easy throughout / difficulty spike at T+N]
 **PASS**: No leaks detected, stability maintained, fun factor consistent
 **PASS WITH CONCERNS**: Minor drift or fatigue noted; addressable in Polish
 **NOT ASSESSED**: The soak did not run to a length that could show what it looks
-for ??say how far it got and which checkpoints were never reached
+for — say how far it got and which checkpoints were never reached
 **FAIL**: Memory leak confirmed, stability breach, or severe fun fatigue
 
 > **A short soak cannot return PASS.** Everything this protocol exists to detect
-> ??slow leaks, fatigue, late-appearing edge cases ??is by definition invisible
+> — slow leaks, fatigue, late-appearing edge cases — is by definition invisible
 > early, so a session that ended before the checkpoints it was built around has
-> not shown stability; it has shown nothing yet. Record `NOT ASSESSED ??reached
+> not shown stability; it has shown nothing yet. Record `NOT ASSESSED — reached
 > T+[N] of [duration]; checkpoints [list] not reached`. Ranks **above both pass
 > values** and **below FAIL**: a crash observed at T+20 is a real finding no
 > matter how short the run, and must not be demoted behind the run's length.
 > The same applies when the build crashed for reasons unrelated to the soak, when
 > no memory instrumentation was available (nothing was measured, so "no leaks
 > detected" means "no leaks could have been detected"), or when the protocol was
-> written but never executed ??a protocol document is not a result.
+> written but never executed — a protocol document is not a result.
 
 ---
 
 ## Sign-Off
 
-- **Tester**: [name] ??[date]
-- **QA Lead review**: [name] ??[date]
+- **Tester**: [name] — [date]
+- **QA Lead review**: [name] — [date]
 ```
 
 ---
@@ -322,11 +323,10 @@ If the verdict is FAIL, run `/smoke-check` again after fixing the issues."
 
 ## Collaborative Protocol
 
-- **This skill generates a protocol ??humans run it** ??never attempt to
+- **This skill generates a protocol — humans run it** — never attempt to
   run a soak test automatically. The observations require a human observer.
-- **Duration should match the game's session design** ??a 5-minute game
+- **Duration should match the game's session design** — a 5-minute game
   doesn't need a 4h soak; a city-builder might. Use judgment and ask if unclear.
-- **First soak should be `all` focus** ??narrow focus (memory-only) is for
+- **First soak should be `all` focus** — narrow focus (memory-only) is for
   regression soaks after a specific fix, not the first pass
-- **Ask before writing** ??always confirm before creating the protocol file
-
+- **Ask before writing** — always confirm before creating the protocol file

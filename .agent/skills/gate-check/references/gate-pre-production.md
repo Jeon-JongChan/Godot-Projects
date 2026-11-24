@@ -1,18 +1,18 @@
 > Gate definition, loaded by `/gate-check` for the target stage only.
-> Never load the other five ??one gate applies per invocation.
+> Never load the other five — one gate applies per invocation.
 
 
-# Gate: Technical Setup ??Pre-Production
+# Gate: Technical Setup → Pre-Production
 
 
 **Required Artifacts:**
 - [ ] Engine chosen (CLAUDE.md Technology Stack is not `[CHOOSE]`)
 - [ ] Project config populated (`project.yaml` has engine/naming/performance set, or legacy `.agent/docs/technical-preferences.md` populated)
-- [ ] Art bible exists at `design/art/art-bible.md` with at least Sections 1?? (Visual Identity Foundation)
+- [ ] Art bible exists at `design/art/art-bible.md` with at least Sections 1–4 (Visual Identity Foundation)
 - [ ] At least 3 Architecture Decision Records in `docs/architecture/` covering
       Foundation-layer systems (scene management, event architecture, save/load)
 - [ ] Engine reference docs exist in `docs/engine-reference/[engine]/`
-- [ ] Test framework initialized: the engine's test root exists ??`tests/unit/` and `tests/integration/` (Godot, Web), `Assets/Tests/EditMode/` and `Assets/Tests/PlayMode/` (Unity), or `Source/<Module>/Private/Tests/` (Unreal); see `.agent/docs/directory-structure.md`
+- [ ] Test framework initialized: the engine's test root exists — `tests/unit/` and `tests/integration/` (Godot, Web), `Assets/Tests/EditMode/` and `Assets/Tests/PlayMode/` (Unity), or `Source/<Module>/Private/Tests/` (Unreal); see `.agent/docs/directory-structure.md`
 - [ ] CI/CD test workflow exists at `.github/workflows/tests.yml` (or equivalent)
 - [ ] At least one example test file exists to confirm the framework is functional
 - [ ] Master architecture document exists at `docs/architecture/architecture.md`
@@ -42,7 +42,7 @@ does not say what it checked, so it counts for none of the three, as
 **Quality Checks:**
 - [ ] Architecture decisions cover core systems (rendering, input, state management)
 - [ ] Technical preferences have naming conventions and performance budgets set
-- [ ] Accessibility tier is defined and documented (even "Basic" is acceptable ??undefined is not)
+- [ ] Accessibility tier is defined and documented (even "Basic" is acceptable — undefined is not)
 - [ ] At least one screen's UX spec started (often the main menu or core HUD is designed during Technical Setup)
 - [ ] All ADRs have an **Engine Compatibility section** with engine version stamped
 - [ ] All ADRs have a **GDD Requirements Addressed section** with explicit GDD linkage
@@ -53,7 +53,7 @@ does not say what it checked, so it counts for none of the three, as
       (all Foundation requirements must have ADR coverage before Pre-Production)
 
 **ADR Circular Dependency Check**: run the deterministic graph builder rather than
-reading every ADR to trace the graph by hand ??a manual trace across a dozen ADRs
+reading every ADR to trace the graph by hand — a manual trace across a dozen ADRs
 eventually misses an edge; the script cannot:
 ```
 Bash: bash .agent/scripts/adr-dep-graph.sh
@@ -63,12 +63,12 @@ It prints `ADRS`, `EDGES` (one `adr-A -> adr-B` per Depends-On reference),
 still the template's placeholder), a `CYCLE:` line per ADR on a dependency cycle
 with its edges into that cycle, `BLOCKED_BY_CYCLE` (ADRs on no cycle that depend
 on one) and `ORDER` (the rest, dependencies first).
-- **Any `CYCLE:` lines ??FAIL**: "Circular ADR dependency: [the nodes on the
+- **Any `CYCLE:` lines → FAIL**: "Circular ADR dependency: [the nodes on the
   `CYCLE:` lines]. Neither can reach Accepted while the cycle exists. Remove one
   'Depends On' edge shown on a `CYCLE:` line to break the cycle." Name the
   `BLOCKED_BY_CYCLE` ADRs as waiting on the cycle, not as part of it: none of
   their own edges is the one to remove.
-- No `CYCLE:` lines ??this check passes. But the acyclic result is only as
+- No `CYCLE:` lines → this check passes. But the acyclic result is only as
   trustworthy as the dependency sections are complete: if `NO_DEPS_SECTION` or
   `UNFILLED_DEPS` lists many ADRs, surface that as a CONCERNS note rather than a
   clean pass, naming each `UNFILLED_DEPS` ADR as unfilled (what it depends on is
@@ -83,10 +83,9 @@ on one) and `ORDER` (the rest, dependencies first).
 
 The checklist above is the **`full` baseline**. At lower tiers apply the
 reduction for the resolved tier; items not named keep their status above.
-Reductions only ever *relax* a requirement ??`workflow_overrides` is the
+Reductions only ever *relax* a requirement — `workflow_overrides` is the
 only thing that adds one.
 
-- **`full`** ??engine + art bible 짠1??+ + 3+ ADRs + architecture + UX specs started + accessibility doc + traceability index all required
-- **`standard`** ??art bible required **only if visual-asset stories exist**; ADRs reduced to **critical (Foundation-layer) only**; UX-specs-started, accessibility doc, interaction-patterns, traceability index ??recommended
-- **`minimal`** ??only **engine configured** required (the minimal floor); everything else **drops**
-
+- **`full`** — engine + art bible §1–4+ + 3+ ADRs + architecture + UX specs started + accessibility doc + traceability index all required
+- **`standard`** — art bible required **only if visual-asset stories exist**; ADRs reduced to **critical (Foundation-layer) only**; UX-specs-started, accessibility doc, interaction-patterns, traceability index → recommended
+- **`minimal`** — only **engine configured** required (the minimal floor); everything else **drops**

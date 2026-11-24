@@ -129,6 +129,5 @@ func _merc_card(m: Mercenary, show_status: bool) -> Control:
 		"action_text": "해고" if can_fire else "",
 		"action_color": UiKit.RED,
 		"on_action": func(target: Mercenary):
-			GameState.roster.erase(target)
-			GameState.roster_changed.emit(),
+			GameState.dismiss_merc(target),
 	})

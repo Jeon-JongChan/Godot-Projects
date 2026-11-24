@@ -1,9 +1,9 @@
-# /prototype ??One-shot 2c: The small check
+# /prototype — One-shot 2c: The small check
 
 > Part of `/prototype`. The build file names when to read this file.
 
-**In this file:** 1 Write the brief words 쨌 2 Run it 쨌 3 Read the rows, fix once 쨌 4 The brief
-checklist 쨌 5 Record the results
+**In this file:** 1 Write the brief words · 2 Run it · 3 Read the rows, fix once · 4 The brief
+checklist · 5 Record the results
 
 Before the report, a few cheap fixed checks: the game opens with no errors, a screenshot of play
 was looked at against the brief, a few scripted keys show it responds, the person's words are
@@ -93,4 +93,3 @@ Each of the three is `pass`, `fail`, or `not_run:not-assessed:<why>`. The script
 words, emoji and the checklist itself, records the step time as a measure, and refuses a pass
 its rows do not show, an unlisted checklist item or a pass with no evidence, saying why: fix
 that and run it again.
-

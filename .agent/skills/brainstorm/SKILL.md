@@ -8,8 +8,7 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,docs.density,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above; use as-is. No block ??the defaults in `.agent/docs/config-resolution.md`
+Resolved above; use as-is. No block → the defaults in `.agent/docs/config-resolution.md`
 (`workflow: minimal`, `review_mode: solo`, `automation: collaborative`, `docs.density: terse`), and
 say that the settings were not read.
 
@@ -55,7 +54,7 @@ of starting over; its In your words section is never rewritten, only added to.
    concept and their hint in the brackets:
    "Type `/prototype <the picked concept, in their words>` to build it: it asks one round of
    questions, writes the one-page brief from the genre's sheet and builds a playable browser
-   game." End with `Verdict: COMPLETE ??concept picked; /prototype writes
+   game." End with `Verdict: COMPLETE — concept picked; /prototype writes
    the brief.` Go on to step 2 only when they ask to write the brief here first ("write it
    down", "formalize it", or `/start`'s `Formalize it first`).
 2. **Fill the brief** in conversation, several fields per exchange:
@@ -86,7 +85,7 @@ of starting over; its In your words section is never rewritten, only added to.
    Mark each field the user did not give *(guessed)*, or *(provisional)* when they said "you
    pick". **Keep** stays empty: it fills after they play.
 3. **Show the filled brief in full.** Then ask, as its own question: "Brief is ready. May I write it
-   to `design/game-brief.md`?" `Yes ??write it` / `Revise a field first`. Write only on an explicit
+   to `design/game-brief.md`?" `Yes — write it` / `Revise a field first`. Write only on an explicit
    yes to this question; agreeing to a cut or saying "go on" is not a yes to the write. On a
    revision, change the named field, show it before and after, and ask again. Then write
    `design/game-brief.md`, creating folders as needed. Never write `design/gdd/game-concept.md`
@@ -105,8 +104,7 @@ of starting over; its In your words section is never rewritten, only added to.
      the game is rebuilt in [engine]."
 
    Then one summary line: the pitch, the number of Features, and `design/game-brief.md`. End with
-   the line `Verdict: COMPLETE ??game brief written; next stop is code.`
+   the line `Verdict: COMPLETE — game brief written; next stop is code.`
 
 If the user stops before the write, say the brief was not written, so it lives only in this
 conversation.
-

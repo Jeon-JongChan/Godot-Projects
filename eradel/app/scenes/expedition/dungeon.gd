@@ -13,7 +13,12 @@ const FloatingTextScene = preload("res://scenes/expedition/entities/floating_tex
 enum BattleState { ROUND_START, ALLY_TURN, ALLY_ACTING, MONSTER_TURN, FINISHED }
 
 ## 던전 1회 원정 당 돌파해야 하는 총 구역(회랑) 수
-const MAX_STAGE: int = 3
+const MAX_STAGE: int = 4
+
+## 목적지 종류 (몬스터/보물/이벤트/상점). 마지막 단계는 보스 고정.
+const DEST_TYPES: Array[String] = ["monster", "treasure", "event", "shop"]
+const DEST_GLYPH := {"monster": "⚔", "treasure": "💰", "event": "❗", "shop": "🏪", "boss": "☠"}
+const DEST_NAME := {"monster": "몬스터", "treasure": "보물", "event": "이벤트", "shop": "상점", "boss": "심연 수호자"}
 
 # ── 노드 및 데이터 ──
 var _root: MarginContainer
@@ -29,6 +34,14 @@ var _round: int = 0
 var _log: Array[String] = []
 var _finished: bool = false
 var _is_busy: bool = false
+
+# 탐험 진행 상태: "map"(목적지 선택) / "walk"(이동 중) / "node"(상호작용) / "battle"(전투)
+var _phase: String = "map"
+var _map_overlay: Control = null
+var _dest_choices: Array[String] = []
+var _dest_selected: int = -1
+var _dest_marker: Label = null
+var _shop_panel: Control = null
 
 # ── 횃불 광원(Torchlight) 시스템 (0 ~ 100) ──
 var _torchlight: int = 85
@@ -89,15 +102,15 @@ func _ready() -> void:
 
 	# 1회랑 원정 데이터 생성 (기존 게임 로직 준수 + 다단계 회랑 확장)
 	_current_stage = 1
-	_monsters_data = _generate_stage_monsters(_current_stage)
+	_monsters_data = []
 	_base_gold = 120 + GameState.dungeon_activity + GameState.rng().randi_range(0, 60)
-	_log.append("어둠의 균열 제 %d 회랑에 진입했다. 몬스터 %d마리가 앞을 가로막는다." % [_current_stage, _monsters_data.size()])
+	_log.append("어둠의 균열에 진입했다. 편성 위치는 더 이상 바꿀 수 없다. 갈림길에서 목적지를 선택하라.")
 
 	_build_scene_layout()
 	_setup_fsm_and_pools()
 	_spawn_units()
 	_refresh_minimap()
-	_start_next_round()
+	_begin_map_select()
 
 
 ## [유한 상태 기계 & 오브젝트 풀] 전투 상태 전이 표와 데미지 텍스트/효과음 풀을 초기화합니다.
@@ -920,7 +933,12 @@ func _set_target(target) -> void:
 
 ## 유닛 클릭 이벤트 핸들러
 func _on_unit_clicked(unit) -> void:
-	if _is_busy or _finished:
+	if _finished:
+		return
+	if unit.is_ally and _phase != "battle":
+		_update_hero_panel(unit)
+		return
+	if _is_busy:
 		return
 	if not unit.is_ally and not unit.is_dead:
 		_set_target(unit)
@@ -1280,13 +1298,11 @@ func advance_stage_now() -> void:
 			unit.set_active_turn(false)
 			unit._update_view()
 
-	_monsters_data = _generate_stage_monsters(_current_stage)
-	_spawn_stage_monsters()
 	_refresh_minimap()
 	_switch_right_tab(true)
 	_reset_round_flags()
-	_add_log("▶ 제 %d 회랑으로 전진! (보상 +%dG, 파티 정비 완료)" % [_current_stage, 60 * _current_stage])
-	_start_next_round()
+	_add_log("▶ 다음 갈림길(%d/%d)로 전진! (보상 +%dG, 파티 정비 완료)" % [_current_stage, MAX_STAGE, 60 * _current_stage])
+	_begin_map_select()
 
 
 ## 영웅 정보 패널 UI (초상화, 이름/직업, HP, 스트레스, 6대 스탯, 대장간 장비)를 갱신합니다.
@@ -1399,6 +1415,276 @@ func trigger_screen_shake(amount: float = 6.0, duration: float = 0.22) -> void:
 		var offset := Vector2(randf_range(-amount, amount), randf_range(-amount * 0.6, amount * 0.6))
 		tween.tween_property(_stage_content, "position", orig_pos + offset, duration / float(steps * 2))
 		tween.tween_property(_stage_content, "position", orig_pos, duration / float(steps * 2))
+
+
+# ───────────────────────── 탐험 단계: 갈림길 선택 · 이동 · 목적지 상호작용 ─────────────────────────
+
+## 현재 단계의 갈림길(항상 3갈래, 마지막은 보스)을 생성하고 목적지 선택 지도를 표시한다.
+func _begin_map_select() -> void:
+	if _finished:
+		return
+	_phase = "map"
+	_dest_selected = -1
+	_dest_choices.clear()
+	if _current_stage >= MAX_STAGE:
+		_dest_choices.append("boss")
+	else:
+		var rng := GameState.rng()
+		for i in 3:
+			_dest_choices.append(DEST_TYPES[rng.randi_range(0, DEST_TYPES.size() - 1)])
+	_btn_retreat.disabled = false
+	_set_controls_enabled(false)
+	_round_label.text = "제 %d 구역 · 갈림길" % _current_stage
+	if _quest_progress_label:
+		_quest_progress_label.text = "구역: %d/%d · 목적지 선택" % [_current_stage, MAX_STAGE]
+	for u in _party_units:
+		if is_instance_valid(u) and not u.is_dead:
+			_update_hero_panel(u)
+			break
+	_build_map_overlay()
+
+
+## 지도 오버레이: 좌측 깃발(현재 위치)에서 3갈래 길이 뻗고 목적지는 선택 전까지 '?'로 가려진다.
+func _build_map_overlay() -> void:
+	if _map_overlay != null and is_instance_valid(_map_overlay):
+		_map_overlay.queue_free()
+	_map_overlay = Control.new()
+	_map_overlay.set_anchors_preset(PRESET_FULL_RECT)
+	_stage_content.add_child(_map_overlay)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(PRESET_FULL_RECT)
+	dim.color = Color(0.03, 0.02, 0.02, 0.88)
+	_map_overlay.add_child(dim)
+
+	var title := UiKit.label("갈림길 — 가고 싶은 길을 선택하세요 (%d / %d)" % [_current_stage, MAX_STAGE], 14, Color("c8a24a"))
+	title.position = Vector2(24, 14)
+	_map_overlay.add_child(title)
+
+	var flag_pos := Vector2(150, 205)
+	var flag := UiKit.label("⚑", 44, Color("ffd700"))
+	flag.position = flag_pos + Vector2(-20, -30)
+	_map_overlay.add_child(flag)
+
+	var n := _dest_choices.size()
+	var ys: Array = [205.0] if n == 1 else [70.0, 205.0, 340.0]
+	for i in n:
+		var node_pos := Vector2(560, ys[i])
+		var line := Line2D.new()
+		line.width = 3.0
+		line.default_color = Color("5c5142") if _dest_selected != -1 and _dest_selected != i else Color("c8a24a")
+		var mid := Vector2((flag_pos.x + node_pos.x) * 0.5, (flag_pos.y + node_pos.y) * 0.5 + (0 if n == 1 else (-20 if i == 0 else (20 if i == 2 else 0))))
+		for k in 13:
+			var s := float(k) / 12.0
+			line.add_point(flag_pos.lerp(mid, s).lerp(mid.lerp(node_pos - Vector2(55, 0), s), s))
+		_map_overlay.add_child(line)
+
+		var btn := Button.new()
+		btn.custom_minimum_size = Vector2(110, 90)
+		btn.size = Vector2(110, 90)
+		btn.position = node_pos - Vector2(55, 45)
+		btn.add_theme_font_size_override("font_size", 30)
+		var type: String = _dest_choices[i]
+		var revealed := (_dest_selected == i) or type == "boss"
+		var greyed := _dest_selected != -1 and _dest_selected != i
+		btn.text = ("%s\n%s" % [DEST_GLYPH[type], DEST_NAME[type]]) if revealed else "?"
+		if revealed:
+			btn.add_theme_font_size_override("font_size", 22)
+		# 한 번 길을 선택하면 선택하지 않은 길은 회색 처리 및 클릭 비활성화(엿보기 방지)
+		btn.disabled = greyed
+		if greyed or _dest_selected != -1:
+			btn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.modulate = Color(1, 1, 1, 0.35) if greyed else Color.WHITE
+		btn.pressed.connect(_on_dest_selected.bind(i))
+		_map_overlay.add_child(btn)
+
+		# 선택한 ? 박스가 뒤집히며 열리는 애니메이션 + 깃발이 선택한 통로를 따라 이동한 뒤 자동 출발
+		if _dest_selected == i:
+			btn.pivot_offset = btn.size * 0.5
+			btn.scale = Vector2(0.08, 1.15)
+			btn.modulate = Color(1.45, 1.3, 0.85, 1.0)
+			var tw := create_tween()
+			tw.set_parallel(true)
+			tw.tween_property(btn, "scale", Vector2(1.1, 1.1), 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(btn, "scale", Vector2.ONE, 0.14).set_delay(0.22)
+			tw.tween_property(btn, "modulate", Color.WHITE, 0.35)
+			tw.tween_property(flag, "position", node_pos + Vector2(-95, -30), 0.52).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+			tw.chain().tween_callback(_on_depart_pressed)
+
+
+## 갈림길 선택: 별도 출발 버튼 없이 ? 박스를 클릭하면 즉시 다른 길이 잠기고 박스 오픈 애니메이션과 함께 자동 출발한다.
+func _on_dest_selected(index: int) -> void:
+	if _phase != "map" or _finished or _dest_selected != -1:
+		return
+	_dest_selected = index if _dest_choices[index] != "boss" else 0
+	_build_map_overlay()
+
+
+## 출발 확정: 지도를 닫고 선택한 목적지를 향해 이동을 시작한다.
+func _on_depart_pressed() -> void:
+	if _phase != "map" or _finished:
+		return
+	var idx := maxi(_dest_selected, 0)
+	_start_walk(_dest_choices[idx])
+
+
+## 이동 연출: 대표 캐릭터(전열 선두)가 우측으로 이동하고 목적지 오브젝트가 점점 가까워진다.
+func _start_walk(type: String) -> void:
+	_phase = "walk"
+	_btn_retreat.disabled = true
+	if _map_overlay != null and is_instance_valid(_map_overlay):
+		_map_overlay.queue_free()
+		_map_overlay = null
+	_torchlight = maxi(5, _torchlight - 6)
+	_update_torchlight_display()
+	_add_log("%s 방향으로 통로를 따라 이동한다..." % DEST_NAME[type])
+
+	_dest_marker = UiKit.label(DEST_GLYPH[type], 72, Color("ffd9a0"))
+	_dest_marker.position = Vector2(1250, 120)
+	_stage_content.add_child(_dest_marker)
+
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(_dest_marker, "position:x", 800.0, 1.8)
+	for i in _party_units.size():
+		var u = _party_units[i]
+		if is_instance_valid(u):
+			var dx := 110.0 if i == 0 else 40.0
+			tw.tween_property(u, "position:x", u.base_position.x + dx, 1.8)
+	await tw.finished
+	if _finished:
+		return
+	_arrive(type)
+
+
+## 목적지 도착: 종류에 따라 전투 / 보물 / 이벤트 / 상점 처리로 분기한다.
+func _arrive(type: String) -> void:
+	_phase = "node"
+	var back := create_tween().set_parallel(true)
+	for u in _party_units:
+		if is_instance_valid(u):
+			back.tween_property(u, "position", u.base_position, 0.3)
+	match type:
+		"monster", "boss":
+			_clear_marker()
+			_start_battle()
+		"treasure":
+			var gold := GameState.rng().randi_range(40, 90) + 20 * _current_stage
+			_base_gold += gold
+			_add_log("★ 보물 상자를 발견했다! +%dG" % gold)
+			_finish_node_after(1.2)
+		"event":
+			_run_event()
+			_finish_node_after(1.6)
+		"shop":
+			_open_shop()
+
+
+## 마커 정리
+func _clear_marker() -> void:
+	if _dest_marker != null and is_instance_valid(_dest_marker):
+		_dest_marker.queue_free()
+	_dest_marker = null
+
+
+## 몬스터/보스 목적지 전투 개시: 기존 턴제 전투 로직 재사용.
+func _start_battle() -> void:
+	_phase = "battle"
+	_round = 0
+	_monsters_data = _generate_stage_monsters(_current_stage)
+	_spawn_stage_monsters()
+	_reset_round_flags()
+	_add_log("몬스터 %d마리와 조우했다!" % _monsters_data.size())
+	_start_next_round()
+
+
+## 비전투 목적지 처리 후 잠시 뒤 다음 갈림길로 진행한다.
+func _finish_node_after(sec: float) -> void:
+	await get_tree().create_timer(sec).timeout
+	if _finished:
+		return
+	_clear_marker()
+	_advance_after_node()
+
+
+## 비전투 노드 완료: 전투 승리 후와 동일하게 단계 전진(회복 포함) 처리.
+func _advance_after_node() -> void:
+	advance_stage_now()
+
+
+## 무작위 이벤트: 60% 샘물(HP 회복·스트레스 완화) / 40% 함정(피해·스트레스).
+func _run_event() -> void:
+	if GameState.rng().randi_range(1, 100) <= 60:
+		_heal_party(0.2)
+		for u in _party_units:
+			if is_instance_valid(u) and not u.is_dead:
+				u.heal_stress(8)
+		_add_log("✦ 맑은 샘물을 발견했다. 파티 HP +20%, 스트레스 완화.")
+	else:
+		for u in _party_units:
+			if is_instance_valid(u) and not u.is_dead:
+				var dmg := maxi(2, int(round(float(u.max_hp) * 0.08)))
+				u.current_hp = maxi(1, u.current_hp - dmg)
+				if u.merc_data != null:
+					u.merc_data.hp = u.current_hp
+				u.add_stress(8)
+				u._update_view()
+		_add_log("☠ 숨겨진 함정이 발동했다! 파티 피해 및 스트레스 +8.")
+
+
+## 생존 파티원 HP를 최대 체력 비율만큼 회복한다.
+func _heal_party(ratio: float) -> void:
+	for u in _party_units:
+		if is_instance_valid(u) and not u.is_dead:
+			u.current_hp = mini(u.max_hp, u.current_hp + maxi(1, int(round(float(u.max_hp) * ratio))))
+			if u.merc_data != null:
+				u.merc_data.hp = u.current_hp
+			u._update_view()
+
+
+## 상점: 원정 중 획득한 골드로 치료/성수를 구매하고 '나가기'로 다음 갈림길로 진행한다.
+func _open_shop() -> void:
+	if _shop_panel != null and is_instance_valid(_shop_panel):
+		_shop_panel.queue_free()
+	_shop_panel = PanelContainer.new()
+	_shop_panel.position = Vector2(820, 70)
+	_shop_panel.custom_minimum_size = Vector2(340, 0)
+	_stage_content.add_child(_shop_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	_shop_panel.add_child(v)
+	var gold_lbl := UiKit.label("🏪 떠돌이 상인 — 보유 %dG" % _base_gold, 14, Color("ffd700"))
+	v.add_child(gold_lbl)
+	var offers := [
+		{"name": "붕대 세트 (파티 HP +25%)", "cost": 40, "kind": "heal"},
+		{"name": "성수 (파티 스트레스 -12)", "cost": 30, "kind": "holy"},
+	]
+	for o in offers:
+		var b := UiKit.button("%s — %dG" % [o["name"], o["cost"]], UiKit.GOLD)
+		b.disabled = _base_gold < int(o["cost"])
+		b.pressed.connect(_shop_buy.bind(str(o["kind"]), int(o["cost"]), str(o["name"])))
+		v.add_child(b)
+	var leave := UiKit.primary_button("나가기 ▶", UiKit.GREEN)
+	leave.pressed.connect(func():
+		_shop_panel.queue_free()
+		_shop_panel = null
+		_clear_marker()
+		_advance_after_node())
+	v.add_child(leave)
+
+
+## 상점 구매 처리: 골드를 차감하고 효과(heal/holy)를 적용한 뒤 상점 UI를 갱신한다.
+func _shop_buy(kind: String, cost: int, item_name: String) -> void:
+	if _base_gold < cost:
+		return
+	_base_gold -= cost
+	if kind == "heal":
+		_heal_party(0.25)
+	else:
+		for u in _party_units:
+			if is_instance_valid(u) and not u.is_dead:
+				u.heal_stress(12)
+	_add_log("🛡 %s 구매 (-%dG)" % [item_name, cost])
+	_open_shop()
 
 
 ## 전투 종료 처리 및 결과 씬 전환

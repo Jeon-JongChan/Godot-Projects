@@ -1,4 +1,4 @@
-# /architecture-review ??Phase 4: Cross-ADR Conflict Detection
+# /architecture-review — Phase 4: Cross-ADR Conflict Detection
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -37,7 +37,7 @@ Resolution options:
 
 After conflict detection, analyse the dependency graph across all ADRs.
 
-**Build the graph deterministically ??do not trace it by hand:**
+**Build the graph deterministically — do not trace it by hand:**
 
 ```
 Bash: bash .agent/scripts/adr-dep-graph.sh
@@ -45,9 +45,9 @@ Bash: bash .agent/scripts/adr-dep-graph.sh
 
 It collects every `Depends On` edge, finds the cycles and the order, and emits
 `ADRS:` / `EDGES:` / `NO_DEPS_SECTION:` / `UNFILLED_DEPS:` / `CYCLE:` /
-`BLOCKED_BY_CYCLE:` / `ORDER:`. A model tracing A?묪?묬?묨 across
+`BLOCKED_BY_CYCLE:` / `ORDER:`. A model tracing A→B→C→A across
 a dozen ADRs eventually misses an edge; the algorithm cannot. It reports
-observations, not a verdict ??you apply the meaning below.
+observations, not a verdict — you apply the meaning below.
 
 **`NO_DEPS_SECTION` and `UNFILLED_DEPS` are load-bearing**: they make "no cycles
 because the graph is clean" distinguishable from "no cycles because half the ADRs
@@ -57,7 +57,7 @@ the second case as a structural gap, never as a clean graph, and name each
 
 Then interpret:
 
-1. **Topological sort**: the `ORDER:` row, as emitted ??ADRs with no
+1. **Topological sort**: the `ORDER:` row, as emitted — ADRs with no
    dependencies come first (Foundation), ADRs that depend on those come next, etc.
    Do not re-sort it by hand. An ADR in `NO_DEPS_SECTION` or `UNFILLED_DEPS` sits
    in it as if it depended on nothing: mark it so.
@@ -65,16 +65,16 @@ Then interpret:
    values already scanned in Phase 1b. If ADR-A depends on an ADR that is still
    `Proposed` or does not exist, flag it:
    ```
-   ?좑툘  ADR-0005 depends on ADR-0002 ??but ADR-0002 is still Proposed.
+   ⚠️  ADR-0005 depends on ADR-0002 — but ADR-0002 is still Proposed.
        ADR-0005 cannot be safely implemented until ADR-0002 is Accepted.
    ```
 3. **Cycle detection**: every `CYCLE:` line the script emitted is a
-   `DEPENDENCY CYCLE` ??report each one, with the edges its line shows (one of
+   `DEPENDENCY CYCLE` — report each one, with the edges its line shows (one of
    them is the edge to cut). A `BLOCKED_BY_CYCLE:` ADR is on no cycle: it waits
    for one to break, so list it as blocked, never as part of the cycle, and never
    suggest cutting its own edges. Do not re-derive them by hand:
    ```
-   ?뵶 DEPENDENCY CYCLE: ADR-0003 ??ADR-0006 ??ADR-0003
+   🔴 DEPENDENCY CYCLE: ADR-0003 → ADR-0006 → ADR-0003
       This cycle must be broken before either can be implemented.
    ```
 4. **Output recommended implementation order**:
@@ -91,4 +91,3 @@ Then interpret:
    ```
 
 ---
-

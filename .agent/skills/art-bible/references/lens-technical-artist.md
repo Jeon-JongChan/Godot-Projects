@@ -38,4 +38,3 @@ yourself.
 
 No aesthetic choices (no palette values, no style); no gameplay code; no engine
 architecture.
-

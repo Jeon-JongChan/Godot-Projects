@@ -1,6 +1,6 @@
 ---
 name: skill-improve
-description: "Improve a skill via a test-fix-retest loop ??static checks, targeted fixes, keep or revert on score change."
+description: "Improve a skill via a test-fix-retest loop — static checks, targeted fixes, keep or revert on score change."
 argument-hint: "[skill-name]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/skill-improve/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,16 +8,16 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Skill Improve
 
 Runs an improvement loop on a single skill:
-test ??fix ??retest ??keep or revert.
+test → fix → retest → keep or revert.
 
 Its score comes from `/skill-test` static and category checks, which read the
 skill rather than run it: a better score means a better-written skill, not proof
@@ -41,7 +41,7 @@ Verify `.agent/skills/[name]/SKILL.md` exists. If not, stop with:
 Glob `CCGS Skill Testing Framework/catalog.yaml`. When it exists, say so first:
 "`CCGS Skill Testing Framework/` was renamed `studio-tests/` in 1.2.0, and this
 skill reads only `studio-tests/`. Move any specs you wrote there; UPGRADING.md
-(v1.1.3 ??v1.2.0, `studio-tests/`) says how." Then go on.
+(v1.1.3 → v1.2.0, `studio-tests/`) says how." Then go on.
 
 ---
 
@@ -50,7 +50,7 @@ skill reads only `studio-tests/`. Move any specs you wrote there; UPGRADING.md
 Run `/skill-test static [name]` and record the baseline score:
 - Count of FAILs
 - Count of WARNs
-- Which specific checks failed (Check 1??)
+- Which specific checks failed (Check 1–7)
 
 Display to the user:
 ```
@@ -69,7 +69,7 @@ If baseline is 0 FAILs and 0 WARNs, note it and proceed to Phase 2b.
 Look up the skill's `category:` field in `studio-tests/catalog.yaml`.
 
 If no `category:` field is found, display:
-"Category: not yet assigned ??skipping category checks."
+"Category: not yet assigned — skipping category checks."
 and skip to Phase 3.
 
 If category is found, run `/skill-test category [name]` and record the category baseline:
@@ -86,8 +86,8 @@ A category result of **NOT ASSESSED** (a rubric section the skill-test could not
 find or apply) is reported with its reason and is not a zero: the category
 dimension is then excluded from "already passes" below.
 
-If BOTH static and category baselines are 0 FAILs and 0 WARNs ??and neither is
-NOT ASSESSED ??stop:
+If BOTH static and category baselines are 0 FAILs and 0 WARNs — and neither is
+NOT ASSESSED — stop:
 "This skill already passes all static and category checks. No improvements needed."
 
 ---
@@ -95,18 +95,18 @@ NOT ASSESSED ??stop:
 ## Phase 3: Diagnose
 
 Read the full skill: `.agent/skills/[name]/SKILL.md` and every file in its `references/` folder,
-if it has one ??the longest skills keep each phase there. Name the file each
+if it has one — the longest skills keep each phase there. Name the file each
 gap is in.
 
 For each failing or warning **static** check, identify the exact gap:
 
-- **Check 1 fail** ??which frontmatter field is missing
-- **Check 2 fail** ??how many phases found vs. minimum required
-- **Check 3 fail** ??no verdict keywords anywhere in the skill body
-- **Check 4 fail** ??Write or Edit in allowed-tools but no ask-before-write language
-- **Check 5 warn** ??no follow-up or next-step section at the end
-- **Check 6 warn** ??`context: fork` set but fewer than 5 phases found
-- **Check 7 warn** ??argument-hint is empty or doesn't match documented modes
+- **Check 1 fail** → which frontmatter field is missing
+- **Check 2 fail** → how many phases found vs. minimum required
+- **Check 3 fail** → no verdict keywords anywhere in the skill body
+- **Check 4 fail** → Write or Edit in allowed-tools but no ask-before-write language
+- **Check 5 warn** → no follow-up or next-step section at the end
+- **Check 6 warn** → `context: fork` set but fewer than 5 phases found
+- **Check 7 warn** → argument-hint is empty or doesn't match documented modes
 
 For each failing or warning **category** check (if category was assigned in Phase 2b),
 identify the exact gap in the skill's text. For example:
@@ -124,7 +124,7 @@ Show the full combined diagnosis to the user before proposing any changes.
 ## Phase 4: Propose Fix
 
 Write a targeted fix for each failure and warning. Show the proposed changes
-as clearly marked before/after blocks. Only change what is failing ??do not
+as clearly marked before/after blocks. Only change what is failing — do not
 rewrite sections that are passing. In a skill with a `references/` folder, a
 fix to a phase's steps goes in that phase's `references/` file, not back into
 `SKILL.md`; the question below then names each file the fix changes.
@@ -137,24 +137,24 @@ If the user says no, stop here.
 
 ## Phase 5: Write and Retest
 
-Record the current content of each file the fix changes ??the exact text, kept
-in this conversation ??so Phase 6 can restore it.
+Record the current content of each file the fix changes — the exact text, kept
+in this conversation — so Phase 6 can restore it.
 
 Write the improved skill to `.agent/skills/[name]/SKILL.md`, and to each
 `references/` file the fix changes.
 
-Re-run `/skill-test static [name]` and record the new static score ??measured by that run, never stated from the edit.
+Re-run `/skill-test static [name]` and record the new static score — measured by that run, never stated from the edit.
 If a category was assigned, also re-run `/skill-test category [name]` and record the new category score.
 
 Display the comparison:
 ```
-Static:   Before [N] failures, [M] warnings  ?? After [N'] failures, [M'] warnings
-Category: Before [N] failures, [M] warnings  ?? After [N'] failures, [M'] warnings  (if applicable)
-Combined: [before] ??[after] (improved / no change / worse)
+Static:   Before [N] failures, [M] warnings  →  After [N'] failures, [M'] warnings
+Category: Before [N] failures, [M] warnings  →  After [N'] failures, [M'] warnings  (if applicable)
+Combined: [before] → [after] (improved / no change / worse)
 ```
 
-`[before]` and `[after]` are the Phase 6 combined counts ??failures plus
-warnings, both dimensions ??e.g. `Combined: 3 ??0 (improved)`.
+`[before]` and `[after]` are the Phase 6 combined counts — failures plus
+warnings, both dimensions — e.g. `Combined: 3 → 0 (improved)`.
 
 ---
 
@@ -173,9 +173,9 @@ Show a summary of what was fixed in each dimension.
 Report: "Combined score did not improve."
 Show what changed and why it may not have helped.
 Ask: "May I restore `.agent/skills/[name]/SKILL.md` to the content it had before this run?"
-??naming every file Phase 5 wrote.
+— naming every file Phase 5 wrote.
 If yes: write the content recorded in Phase 5 back to each file with Write; if no, leave the files as written. Never
-`git checkout` it ??that returns the last *committed* version and discards any edits
+`git checkout` it — that returns the last *committed* version and discards any edits
 made before this run that were not yet committed.
 
 ---
@@ -185,4 +185,3 @@ made before this run that were not yet committed.
 - Run `/skill-test static all` to find the next skill with failures.
 - Run `/skill-improve [next-name]` to continue the loop on another skill.
 - Run `/skill-test audit` to see overall coverage progress.
-

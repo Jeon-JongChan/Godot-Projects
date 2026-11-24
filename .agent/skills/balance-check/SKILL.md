@@ -8,52 +8,52 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
 # Balance Check
 
 
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-## Insufficient input ??check this before producing any report
+## Insufficient input — check this before producing any report
 
-**If the inputs this skill needs do not exist, the answer is "could not run" ??not a filled-in report.** Check first, and stop if the check fails.
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
 
 1. List the inputs this skill reads (data files, prior reports, profiler output,
    test results, registries, source code).
-2. For each, record `FOUND` or `ABSENT` ??not "assumed present".
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
 3. If any input required for a section is ABSENT, that section is
-   **`NOT ASSESSED ??NO DATA`**. Do not estimate it, do not infer it from an
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
    adjacent artifact, and do not leave a mandated cell to be filled by whoever
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
-   **`NOT ASSESSED ??NO DATA`** as the whole verdict, naming what was missing and
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
    which skill produces it.
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
 specific: a report whose verdict enum has no "could not run" state produces
-**false clean passes** ??an asset audit returning COMPLIANT on a project with no
+**false clean passes** — an asset audit returning COMPLIANT on a project with no
 assets and no standards, or a performance profile reporting ">99% headroom against
 a 16.67ms budget" with zero profiler data and no budget ever set.
 
 **Absence of evidence is never evidence of absence.** A scan that finds no
 matches because there are no files to scan has not verified anything. Say which of
-the two happened ??a reader cannot tell from a green result.
+the two happened — a reader cannot tell from a green result.
 
 ---
 
 ## Phase 1: Identify Balance Domain
 
-Determine the balance domain from `$ARGUMENTS` ??the whole string, since a data-file path may contain spaces:
+Determine the balance domain from `$ARGUMENTS` — the whole string, since a data-file path may contain spaces:
 
-- **Combat** ??weapon/ability DPS, time-to-kill, damage type interactions
-- **Economy** ??resource faucets/sinks, acquisition rates, item pricing
-- **Progression** ??XP/power curves, dead zones, power spikes
-- **Loot** ??rarity distribution, pity timers, inventory pressure
-- **File path given** ??load that file directly and infer domain from content
+- **Combat** → weapon/ability DPS, time-to-kill, damage type interactions
+- **Economy** → resource faucets/sinks, acquisition rates, item pricing
+- **Progression** → XP/power curves, dead zones, power spikes
+- **Loot** → rarity distribution, pity timers, inventory pressure
+- **File path given** → load that file directly and infer domain from content
 
 If no argument, ask the user which system to check.
 
@@ -62,7 +62,7 @@ If no argument, ask the user which system to check.
 ## Phase 2: Read Data Files
 
 Read relevant files from `assets/data/` (`data/` in a web game) and `design/balance/` for the identified domain.
-Note every file read ??they will appear in the Data Sources section of the report.
+Note every file read — they will appear in the Data Sources section of the report.
 
 ---
 
@@ -70,7 +70,7 @@ Note every file read ??they will appear in the Data Sources section of the repor
 
 **Registry first.** If `design/registry/entities.yaml` exists, read it before the
 GDD. Its `constants` and `formulas` sections hold the cross-GDD named values and
-output ranges ??the balance targets ??already distilled, each with a `source:`
+output ranges — the balance targets — already distilled, each with a `source:`
 GDD and any `revised:` date:
 ```
 Grep pattern="^  - name:" path="design/registry/entities.yaml" output_mode="content" -A 6
@@ -82,27 +82,27 @@ exist or has no entries** (it ships as an empty stub until `/design-system`
 populates it), skip this and use the GDD alone.
 
 Then read the GDD for the system from `design/gdd/` to understand intended design
-targets, tuning knobs, and expected value ranges ??for anything the registry did
+targets, tuning knobs, and expected value ranges — for anything the registry did
 not already supply. This is the baseline for "correct" behaviour. Read it by section:
 find the headings you need with the Grep tool (pattern `^#`, content mode) and
 Read those ranges with offset and limit.
 
 If the data files are FOUND but neither source gives targets for this domain,
 the sections that judge against targets (Outliers Detected, and Progression
-Analysis where the domain has a curve) are `NOT ASSESSED ??NO DATA`. Each one names what was missing ??the
+Analysis where the domain has a curve) are `NOT ASSESSED — NO DATA`. Each one names what was missing — the
 GDD it looked for in `design/gdd/`, and whether the registry was absent or empty
-??and names `/design-system`, which writes both.
+— and names `/design-system`, which writes both.
 
 ---
 
 ## Phase 4: Perform Analysis
 
 **Every domain: compare each value with its target.** For each named value in the
-data files, take its target from Phase 3 ??a registry constant's `value`, a
-registry formula's `output_range`, or the range the GDD states ??and compare. A
+data files, take its target from Phase 3 — a registry constant's `value`, a
+registry formula's `output_range`, or the range the GDD states — and compare. A
 value outside its target is a row in Outliers Detected (`player_damage_base` 140
-against 90??10). A value with no target anywhere is neither in range nor an
-outlier: list it under Values That Need Attention as `no stated range ??not judged`.
+against 90–110). A value with no target anywhere is neither in range nor an
+outlier: list it under Values That Need Attention as `no stated range — not judged`.
 
 Then run domain-specific checks:
 
@@ -164,16 +164,16 @@ Then run domain-specific checks:
 ```
 
 Choose the Health Summary by the worst finding, first match wins:
-- **CRITICAL ISSUES** ??a degenerate strategy (one choice dominates every
+- **CRITICAL ISSUES** — a degenerate strategy (one choice dominates every
   alternative), a progression that stalls or cannot be completed, or an economy
   loop with no sink
-- **CONCERNS** ??outliers or curve problems a tuning pass can fix, with no
+- **CONCERNS** — outliers or curve problems a tuning pass can fix, with no
   finding of the critical kind
-- **NOT ASSESSED** ??nothing to analyze (the no-data path above), a section that
-  needs targets is `NOT ASSESSED ??NO DATA`, or a value had no stated range to
+- **NOT ASSESSED** — nothing to analyze (the no-data path above), a section that
+  needs targets is `NOT ASSESSED — NO DATA`, or a value had no stated range to
   judge it against; name which. It ranks below the two finding verdicts, because
   a measured problem is more actionable than a gap, and above HEALTHY
-- **HEALTHY** ??every value judged against a stated target, no outliers, no
+- **HEALTHY** — every value judged against a stated target, no outliers, no
   degenerate strategies, progression within the stated targets
 
 ---
@@ -183,9 +183,9 @@ Choose the Health Summary by the worst finding, first match wins:
 After presenting the report, use `AskUserQuestion`:
 - Prompt: "Balance check complete. What would you like to do next?"
 - Options:
-  - `[A] Fix highest-priority issue now ??walk me through it`
+  - `[A] Fix highest-priority issue now — walk me through it`
   - `[B] Save report to design/balance/balance-check-[system]-[date].md`
-  - `[C] Stop here ??I'll review the findings manually`
+  - `[C] Stop here — I'll review the findings manually`
 
 **Run as a subagent?** `game-designer` preloads this skill, and a subagent has
 no `AskUserQuestion`. End your reply with the question and these three options
@@ -205,4 +205,3 @@ If [B]:
 
 If [C]:
 - Summarize open issues and end with: "Re-run `/balance-check` after fixes to verify."
-

@@ -3,44 +3,46 @@ name: launch-checklist
 description: "Launch readiness across every department: code, content, store, marketing, community, infrastructure, legal, go/no-go sign-offs."
 argument-hint: "[launch-date or 'dry-run']"
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, AskUserQuestion, Bash(bash "*/.agent/skills/launch-checklist/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys rigor,workflow,project.stage,cert_tier,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-Resolved above ??use as-is. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is. No block → defaults in `.agent/docs/config-resolution.md`.
 
 # Launch Checklist
 
 **Scope this checklist to the project.** Emitting every item for every platform
 trains the reader to skip the list, which defeats the gate:
 
-- **`project.stage`** ??items for phases this project has not reached are out of
+- **`project.stage`** — items for phases this project has not reached are out of
   scope; say so rather than listing them unchecked.
-- **`modes.rigor`** ??at `minimal`, drop items whose only justification is process
+- **`modes.rigor`** — at `minimal`, drop items whose only justification is process
   weight this project has opted out of.
-- **`platform.cert_tier`** ??emit certification items **only** for the tier the
+- **`platform.cert_tier`** — emit certification items **only** for the tier the
   project targets. If it is **unset**, **ask which platforms are in scope**
-  rather than emitting all of them ??an unset value is a question, not a licence
+  rather than emitting all of them — an unset value is a question, not a licence
   to emit every certification track. The answer, mapped onto the four values
   below, is the tier for this run. If it cannot be determined, mark the section
-  **`NOT ASSESSED ??cert tier unknown`**. **Unset is not `none`:** `none` is a
+  **`NOT ASSESSED — cert tier unknown`**. **Unset is not `none`:** `none` is a
   decision, unset is a missing one, and they must not produce the same output.
-  Branch on the **four values this key takes** ??`none | itch | steam | console` ??  and not on platform names. The full requirement table is the `## platform.cert_tier`
-  section of `.agent/docs/effects-map.md` ??read **only that section** (Grep its
+  Branch on the **four values this key takes** — `none | itch | steam | console` —
+  and not on platform names. The full requirement table is the `## platform.cert_tier`
+  section of `.agent/docs/effects-map.md` — read **only that section** (Grep its
   heading, then a bounded Read); the file as a whole is not a runtime input.
-  - `none` ??**emit no certification section at all.** Internal release, alpha or
+  - `none` — **emit no certification section at all.** Internal release, alpha or
     jam game. Say the section was omitted and why; do not leave it blank.
-  - `itch` ??itch.io upload requirements only: build size, page setup, age tags.
+  - `itch` — itch.io upload requirements only: build size, page setup, age tags.
     **No console and no Steamworks items.**
-  - `steam` ??Steamworks: store page, depot build, achievements, system
+  - `steam` — Steamworks: store page, depot build, achievements, system
     requirements, common content rules. **No console certification items.**
-  - `console` ??full platform certification (TRC / XR / Lotcheck), save-data
+  - `console` — full platform certification (TRC / XR / Lotcheck), save-data
     rules, controller-mapping rules, age-rating boards. The heaviest tier.
 
   > **Branch on the `cert_tier` values above, not on platform names.** A test on
@@ -49,7 +51,7 @@ trains the reader to skip the list, which defeats the gate:
   > value at all. Use the vocabulary the config defines.
 
 If an item cannot be scoped because the config is absent, mark it
-**`NOT ASSESSED ??platform/stage unknown`**. Do not silently include it: a
+**`NOT ASSESSED — platform/stage unknown`**. Do not silently include it: a
 `rigor: standard`, single-platform project would otherwise receive a ~150-item
 checklist demanding PC **and** console **and** mobile certification plus age
 ratings, of which ~140 are unassessable.
@@ -59,7 +61,7 @@ ratings, of which ~140 are unassessable.
 
 ## Phase 1: Parse Arguments
 
-Read the argument for the launch date or `dry-run` mode. Dry-run mode generates the checklist without creating sign-off entries or writing files. With no argument the run is a normal one with the target date unset (`Target Launch: not set`) ??dry-run only when the argument says `dry-run`.
+Read the argument for the launch date or `dry-run` mode. Dry-run mode generates the checklist without creating sign-off entries or writing files. With no argument the run is a normal one with the target date unset (`Target Launch: not set`) — dry-run only when the argument says `dry-run`.
 
 ---
 
@@ -81,7 +83,7 @@ Read the argument for the launch date or `dry-run` mode. Dry-run mode generates 
 >
 > **Establish the denominator before every scan below, and report it.** Each line
 > reads either `scanned [N] files, [M] hits` or
-> `NOT ASSESSED ??[code root unresolved | no source files | no asset folder | directory empty]`.
+> `NOT ASSESSED — [code root unresolved | no source files | no asset folder | directory empty]`.
 > Never a bare tick. The code root is `src/`, `Assets/` or `Source/` by engine
 > (resolve per `.agent/docs/code-root-resolution.md`); assets live in
 > `assets/`, `Assets/` or `Content/`.
@@ -101,7 +103,7 @@ Read the argument for the launch date or `dry-run` mode. Dry-run mode generates 
 `NOT ASSESSED` is written `- [?]`, not `- [ ]`. An unticked box says *work
 remains*; a `[?]` says *nobody could check*, and only one of those is closed by
 doing the work. Include the legend wherever a `[?]` appears:
-`[?] = not assessed ??the input to this check was absent`.
+`[?] = not assessed — the input to this check was absent`.
 
 ---
 
@@ -179,7 +181,7 @@ Generated: [Date]
 ### Testing
 - [ ] Full regression test suite passed
 - [ ] Zero S1 (Critical) bugs open
-- [ ] Zero S2 (High) bugs open (or documented exceptions) ??at `workflow: full` instead: zero S2 (High) and S3 (Medium) bugs open, no exceptions
+- [ ] Zero S2 (High) bugs open (or documented exceptions) — at `workflow: full` instead: zero S2 (High) and S3 (Medium) bugs open, no exceptions
 - [ ] Soak test passed (the longest soak `/soak-test` runs, or longer by hand if a play session lasts longer)
 - [ ] Multiplayer stress test passed (if applicable)
 - [ ] All critical user paths tested on every platform
@@ -187,12 +189,12 @@ Generated: [Date]
 
 ### Platform Certification
 
-**Emit ONLY the block matching `platform.cert_tier`** (resolved in the resolved-config block at the top of this skill ??see
+**Emit ONLY the block matching `platform.cert_tier`** (resolved in the resolved-config block at the top of this skill — see
 the `platform.cert_tier` rule above). Do not emit this section's other blocks, and
 do not fall back to emitting all of them.
 
-**At `none`** ??omit the section and say so in one line:
-`Platform Certification: omitted ??cert_tier is 'none' (internal/jam release).`
+**At `none`** — omit the section and say so in one line:
+`Platform Certification: omitted — cert_tier is 'none' (internal/jam release).`
 
 **At `itch`:**
 - [ ] Build size within itch.io upload limits
@@ -312,50 +314,52 @@ do not fall back to emitting all of them.
 
 First match wins: **NOT READY** if Blocking Items is not empty; else **NOT
 ASSESSED** if any item is `- [?]`, any section came out `NOT ASSESSED`, or any
-item is still unconfirmed ??neither ticked on evidence or on a Phase 4b answer,
+item is still unconfirmed — neither ticked on evidence or on a Phase 4b answer,
 nor marked N/A, nor listed below (name each; group by section when there are
 many); else **CONDITIONAL** if Conditional
-Items is not empty; else **READY**. NOT ASSESSED outranks CONDITIONAL and READY ??an item nobody could check is not a passed one ??and ranks below NOT READY, so a
+Items is not empty; else **READY**. NOT ASSESSED outranks CONDITIONAL and READY —
+an item nobody could check is not a passed one — and ranks below NOT READY, so a
 known blocker is never buried behind it.
 
 ### Blocking Items
-[Every FAIL or unresolved finding: a check that found a problem ??FIXMEs, debug
+[Every FAIL or unresolved finding: a check that found a problem — FIXMEs, debug
 output, placeholder assets, hardcoded dev values, an open S1 bug, a failing
-build or test ??with no documented workaround and no explicitly accepted risk]
+build or test — with no documented workaround and no explicitly accepted risk]
 
 ### Conditional Items
-[Every shortfall with a documented workaround or an explicitly accepted risk ??e.g. a HACK with its documented justification, an S2 with a documented
+[Every shortfall with a documented workaround or an explicitly accepted risk —
+e.g. a HACK with its documented justification, an S2 with a documented
 exception (below `workflow: full`, which allows none). Name the workaround, or
 who accepted the risk]
 
 ### Sign-Offs Required
-- [ ] Creative Director ??Content and experience quality
-- [ ] Technical Director ??Technical health and stability
-- [ ] QA Lead ??Quality and test coverage
-- [ ] Producer ??Schedule and overall readiness
-- [ ] Release Manager ??Build and deployment readiness
+- [ ] Creative Director — Content and experience quality
+- [ ] Technical Director — Technical health and stability
+- [ ] QA Lead — Quality and test coverage
+- [ ] Producer — Schedule and overall readiness
+- [ ] Release Manager — Build and deployment readiness
 ```
 
 ---
 
 ## Phase 4b: Confirm What Only a Person Can
 
-Most items above cannot be settled from the repository ??the on-call schedule,
+Most items above cannot be settled from the repository — the on-call schedule,
 the EULA, press keys, pricing, a soak test someone ran. Left unasked, every one
 of them stays unconfirmed and the Overall Status can only be NOT ASSESSED, so ask.
 
 For each of the seven sections, collect the items no scan or file settled (the
 Phase 3 counts and anything read in Phase 2 are not asked again) and ask **one
 `AskUserQuestion` per section**, listing those items numbered. Each item's
-answer is **yes / no / not yet / N/A**. Options: `Yes ??all of them` /
-`Not yet ??none of them` / `N/A ??this section does not apply` /
-`Some differ ??I'll answer per item` (the user then gives each numbered item its
+answer is **yes / no / not yet / N/A**. Options: `Yes — all of them` /
+`Not yet — none of them` / `N/A — this section does not apply` /
+`Some differ — I'll answer per item` (the user then gives each numbered item its
 answer). Skip a section with nothing left to ask.
 
-- **yes** ??ticked `- [x]`, marked `(confirmed by the user)`
-- **no** or **not yet** ??a failed item: under Blocking Items, or under
+- **yes** → ticked `- [x]`, marked `(confirmed by the user)`
+- **no** or **not yet** → a failed item: under Blocking Items, or under
   Conditional Items when the user names a workaround or accepts the risk
-- **N/A** ??written `- N/A ??[item]` and left out of the Overall Status
+- **N/A** → written `- N/A — [item]` and left out of the Overall Status
 - an item left unanswered stays unconfirmed, and the status names it
 
 These are questions of fact only the user can answer, so they are asked in
@@ -373,13 +377,12 @@ Present the completed checklist and summary to the user (Overall Status, total i
 
 If not in dry-run mode, ask: "May I write this to `production/releases/launch-checklist-[date].md`?"
 
-Create nothing before the answer ??not even the `production/releases/` directory.
+Create nothing before the answer — not even the `production/releases/` directory.
 If yes, write the file; the write creates the directory with it.
 
 ---
 
 ## Phase 6: Next Steps
 
-- If `project.stage` is not `Release` (`Polish`, an earlier stage, or unset), run `/gate-check release` first ??it is the readiness gate before launch.
+- If `project.stage` is not `Release` (`Polish`, an earlier stage, or unset), run `/gate-check release` first — it is the readiness gate before launch.
 - Coordinate sign-offs and the deployment via `/team-release`.
-

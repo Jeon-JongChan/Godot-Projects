@@ -3,13 +3,13 @@ name: dev-story
 description: "Implements one story in code with tests, following its ADRs. Use when the user says to build, implement or start working on a story. Not for checking readiness beforehand or closing the story after."
 argument-hint: "[story-path]"
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.agent/skills/dev-story/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/story-facts.sh *), Bash(bash .agent/scripts/adr-status.sh *), Bash(bash .agent/scripts/md-section.sh *), Bash(bash .agent/scripts/session-state.sh *), Bash(bash .agent/scripts/review-receipts.sh hash *), Bash(godot *), Bash(mkdir -p production/qa/evidence/*), Bash(npm run smoke), Bash(npm run build:single), Bash(bash .agent/scripts/page-shot.sh *), Bash(bash .agent/scripts/one-shot-grow.sh replay *), Bash(bash .agent/scripts/one-shot-grow.sh accept *)
 model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,qa.level,gate_level,engine_values,specialists,perf_budgets,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is. No block ??defaults in
+Resolved above — use as-is. No block → defaults in
 `.agent/docs/config-resolution.md`.
 
 Ask with the question tool. Without one, list the options numbered and end your turn
@@ -49,16 +49,16 @@ Checklist (copy it and tick as you go):
 
 The text typed after the skill name is the story path. With nothing typed, take the
 story the checkpoint in `production/session-state/active.md` names and confirm it:
-"Continuing work on [title] ??is that correct?" None there: ask "Which story are we
+"Continuing work on [title] — is that correct?" None there: ask "Which story are we
 implementing?" with the `TODO` rows of `bash .agent/scripts/story-facts.sh --all`
 as options. No story file under `production/epics/` at all: stop with
-"No stories found in `production/epics/` ??run `/create-stories [epic-slug]` to make them (at `standard` and `full`, run `/create-epics` first if there is no epic yet)."
+"No stories found in `production/epics/` — run `/create-stories [epic-slug]` to make them (at `standard` and `full`, run `/create-epics` first if there is no epic yet)."
 
 `bash .agent/scripts/story-facts.sh <story-path>` gives its type, layer, TR-IDs,
 ADRs and dependencies. Then read the story in full.
 
 **Tier.** `workflow` for the story's system, keyed on the GDD filename stem of its
-`GDD:` path (`design/gdd/<stem>.md` ??`<stem>`; the `[system]` of its TR-ID only when
+`GDD:` path (`design/gdd/<stem>.md` → `<stem>`; the `[system]` of its TR-ID only when
 there is no GDD path): that system's `system_overrides` row if there is one, else the
 project value. Say it in your first reply: `Tier: workflow [value]`. That value, never
 `rigor` or `qa.level`, picks the Phase 2 column and the closing Next step.
@@ -71,14 +71,14 @@ project value. Say it in your first reply: `Tier: workflow [value]`. That value,
 | The ADR the story names | missing, `Proposed`, `Deprecated` or `Superseded`: **stop** | the same, only when the story names one | the same, only when the story names one |
 | Control manifest `docs/architecture/control-manifest.md` | missing: warn, go on | missing: warn, go on | not expected |
 
-A story whose ADR field reads `N/A ??[reason]` names none.
+A story whose ADR field reads `N/A — [reason]` names none.
 
 **The ADR.** `bash .agent/scripts/adr-status.sh <ADR id>` gives its status and
-`version`. Stop messages: `Proposed` ??"ADR-NNNN is still Proposed. Accept it with
+`version`. Stop messages: `Proposed` — "ADR-NNNN is still Proposed. Accept it with
 `/architecture-decision accept ADR-NNNN` before implementing." `Deprecated` or
-`Superseded` ??"ADR-NNNN is [status]; point the story at [successor] (edit its ADR
+`Superseded` — "ADR-NNNN is [status]; point the story at [successor] (edit its ADR
 field; `/create-stories` never rewrites an existing story) before implementing."
-`NOT_FOUND` ??"ADR file not found. Run `/architecture-decision`, or correct the
+`NOT_FOUND` — "ADR file not found. Run `/architecture-decision`, or correct the
 story's ADR field."
 
 **Do not open the ADR.** The story's ADR Decision Summary and Implementation Notes
@@ -100,8 +100,8 @@ story's. They differ: read `references/version-mismatch.md`.
 **Dependencies.** For each path on the story's Depends on line,
 `bash .agent/scripts/story-facts.sh <path>`. Not `COMPLETE`: ask "[this story]
 depends on [dependency], which is [status], not Complete. How do you want to go
-on?" Options: Proceed anyway ??I accept the risk / Stop ??I'll finish the
-dependency first / It is done, the status was never updated ??mark it Complete.
+on?" Options: Proceed anyway — I accept the risk / Stop — I'll finish the
+dependency first / It is done, the status was never updated — mark it Complete.
 Stop: the story is BLOCKED (Phase 7), no agent. Mark it: ask "May I set [path]
 Status to Complete?" first. Proceed: note it under Deviations. `NOT_FOUND`: warn
 "Dependency story not found: [path]".
@@ -123,12 +123,12 @@ question: the question is the last thing in the reply. On yes:
   the top-level `updated` today. No file: say `Sprint status not updated:
   production/sprint-status.yaml absent`.
 
-Declined: change neither, print `Story not marked In Progress ??declined` in the
+Declined: change neither, print `Story not marked In Progress — declined` in the
 summary, and go on.
 
 ## Phase 4: Who implements it
 
-**Config/Data stories need no agent.** Show each value change as from ??to, ask "May
+**Config/Data stories need no agent.** Show each value change as from → to, ask "May
 I write [data file]?", and edit it. Go to Phase 6.
 
 | Story | Programmer agent |
@@ -169,7 +169,7 @@ paste whole documents into it.
   5. `naming.*` in `project.yaml` and the `perf_budgets` line above.
   6. The test file path from the story's Test Evidence section.
 - **Tests,** by `qa.level`, for Logic and Integration stories:
-  - `minimal`: "Do not write a test file for this story ??test evidence is waived at
+  - `minimal`: "Do not write a test file for this story — test evidence is waived at
     `qa.level: minimal`." Say it: an omitted line and a forgotten one look the same
     to the agent.
   - `standard`: "Write the test at [path] with the code. Each acceptance criterion
@@ -194,8 +194,8 @@ paste whole documents into it.
 
 **Say what the brief leaves out, to both readers.** Inputs Phase 2 found absent
 (the TR registry, an ADR, the manifest) are left out: tell the agent "No [input] is
-passed ??it does not exist at this tier; do not go looking for it", and tell the
-user one line before handing out: `Briefing omits: [inputs] ??implementing against
+passed — it does not exist at this tier; do not go looking for it", and tell the
+user one line before handing out: `Briefing omits: [inputs] — implementing against
 the acceptance criteria and the [GDD | brief].`
 
 **Then hand the engine check to the specialist** once the programmer reports.
@@ -220,7 +220,7 @@ further past what it blocks, and give a partial report
 
 **Is the test there?** At `qa.level: standard` and `full`, for a Logic or Integration
 story, look for the file at the Test Evidence path. Missing: at the type's BLOCKING
-level on the `gate_level` line, flag "story unverifiable ??test required before
+level on the `gate_level` line, flag "story unverifiable — test required before
 `/story-done`"; at ADVISORY, note it as a recommendation. At `minimal` there is
 nothing to check: tests are waived.
 
@@ -242,10 +242,10 @@ command, the exit code and any error lines:
   failing `@boot` means the page did not start. `npm run build:single` alone (the
   same-seed run's first step) is not this check: it shows nothing about the page
   starting. Never `commands.run`: it is a dev server and never exits. No
-  `node_modules/`: `parse NOT VERIFIED ??npm ci has not run`. No `smoke` script (an
+  `node_modules/`: `parse NOT VERIFIED — npm ci has not run`. No `smoke` script (an
   existing project, `/setup-engine web`): its `commands.smoke`, else its build,
   which shows the code compiles and nothing about the page starting.
-- **No engine executable:** `parse NOT VERIFIED ??engine binary not available`.
+- **No engine executable:** `parse NOT VERIFIED — engine binary not available`.
   Never infer from reading the code that it parses.
 
 **Run it and look** (`.agent/docs/run-and-observe.md`). For every story a player
@@ -258,10 +258,10 @@ then open the image and compare it with the criteria. Not waived at `qa.level:
 minimal`. Report exactly one line, plain text starting `Run result:` (no bold:
 `/story-done` reads it as written):
 
-- `Run result: OBSERVED ??<what was on screen>` with the retained path;
-- `Run result: NOT VERIFIED ??<reason>` (no engine, nothing captured); at the
+- `Run result: OBSERVED — <what was on screen>` with the retained path;
+- `Run result: NOT VERIFIED — <reason>` (no engine, nothing captured); at the
   default gate level this blocks a Visual/Feel or UI story at `/story-done`;
-- `Run result: N/A ??<reason>` for a story with nothing observable; the reason says
+- `Run result: N/A — <reason>` for a story with nothing observable; the reason says
   why nothing is (`/story-done` does not accept "it's a Logic story").
 
 Only the feel half of a Visual/Feel criterion (timing, weight) is DEFERRED to
@@ -277,18 +277,18 @@ last one the person accepted (its `against` row: `accepted`, else the grow step'
 `reference`). Open `story.png` beside that run's screenshot (`accepted.png` or
 `reference.png`), then report one line, plain text starting `Same-seed run:`:
 
-- **`match yes`:** `Same-seed run: SAME ??nothing broke`, with the screenshot's path.
+- **`match yes`:** `Same-seed run: SAME — nothing broke`, with the screenshot's path.
 - **`match no`:** the story changed how the game plays. Never pass over it, in any
   automation mode: show the person, in plain words, what the `no` row and the `was` row
   under it say (a scene, a value, the screen), with both screenshots, and ask: "This story
   changed the same-seed run: [what changed]. Is that what the story meant?" Options: Yes, it
-  is meant ??later stories are compared with this run / No ??something broke, leave the
+  is meant — later stories are compared with this run / No — something broke, leave the
   story open. Yes: `bash .agent/scripts/one-shot-grow.sh accept <name>`, then
-  `Same-seed run: CHANGED, accepted ??[what changed]`. No: `Same-seed run: CHANGED, not
-  accepted ??[what changed]`, and the story is INCOMPLETE until it is fixed.
+  `Same-seed run: CHANGED, accepted — [what changed]`. No: `Same-seed run: CHANGED, not
+  accepted — [what changed]`, and the story is INCOMPLETE until it is fixed.
 - **An `errors` row above 0** that the compared run did not have is a change too: ask the
   same way.
-- **`not_assessed`, or `match not_assessed`:** `Same-seed run: NOT ASSESSED ??[its
+- **`not_assessed`, or `match not_assessed`:** `Same-seed run: NOT ASSESSED — [its
   reason]`; still open the screenshot when there is one.
 
 No such folder: the game was not grown, and there is no `Same-seed run:` line.
@@ -304,14 +304,14 @@ adds `Bash(<that executable> *)` to `.agent/settings.local.json`.
 ## Implementation Complete: [title]
 
 **Files changed**:
-- `[code root path]` ??created / modified ([what])
-- `[test path]` ??[N] test functions
-**Test evidence**: waived at `qa.level: minimal` ??no test was required or written   (Logic/Integration at minimal, instead of the test line)
-**Verification**: [command] ??[exit code and result | parse NOT VERIFIED ??<reason>]
+- `[code root path]` — created / modified ([what])
+- `[test path]` — [N] test functions
+**Test evidence**: waived at `qa.level: minimal` — no test was required or written   (Logic/Integration at minimal, instead of the test line)
+**Verification**: [command] — [exit code and result | parse NOT VERIFIED — <reason>]
 
 **Acceptance criteria**:
-- [x] [criterion] ??[file:function | test name | OBSERVED in <image path>]
-- [ ] [criterion] ??DEFERRED: feel, needs a playtest
+- [x] [criterion] — [file:function | test name | OBSERVED in <image path>]
+- [ ] [criterion] — DEFERRED: feel, needs a playtest
 **Deviations**: [None | files outside scope, an accepted dependency or version risk]
 **Engine risks**: [None | the specialist's findings]
 **Blockers**: [None | each]
@@ -338,12 +338,12 @@ this when the Phase 3 ask was declined.
 ```
 **Updated:** [date]
 **Branch:** `[current git branch]`
-**Current task:** /dev-story ??[story path] ([title])
+**Current task:** /dev-story — [story path] ([title])
 **Next step:** [the Next step below]
 **Blocked on:** [nothing, or the blocker]
 **Files in progress:** [changed files, comma-separated]
-**Run result:** [OBSERVED ????| NOT VERIFIED ????| N/A ???? as in the closing block: /story-done reads it here]
-**Same-seed run:** [a grown game only: SAME ????| CHANGED, accepted ????| CHANGED, not accepted ????| NOT ASSESSED ????
+**Run result:** [OBSERVED — … | NOT VERIFIED — … | N/A — …, as in the closing block: /story-done reads it here]
+**Same-seed run:** [a grown game only: SAME — … | CHANGED, accepted — … | CHANGED, not accepted — … | NOT ASSESSED — …]
 **Own calls:** [the programmer's calls beyond the design, or none]
 **Open questions:** [none, or one line each]
 ```
@@ -357,9 +357,8 @@ after the fix. BLOCKED: the action that unblocks it (`/architecture-decision acc
 ADR-NNNN`, the dependency to finish, the diff to review).
 
 ```
-Story: [path] ??[Implemented | INCOMPLETE ??<breakage> | BLOCKED ??<reason>]
-Run result: [OBSERVED ????| NOT VERIFIED ????| N/A ????
+Story: [path] — [Implemented | INCOMPLETE — <breakage> | BLOCKED — <reason>]
+Run result: [OBSERVED — … | NOT VERIFIED — … | N/A — …]
 Same-seed run: [a grown game only, as in Phase 6]
-Next step: [Implemented, Tier: workflow minimal ??/story-done [path] | Implemented, Tier: workflow standard or full ??/code-review [changed files], then /story-done [path] | INCOMPLETE ??/dev-story [path] to resume | BLOCKED ??the unblocking action]
+Next step: [Implemented, Tier: workflow minimal → /story-done [path] | Implemented, Tier: workflow standard or full → /code-review [changed files], then /story-done [path] | INCOMPLETE → /dev-story [path] to resume | BLOCKED → the unblocking action]
 ```
-

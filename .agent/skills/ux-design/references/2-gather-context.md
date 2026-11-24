@@ -1,4 +1,4 @@
-# /ux-design ??Sections 2 and 2b: Gather Context and Retrofit Detection
+# /ux-design — Sections 2 and 2b: Gather Context and Retrofit Detection
 
 > Part of `/ux-design`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -24,8 +24,8 @@ ranges with offset and limit.
 
 ### 2a: Required Reads
 
-- **Game concept**: Read `design/gdd/game-concept.md` ??or `design/game-brief.md`,
-  the one-page brief that replaces it at `rigor: minimal` ??if neither exists, warn:
+- **Game concept**: Read `design/gdd/game-concept.md` — or `design/game-brief.md`,
+  the one-page brief that replaces it at `rigor: minimal` — if neither exists, warn:
   > "No game concept found. Run `/brainstorm` first to establish the game's
   > foundation before designing UX."
   > Continue anyway if the user asks.
@@ -47,7 +47,7 @@ Also add to the UX spec's Open Questions section:
 > "Player journey map not yet created. Author it from the template at `.agent/docs/templates/player-journey.md` to establish player context for this screen."
 
 > **Do not tell the user to "run `/ux-design` Phase 2b" to create it.** Phase 2b
-> is this step ??the one that *reads* the file. That remediation is circular: it
+> is this step — the one that *reads* the file. That remediation is circular: it
 > sends the user back to the check that just reported the gap. No skill
 > writes `design/player-journey.md`; it is hand-authored from its template.
 
@@ -59,7 +59,7 @@ UI Requirements section references this screen by name or category.
 These GDD UI Requirements are the **requirements input** to this spec. Collect them
 as a list of constraints the spec must satisfy.
 
-If designing the HUD, you need the UI Requirements of **every** system ??the HUD
+If designing the HUD, you need the UI Requirements of **every** system — the HUD
 aggregates them. Collect them with one scan rather than opening each GDD:
 
 ```
@@ -72,7 +72,7 @@ the match count against it. Count system GDDs only: `game-concept.md`,
 `fixture-swap-ledger.md`, `sound-bible.md` and any `gdd-cross-review-*.md` live
 there too, but they are not systems and have no UI to aggregate.
 **A GDD with no UI Requirements section is not a GDD
-with no UI needs** ??it may predate the section. List the unmatched ones and
+with no UI needs** — it may predate the section. List the unmatched ones and
 confirm with the user that they are genuinely headless before excluding them
 from the HUD's requirement set; a HUD that silently omits a system's readout is
 the exact failure this aggregation exists to prevent.
@@ -87,7 +87,7 @@ find the entry and exit points this spec must match.
 
 If `design/ux/interaction-patterns.md` exists, read the pattern catalog index
 (the list of pattern names and their one-line descriptions). Do not read full
-pattern details ??just the catalog. This tells you which patterns already exist
+pattern details — just the catalog. This tells you which patterns already exist
 so you can reference them rather than reinvent them.
 
 ### 2f: Art Bible
@@ -105,14 +105,14 @@ must satisfy the accessibility tier committed to there.
 Read the `platform` block from `project.yaml`; if `project.yaml` has no
 `platform` block, fall back to the `## Input & Platform` section of
 `.agent/docs/technical-preferences.md`. Store these values for use throughout
-the skill ??they drive the Interaction Map and inform accessibility
+the skill — they drive the Interaction Map and inform accessibility
 requirements:
 
-- **Primary Input** ??`platform.primary_input` ??the dominant input for this game
-- **Gamepad Support** ??`platform.gamepad_support` ??Full / Partial / None
-- **Touch Support** ??`platform.touch_support` ??Full / Partial / None
-- **Target Platforms** ??`platform.targets` ??for safe zone and aspect ratio decisions
-- **Input Methods** ??the set of supported methods. When reading from
+- **Primary Input** — `platform.primary_input` — the dominant input for this game
+- **Gamepad Support** — `platform.gamepad_support` — Full / Partial / None
+- **Touch Support** — `platform.touch_support` — Full / Partial / None
+- **Target Platforms** — `platform.targets` — for safe zone and aspect ratio decisions
+- **Input Methods** — the set of supported methods. When reading from
   `project.yaml`, derive it: keyboard/mouse if `PC` or `Web` is in `targets`;
   gamepad if gamepad support is Full/Partial; touch if touch support is
   Full/Partial; plus the primary input. When falling back to
@@ -133,7 +133,7 @@ Before any design work, present a brief summary to the user:
 
 > **Designing: [Screen/Flow Name]**
 > - Mode: [UX Spec / HUD Design / Pattern Library]
-> - Journey phase(s): [from player-journey.md, or "unknown ??no journey map"]
+> - Journey phase(s): [from player-journey.md, or "unknown — no journey map"]
 > - GDD requirements feeding this spec: [count and names, or "none found"]
 > - Related screens already specced: [list, or "none yet"]
 > - Known patterns available: [count, or "no pattern library yet"]
@@ -148,10 +148,10 @@ Then ask: "Anything else I should read before we start, or shall we proceed?"
 
 Before creating a skeleton, check if the target output file already exists.
 
-Glob the resolved output path from Phase 1 ??`design/ux/[filename].md`, or
+Glob the resolved output path from Phase 1 — `design/ux/[filename].md`, or
 `design/accessibility-requirements.md` in `accessibility` mode.
 
-**If the file exists ??retrofit mode:**
+**If the file exists — retrofit mode:**
 - Read the file in full
 - For each expected section, check whether the body has real content (more than a `[To be designed]` placeholder) or is empty/placeholder
 - Present a section status summary to the user:
@@ -176,17 +176,16 @@ Glob the resolved output path from Phase 1 ??`design/ux/[filename].md`, or
 > | Acceptance Criteria | ... |
 > | Open Questions | ... |
 >
-> (Rows are the skeleton's own `##` headings for the active mode ??the list above is
+> (Rows are the skeleton's own `##` headings for the active mode — the list above is
 > UX spec mode; HUD and accessibility modes list their skeleton's headings.)
 >
-> I'll work on the [N] incomplete sections only ??existing content will not be overwritten."
+> I'll work on the [N] incomplete sections only — existing content will not be overwritten."
 
-- Skip Section 3 (skeleton creation) ??the file already exists
+- Skip Section 3 (skeleton creation) — the file already exists
 - In Phase 4 (Section Authoring), only work on sections with Status: Empty or Placeholder
 - Use `Edit` to fill placeholders in-place rather than creating a new skeleton
 
-**If the file does not exist ??fresh authoring mode:**
+**If the file does not exist — fresh authoring mode:**
 Proceed to Phase 3 (Create File Skeleton) as normal.
 
 ---
-

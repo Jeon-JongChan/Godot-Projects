@@ -1,6 +1,6 @@
 ---
 name: team-ui
-description: "Orchestrate the UI team through the UX pipeline ??authoring, visual design, implementation, review, polish. Uses /ux-design, /ux-review, studio templates."
+description: "Orchestrate the UI team through the UX pipeline — authoring, visual design, implementation, review, polish. Uses /ux-design, /ux-review, studio templates."
 argument-hint: "[UI feature description] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.agent/skills/team-ui/../../hooks/yaml-helper.sh" resolve_config *)
@@ -9,7 +9,7 @@ model: sonnet
 # Team UI
 
 If no argument is provided, output usage guidance and exit without spawning any agents or reading any design files:
-> Usage: `/team-ui [UI feature description] [--review full|lean|solo]` ??describe the screen or UI feature to build (e.g., `inventory screen`, `main menu`, `combat HUD`). Do not use `AskUserQuestion` here; output the guidance directly.
+> Usage: `/team-ui [UI feature description] [--review full|lean|solo]` — describe the screen or UI feature to build (e.g., `inventory screen`, `main menu`, `combat HUD`). Do not use `AskUserQuestion` here; output the guidance directly.
 
 When this skill is invoked, orchestrate the UI team through a structured pipeline.
 
@@ -26,8 +26,8 @@ in `autonomous` mode it runs end to end, recording each phase outcome via
 ## Phase 0: Resolve Config
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,team.size` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.agent/docs/config-resolution.md`.
 
 `review_mode` sets director-gate depth, and this pipeline has no director gate:
 no phase below spawns CD-, TD-, PR- or AD-PHASE-GATE, at any `review_mode`. Its
@@ -40,23 +40,23 @@ below), and the agents that work at them are team members, not director gates.
 **`team.size`**: which agents are active (orthogonal to review_mode gate-depth and workflow docs).
 - **`individual`** (default): `ui-programmer` + `ux-designer`. Other agents consulted via these two, not spawned separately.
 - **`small`**: + `accessibility-specialist` + `art-director`.
-- **`studio`**: + engine UI specialist + an adversarial review pass: Phase 4's reviewers are told "your job is not to confirm this matches the spec ??find where it fails it", and the report says the pass ran.
-A non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point this pipeline itself lists** ??a transition under Decision Points above, or a **Gate** step written into the pipeline below ??**whatever the `automation` mode.** `guided` and `autonomous` change how a gate is passed (it auto-advances, or is recorded with `log_decision`), not whether it is one, so bounded-exception condition (3) below holds at it in every mode. An agent restricted to "phase gates only" is spawned at those points and no others. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+- **`studio`**: + engine UI specialist + an adversarial review pass: Phase 4's reviewers are told "your job is not to confirm this matches the spec — find where it fails it", and the report says the pass ran.
+A non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point this pipeline itself lists** — a transition under Decision Points above, or a **Gate** step written into the pipeline below — **whatever the `automation` mode.** `guided` and `autonomous` change how a gate is passed (it auto-advances, or is recorded with `log_decision`), not whether it is one, so bounded-exception condition (3) below holds at it in every mode. An agent restricted to "phase gates only" is spawned at those points and no others. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
-**Announce the active set before Step 1 ??never let the collapse be silent.**
+**Announce the active set before Step 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
 spawn, and which the pipeline below names but will **not** spawn at the resolved
 `team.size`. For example:
 
 > `Active set (team.size: <resolved>): <the agents listed for that size above>.`
-> `Not spawned this run: <every other agent this pipeline names> ??consulted`
+> `Not spawned this run: <every other agent this pipeline names> — consulted`
 > `through <nearest active core agent>. Raise team.size (or modes.rigor) to widen.`
 
 Fill it from the `team.size` list directly above and the agents this file's own
-pipeline names ??not from an example. Both sets differ per orchestrator.
+pipeline names — not from an example. Both sets differ per orchestrator.
 
 The pipeline below reads as a multi-agent fan-out and at the shipped default it
-is one or two agents ??`team-release` names ten and runs one, `team-narrative`
+is one or two agents — `team-release` names ten and runs one, `team-narrative`
 names six across five phases and runs `writer` alone. **The collapse is correct**:
 `team.size` is rigor-fronted and the narrow default is the token lever.
 Without saying so, a reader cannot
@@ -69,35 +69,35 @@ indistinguishable, to the person reading the output, from one that was never
 enforced.**
 
 ## Team Composition
-- **ux-designer** ??User flows, wireframes, accessibility, input handling
-- **ui-programmer** ??UI framework, screens, widgets, data binding, implementation
-- **art-director** ??Visual style, layout polish, consistency with art bible
-- **engine UI specialist** ??Validates UI implementation patterns against engine-specific best practices (`specialists.ui` from `project.yaml`; if absent, the UI Specialist line of `## Engine Specialists` in `.agent/docs/technical-preferences.md`)
-- **accessibility-specialist** ??Audits accessibility compliance at Phase 4
+- **ux-designer** — User flows, wireframes, accessibility, input handling
+- **ui-programmer** — UI framework, screens, widgets, data binding, implementation
+- **art-director** — Visual style, layout polish, consistency with art bible
+- **engine UI specialist** — Validates UI implementation patterns against engine-specific best practices (`specialists.ui` from `project.yaml`; if absent, the UI Specialist line of `## Engine Specialists` in `.agent/docs/technical-preferences.md`)
+- **accessibility-specialist** — Audits accessibility compliance at Phase 4
 
 > **`specialists.ui: null` means UNSET.** Treat it as absent and skip the engine
 > UI specialist; never spawn `null` as an agent name. The v1.0 migration writes
 > the whole `specialists` block whenever any one member is set, so `null` here is
-> ordinary ??and the config reader returns it as the non-empty string `"null"`.
+> ordinary — and the config reader returns it as the non-empty string `"null"`.
 
 **Templates used by this pipeline:**
-- `ux-spec.md` ??Standard screen/flow UX specification
-- `hud-design.md` ??HUD-specific UX specification
-- `interaction-pattern-library.md` ??Reusable interaction patterns
-- `accessibility-requirements.md` ??Committed accessibility tier and requirements
+- `ux-spec.md` — Standard screen/flow UX specification
+- `hud-design.md` — HUD-specific UX specification
+- `interaction-pattern-library.md` — Reusable interaction patterns
+- `accessibility-requirements.md` — Committed accessibility tier and requirements
 
 ## How to Delegate
 
 Use the `Agent` tool to spawn each team member as a subagent:
-- `subagent_type: ux-designer` ??User flows, wireframes, accessibility, input handling
-- `subagent_type: ui-programmer` ??UI framework, screens, widgets, data binding
-- `subagent_type: art-director` ??Visual style, layout polish, art bible consistency
-- `subagent_type: [UI engine specialist]` ??Engine-specific UI pattern validation (e.g., unity-ui-specialist, ue-umg-specialist, godot-specialist)
-- `subagent_type: accessibility-specialist` ??Accessibility compliance audit
+- `subagent_type: ux-designer` — User flows, wireframes, accessibility, input handling
+- `subagent_type: ui-programmer` — UI framework, screens, widgets, data binding
+- `subagent_type: art-director` — Visual style, layout polish, art bible consistency
+- `subagent_type: [UI engine specialist]` — Engine-specific UI pattern validation (e.g., unity-ui-specialist, ue-umg-specialist, godot-specialist)
+- `subagent_type: accessibility-specialist` — Accessibility compliance audit
 
-**Brief each agent ??do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
+**Brief each agent — do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
 
-**End every agent prompt with a return contract:** "Write your full output to `[path]` ??that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ??-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session. **Implementation files are the exception:** an agent writing code or assets first returns the files it will create or change, and its return contract names them only after you have asked once for the set and the user said yes (File Write Protocol) ??that answer, not the bounded exception, authorises those writes.
+**End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session. **Implementation files are the exception:** an agent writing code or assets first returns the files it will create or change, and its return contract names them only after you have asked once for the set and the user said yes (File Write Protocol) — that answer, not the bounded exception, authorises those writes.
 
 **Substitute a real path for `[path]`.** Working artifacts go under
 `production/ui/[feature-name]/`, the slug Phase 1b's `design/ux/[feature-name].md`
@@ -107,13 +107,13 @@ uses. One file per agent, so the parallel Phase 4 reviews never share one:
 |---|---|
 | 2 art-director | `production/ui/[feature-name]/visual-design.md` |
 | 3 engine UI specialist | `production/ui/[feature-name]/engine-notes.md` |
-| 3 ui-programmer | the code root ??the files the one implementation ask lists (File Write Protocol), outside the bounded exception |
+| 3 ui-programmer | the code root — the files the one implementation ask lists (File Write Protocol), outside the bounded exception |
 | 4 ux-designer, art-director, accessibility-specialist | `production/ui/[feature-name]/review-[agent].md`, one each |
 
 The UX spec itself (Phase 1b) and any pattern-library update are under `design/`,
 outside the bounded exception: `/ux-design` or the agent asks before writing them.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight ??the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an `AskUserQuestion` before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** ??a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an `AskUserQuestion` before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
 
 Launch independent agents in parallel where the pipeline allows it (e.g., Phase 4 review agents can run simultaneously).
 
@@ -124,12 +124,13 @@ Launch independent agents in parallel where the pipeline allows it (e.g., Phase 
 Before designing anything, read and synthesize. Read each GDD by section: find the
 headings you need with the Grep tool (pattern `^#`, content mode) and Read those
 ranges with offset and limit.
-- `design/gdd/game-concept.md` ??platform targets and intended audience (or
-  `design/game-brief.md`, the one-page brief that replaces it at `rigor: minimal` ??  its "Who it's for" line gives the audience; it names no platform)
-- `design/player-journey.md` ??player's state and context when they reach this screen
+- `design/gdd/game-concept.md` — platform targets and intended audience (or
+  `design/game-brief.md`, the one-page brief that replaces it at `rigor: minimal` —
+  its "Who it's for" line gives the audience; it names no platform)
+- `design/player-journey.md` — player's state and context when they reach this screen
 - All GDD UI Requirements sections relevant to this feature
-- `design/ux/interaction-patterns.md` ??existing patterns to reuse (not reinvent)
-- `design/accessibility-requirements.md` ??committed accessibility tier (Basic, Standard, Comprehensive or Exemplary)
+- `design/ux/interaction-patterns.md` — existing patterns to reuse (not reinvent)
+- `design/accessibility-requirements.md` — committed accessibility tier (Basic, Standard, Comprehensive or Exemplary)
 
 **Report the status of every document above before designing anything.** Phase 1a
 reads five inputs, and any of them can be absent. List each as
@@ -138,12 +139,12 @@ present or ABSENT.
 **`design/accessibility-requirements.md` is the one that must not pass silently.**
 It carries the committed accessibility tier, which **Phase 3 implements against**
 and **Phase 4 gates on** ("verify compliance against the committed accessibility
-tier ??flag any violations as blockers"). If the file is missing there is no tier,
-so that gate has no criterion and would pass while checking nothing ??a gate made
+tier … flag any violations as blockers"). If the file is missing there is no tier,
+so that gate has no criterion and would pass while checking nothing — a gate made
 of an absent standard, the same shape as an assertion that can never fail. When it
 is absent:
 - Say so here, and carry it forward: **Phase 4 must report
-  `Accessibility: NOT ASSESSED ??no committed tier (design/accessibility-requirements.md absent)`
+  `Accessibility: NOT ASSESSED — no committed tier (design/accessibility-requirements.md absent)`
   and must NOT report the accessibility gate as passed.**
 - The ux-designer states which tier they designed against as an explicit
   assumption, so a later reader can see it was assumed rather than committed.
@@ -156,11 +157,11 @@ pass to the ux-designer so they design knowing what context they lack, rather
 than inferring it.
 
 **If `design/ux/interaction-patterns.md` does not exist**, surface the gap immediately:
-> "interaction-patterns.md does not exist ??no existing patterns to reuse."
+> "interaction-patterns.md does not exist — no existing patterns to reuse."
 
 Then use `AskUserQuestion` with options:
 - (a) Run `/ux-design patterns` first to establish the pattern library, then continue
-- (b) Proceed without the pattern library ??ui-programmer will treat all patterns created as new and add each to a new `design/ux/interaction-patterns.md` at completion
+- (b) Proceed without the pattern library — ui-programmer will treat all patterns created as new and add each to a new `design/ux/interaction-patterns.md` at completion
 
 Do NOT invent or assume patterns from the feature name or GDD alone. If the user chooses (b), explicitly instruct ui-programmer in Phase 3 to treat all patterns as new and document them in `design/ux/interaction-patterns.md` when implementation is complete. Note the pattern library status (created / absent / updated) in the final summary report.
 
@@ -182,7 +183,7 @@ Output: `design/ux/[feature-name].md` with all required spec sections filled.
 
 After the spec is complete, invoke `/ux-review design/ux/[feature-name].md`.
 
-**Gate**: Do not proceed to Phase 2 until the verdict is APPROVED. If the verdict is NEEDS REVISION, the ux-designer must address the flagged issues in the same spec ??it is kept and revised, never discarded ??and re-run the review. The user may explicitly accept a NEEDS REVISION risk and proceed, but this must be a conscious decision ??present the specific concerns via `AskUserQuestion` before asking whether to proceed.
+**Gate**: Do not proceed to Phase 2 until the verdict is APPROVED. If the verdict is NEEDS REVISION, the ux-designer must address the flagged issues in the same spec — it is kept and revised, never discarded — and re-run the review. The user may explicitly accept a NEEDS REVISION risk and proceed, but this must be a conscious decision — present the specific concerns via `AskUserQuestion` before asking whether to proceed.
 
 A **NOT ASSESSED** verdict blocks the same way, and the user may override it the same way. Its fix is an input, not a revision: present the dimensions `/ux-review` could not assess and the missing input for each (e.g. `/ux-design accessibility` for an uncommitted tier). Re-running the review without that input returns the same verdict, so offer to produce the input first.
 
@@ -191,10 +192,10 @@ When the user proceeds past NEEDS REVISION or NOT ASSESSED, the final report rec
 ### Phase 2: Visual Design
 
 Delegate to **art-director**:
-- Review the full UX spec (flows, wireframes, interaction patterns, accessibility notes) ??not just the wireframe images
+- Review the full UX spec (flows, wireframes, interaction patterns, accessibility notes) — not just the wireframe images
 - Apply visual treatment from the art bible: colors, typography, spacing, animation style
 - Check that visual design preserves accessibility compliance: verify color contrast ratios, and confirm color is never the only indicator of state (shape, text, or icon must reinforce it)
-- Specify all asset requirements needed from the art pipeline: icons at specified sizes, background textures, fonts, decorative elements ??with precise dimensions and format requirements
+- Specify all asset requirements needed from the art pipeline: icons at specified sizes, background textures, fonts, decorative elements — with precise dimensions and format requirements
 - Ensure consistency with existing implemented UI screens
 - Output: visual design spec with style notes and asset manifest
 
@@ -206,13 +207,13 @@ Before implementation begins, spawn the **engine UI specialist** (`specialists.u
 - Recommended widget/node structure for the engine?
 - Output: engine UI implementation notes to hand off to ui-programmer before they begin
 
-If no engine is configured, skip this step. **Record ``Engine validation: NOT ASSESSED ??no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
+If no engine is configured, skip this step. **Record ``Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 
 Delegate to **ui-programmer**:
 - Implement the UI following the UX spec and visual design spec
-- **Use patterns from `design/ux/interaction-patterns.md`** ??do not reinvent patterns that are already specified. If a pattern almost fits but needs modification, note the deviation and flag it for ux-designer review.
-- **UI NEVER owns or modifies game state** ??display only; emit events for all player actions
-- All text through the localization system ??no hardcoded player-facing strings
+- **Use patterns from `design/ux/interaction-patterns.md`** — do not reinvent patterns that are already specified. If a pattern almost fits but needs modification, note the deviation and flag it for ux-designer review.
+- **UI NEVER owns or modifies game state** — display only; emit events for all player actions
+- All text through the localization system — no hardcoded player-facing strings
 - Support both input methods (keyboard/mouse AND gamepad)
 - Implement accessibility features per the committed tier in `design/accessibility-requirements.md`
 - Wire up data binding to game state
@@ -224,7 +225,7 @@ Delegate to **ui-programmer**:
 Delegate in parallel:
 - **ux-designer**: Verify implementation matches wireframes and interaction spec. Test keyboard-only and gamepad-only navigation. Check accessibility features function correctly.
 - **art-director**: Verify visual consistency with art bible. Check at minimum and maximum supported resolutions.
-- **accessibility-specialist**: Verify compliance against the committed accessibility tier documented in `design/accessibility-requirements.md`. Flag any violations as blockers. **If that file is absent there is no committed tier, so this gate has no criterion: report `Accessibility: NOT ASSESSED ??no committed tier (design/accessibility-requirements.md absent)` and do NOT report the gate as passed**. Carry forward whatever tier Phase 1a recorded as assumed, and say plainly that it was assumed.
+- **accessibility-specialist**: Verify compliance against the committed accessibility tier documented in `design/accessibility-requirements.md`. Flag any violations as blockers. **If that file is absent there is no committed tier, so this gate has no criterion: report `Accessibility: NOT ASSESSED — no committed tier (design/accessibility-requirements.md absent)` and do NOT report the gate as passed**. Carry forward whatever tier Phase 1a recorded as assumed, and say plainly that it was assumed.
 
 All three review streams must report before proceeding to Phase 5.
 
@@ -234,20 +235,20 @@ All three review streams must report before proceeding to Phase 5.
 - Verify animations are skippable and respect the player's motion reduction preferences
 - Confirm UI sounds trigger through the audio event system (no direct audio calls)
 - Test at all supported resolutions and aspect ratios
-- **Verify `design/ux/interaction-patterns.md` is up to date** ??if any new patterns were introduced during this feature's implementation, confirm they have been added to the library
+- **Verify `design/ux/interaction-patterns.md` is up to date** — if any new patterns were introduced during this feature's implementation, confirm they have been added to the library
 - **Confirm all HUD elements respect the visual budget** defined in `design/ux/hud.md` (element count, screen region allocations, maximum opacity values)
 
-## Quick Reference ??When to Use Which Skill
+## Quick Reference — When to Use Which Skill
 
-- `/ux-design` ??Author a new UX spec for a screen, flow, or HUD from scratch
-- `/ux-review` ??Validate a completed UX spec before implementation
-- `/team-ui [feature]` ??Full pipeline from concept through polish (calls `/ux-design` and `/ux-review` internally)
-- `/quick-design` ??Small UI changes that don't need a full new UX spec
+- `/ux-design` — Author a new UX spec for a screen, flow, or HUD from scratch
+- `/ux-review` — Validate a completed UX spec before implementation
+- `/team-ui [feature]` — Full pipeline from concept through polish (calls `/ux-design` and `/ux-review` internally)
+- `/quick-design` — Small UI changes that don't need a full new UX spec
 
 ## Error Recovery Protocol
 
 **First, verify the artifact.** If the return contract named a path, check the
-path exists before treating the phase as done ??**a named artifact that is not
+path exists before treating the phase as done — **a named artifact that is not
 on disk is a failed phase, however fluent the response reads.** An agent can
 burn a full phase and return a plausible preamble having written nothing, which
 is neither BLOCKED nor an error nor "cannot complete", so the trigger below
@@ -256,13 +257,13 @@ usually still there.
 
 If any spawned agent returns BLOCKED, errors, or cannot complete: **surface it
 immediately, don't proceed past a dependency it blocks, and always produce a
-partial report.** A skipped agent's section stays a named gap ??never fill it with content of your own. Full procedure: `.agent/docs/error-recovery-protocol.md`.
+partial report.** A skipped agent's section stays a named gap — never fill it with content of your own. Full procedure: `.agent/docs/error-recovery-protocol.md`.
 
 Common blockers:
-- Input file missing (story not found, GDD absent) ??redirect to the skill that creates it
-- ADR status is Proposed ??do not implement; once it is decided, accept it with `/architecture-decision accept ADR-NNNN`
-- Scope too large ??split into two stories via `/create-stories`
-- Conflicting instructions between ADR and story ??surface the conflict, do not guess
+- Input file missing (story not found, GDD absent) → redirect to the skill that creates it
+- ADR status is Proposed → do not implement; once it is decided, accept it with `/architecture-decision accept ADR-NNNN`
+- Scope too large → split into two stories via `/create-stories`
+- Conflicting instructions between ADR and story → surface the conflict, do not guess
 
 ## File Write Protocol
 
@@ -271,7 +272,7 @@ delegated to sub-agents and sub-skills. The two follow **different** rules:
 
 - **Sub-agents spawned via `Agent`** (e.g. `ui-programmer`) follow the **bounded
   exception** documented above under "Why this does not violate the Collaboration
-  Protocol" ??the path is one you named, the artifact is new under `production/`,
+  Protocol" — the path is one you named, the artifact is new under `production/`,
   `docs/` or `tests/`, and the phase is gated by an `AskUserQuestion`. A sub-agent
   does **not** prompt per write inside those bounds; outside them it must ask.
   **Implementation files** (ui-programmer's code under the code root) are outside
@@ -286,18 +287,17 @@ This orchestrator does not write files directly.
 
 A summary report covering: UX spec status, UX review verdict, visual design status, implementation status, accessibility compliance, input method support, interaction pattern library update status, and any outstanding issues.
 
-Verdict: **COMPLETE** ??UI feature delivered through full pipeline (UX spec ??visual ??implementation ??review ??polish).
+Verdict: **COMPLETE** — UI feature delivered through full pipeline (UX spec → visual → implementation → review → polish).
 
 If the accessibility gate (no committed tier) or the engine validation (no engine
-configured) was NOT ASSESSED, the verdict names each one ??never a plain COMPLETE:
+configured) was NOT ASSESSED, the verdict names each one — never a plain COMPLETE:
 
-Verdict: **COMPLETE ??[accessibility | engine validation] NOT ASSESSED ([reason])** ??UI feature delivered; the named check could not run.
+Verdict: **COMPLETE — [accessibility | engine validation] NOT ASSESSED ([reason])** — UI feature delivered; the named check could not run.
 
-Verdict: **BLOCKED** ??pipeline halted; surface the blocker and its phase before stopping.
+Verdict: **BLOCKED** — pipeline halted; surface the blocker and its phase before stopping.
 
 ## Next Steps
 
 - Run `/ux-review` on the final spec if not yet approved.
 - Run `/code-review` on the UI implementation before closing stories.
 - Run `/team-polish` if visual or audio polish pass is needed.
-

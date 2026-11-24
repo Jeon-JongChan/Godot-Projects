@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: "Section-by-section GDD authoring for one system ??walks through each required section, cross-references dependencies."
+description: "Section-by-section GDD authoring for one system — walks through each required section, cross-references dependencies."
 argument-hint: "<system-name> [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.agent/skills/design-system/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/registry.sh *)
@@ -8,12 +8,12 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,workflow,docs.density,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.agent/docs/config-resolution.md`.
 
 # Design System
 
-**This skill spawns no agents** ??not for a section and not for the
+**This skill spawns no agents** — not for a section and not for the
 CD-GDD-ALIGN sign-off, even when the person asks for a specialist's or "the
 creative director's" view: what each specialist checked is in a lens file in
 `references/`, and you apply it here. (The agent files exist for other skills.)
@@ -22,23 +22,23 @@ When this skill is invoked:
 
 ## 1. Parse Arguments & Validate
 
-**Read `references/1-parse-arguments.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/1-parse-arguments.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 2. Gather Context (Read Phase)
 
-**Read `references/2-gather-context.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/2-gather-context.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 3. Create File Skeleton
 
-**Read `references/3-file-skeleton.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/3-file-skeleton.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 4. Section-by-Section Design
 
-**Read `references/4-section-design.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/4-section-design.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 5. Post-Design Validation
 
-**Read `references/5-post-design.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5-post-design.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 6. Specialist Routing
 
@@ -48,7 +48,7 @@ The section steps look at the work through specialists' lenses
 its step says); this table picks which roles' lenses a system's Section C uses.
 You run the flow and apply each lens yourself.
 
-**Rows here are finer-grained than the nine `Category` values on purpose** ??the
+**Rows here are finer-grained than the nine `Category` values on purpose** — the
 right specialist for combat is not the right specialist for pathfinding, and both
 are `Gameplay`. Resolve in two steps: take the system's `Category` from
 `systems-index.md`, then pick the row within it that matches what the system
@@ -56,15 +56,15 @@ actually does. Every category has at least one row, so nothing falls through.
 
 | `Category` | Rows below to choose from |
 |---|---|
-| `Gameplay` | Combat/damage/health 쨌 AI/pathfinding/behavior 쨌 Animation/character movement 쨌 Character systems 쨌 Camera/input/controls |
-| `Core` | Foundation/Infrastructure 쨌 Camera/input/controls |
+| `Gameplay` | Combat/damage/health · AI/pathfinding/behavior · Animation/character movement · Character systems · Camera/input/controls |
+| `Core` | Foundation/Infrastructure · Camera/input/controls |
 | `Persistence` | Foundation/Infrastructure |
 | `Economy` | Economy/loot/crafting |
 | `Progression` | Progression/XP/skills |
-| `UI` | UI systems 쨌 Visual effects (when the system is HUD-adjacent VFX) |
+| `UI` | UI systems · Visual effects (when the system is HUD-adjacent VFX) |
 | `Audio` | Audio systems |
 | `Narrative` | Dialogue/quests/lore |
-| `Meta` | Foundation/Infrastructure (analytics, tutorial plumbing) 쨌 UI systems (accessibility options screens) |
+| `Meta` | Foundation/Infrastructure (analytics, tutorial plumbing) · UI systems (accessibility options screens) |
 
 If two rows fit, use the union of their Primary roles and say why.
 
@@ -96,13 +96,13 @@ If two rows fit, use the union of their Primary roles and say why.
 
 If the session is interrupted (compaction, crash, new session):
 
-1. Read `production/session-state/active.md` ??it records the current system and
+1. Read `production/session-state/active.md` — it records the current system and
    which sections are complete
-2. Read `design/gdd/[system-name].md` ??sections with real content are done;
+2. Read `design/gdd/[system-name].md` — sections with real content are done;
    sections with `[To be designed]` still need work. Read it by section: find the
    headings with the Grep tool (pattern `^#`, content mode) and Read those
    ranges with offset and limit.
-3. Resume from the next incomplete section ??no need to re-discuss completed ones
+3. Resume from the next incomplete section — no need to re-discuss completed ones
 
 This is why incremental writing matters: every approved section survives any
 disruption.
@@ -112,7 +112,7 @@ disruption.
 ## Collaborative Protocol
 
 **In `collaborative` mode (the default).** For `guided` and `autonomous`
-modes, see the per-mode rules in `.agent/docs/automation-modes.md` ??the
+modes, see the per-mode rules in `.agent/docs/automation-modes.md` — the
 "Never" lines below describe what collaborative mode requires, not what
 applies universally.
 
@@ -124,7 +124,7 @@ This skill follows the collaborative design principle at every step:
    - Phase 3: "May I create the skeleton?"
    - Phase 4 (each section): Design questions, approach options, draft approval
    - Phase 5: "May I update the entity registry? May I update the systems
-     index? What's next?" ??**not** "Run design review?": 짠5c forbids offering
+     index? What's next?" — **not** "Run design review?": §5c forbids offering
      `/design-review` inline, because the reviewing agent must not inherit this
      session's design history. Phase 5c presents the hand-off; it never asks.
 3. **"May I write to [filepath]?"** before the skeleton and before each section write
@@ -132,7 +132,7 @@ This skill follows the collaborative design principle at every step:
 5. **Session state updates**: After every section write
 6. **Cross-referencing**: Every section checks existing GDDs for conflicts
 7. **Specialist routing**: Complex sections get expert agent input, presented to
-   the user for decision ??never written silently
+   the user for decision — never written silently
 
 **Never** auto-generate the full GDD and present it as a fait accompli.
 **Never** write a section without user approval.
@@ -144,9 +144,9 @@ This skill follows the collaborative design principle at every step:
 This is a long-running skill. After writing each section, check if the status line
 shows context at or above 70%. If so, append this notice to the response:
 
-> **Context is approaching the limit (??0%).** Your progress is saved ??all approved
+> **Context is approaching the limit (≥70%).** Your progress is saved — all approved
 > sections are written to `design/gdd/[system-name].md`. When you're ready to continue,
-> open a fresh Claude Code session and run `/design-system [system-name]` ??it will
+> open a fresh Claude Code session and run `/design-system [system-name]` — it will
 > detect which sections are complete and resume from the next one.
 
 ---
@@ -157,4 +157,3 @@ shows context at or above 70%. If so, append this notice to the response:
 - Run `/consistency-check` to verify this GDD's values don't conflict with other GDDs
 - Run `/map-systems next` to move to the next highest-priority undesigned system
 - Run `/gate-check technical-setup` when all MVP GDDs are authored and reviewed
-

@@ -1,4 +1,4 @@
-# /prototype ??One-shot 5: Grow it
+# /prototype — One-shot 5: Grow it
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -8,8 +8,8 @@ at the project root, with its values in data files, a rule under test, and a sam
 proves it still plays the same. Everything is copied out of `prototypes/<name>/`; nothing there is
 edited, moved or deleted, so the two can be compared and the one-shot is never lost.
 
-**In this file:** 1 The question 쨌 2 The guard 쨌 3 Reference 쨌 4 Copy 쨌 5 TypeScript 쨌 6 Rules
-under test 쨌 7 Record 쨌 8 Handover 쨌 9 One feature a sitting
+**In this file:** 1 The question · 2 The guard · 3 Reference · 4 Copy · 5 TypeScript · 6 Rules
+under test · 7 Record · 8 Handover · 9 One feature a sitting
 
 Each step ends in one commit of only the files it wrote (`git add -- <paths>`, never `-A`), so
 any step can be undone on its own. A failed check stops the grow at that step: say what
@@ -230,4 +230,3 @@ next. No stories, epics, design documents or gates: they run only when the perso
   each edit made for it; their hand edits stay.
 
 Then one line: "Say the next feature when you're ready."
-

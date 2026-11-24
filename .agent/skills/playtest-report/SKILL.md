@@ -8,9 +8,8 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
-block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.agent/docs/config-resolution.md`.
 
 # Playtest Report
 
@@ -19,20 +18,20 @@ block ??defaults in `.agent/docs/config-resolution.md`.
 ## Phase 1: Parse Arguments
 
 
-See `.agent/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.agent/docs/director-gates/[gate-id].md` ??the spawned agent reads its own gate file; do not read it in the parent session.
+See `.agent/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.agent/docs/director-gates/[gate-id].md` — the spawned agent reads its own gate file; do not read it in the parent session.
 
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 Determine the mode:
 
-- `new` ??generate a blank playtest report template. This mode ends after
+- `new` → generate a blank playtest report template. This mode ends after
   Phase 2A: a blank template has nothing to route, review or save.
-- `analyze [path]` ??read raw notes and fill in the template with structured findings
-- No argument ??ask via `AskUserQuestion`: `[A] New blank template` /
-  `[B] Analyze notes ??I'll give you the path`
+- `analyze [path]` → read raw notes and fill in the template with structured findings
+- No argument → ask via `AskUserQuestion`: `[A] New blank template` /
+  `[B] Analyze notes — I'll give you the path`
 
 ---
 
@@ -102,7 +101,7 @@ Generate this template and output it to the user:
 3. [Third priority]
 ```
 
-In `new` mode, stop here with: Verdict: **COMPLETE** ??blank template output; nothing saved.
+In `new` mode, stop here with: Verdict: **COMPLETE** — blank template output; nothing saved.
 
 ---
 
@@ -110,9 +109,9 @@ In `new` mode, stop here with: Verdict: **COMPLETE** ??blank template output; no
 
 Read the raw notes at the provided path. Cross-reference with existing design documents, reading each by section: find the headings you need with the Grep tool (pattern `^#`, content mode) and Read those ranges with offset and limit. Fill in the template above with structured findings. Flag any playtest observations that conflict with design intent.
 
-An observation that describes a defect ??a crash, a framerate drop, a softlock,
-something that plainly breaks rather than plays badly ??goes in the **Bugs
-Encountered** table, not under Gameplay Flow ??Pain points, and is routed as a
+An observation that describes a defect — a crash, a framerate drop, a softlock,
+something that plainly breaks rather than plays badly — goes in the **Bugs
+Encountered** table, not under Gameplay Flow → Pain points, and is routed as a
 bug in Phase 3. Pain points are for how the game feels to play.
 
 ---
@@ -121,10 +120,10 @@ bug in Phase 3. Pain points are for how the game feels to play.
 
 Categorize all findings into four buckets:
 
-- **Design changes needed** ??fun issues, player confusion, broken mechanics, observations that conflict with the GDD's intended experience
-- **Balance adjustments** ??numbers feel wrong, difficulty too spiked or too flat
-- **Bug reports** ??clear implementation defects that are reproducible
-- **Polish items** ??not blocking progress, but friction or feel issues for later
+- **Design changes needed** — fun issues, player confusion, broken mechanics, observations that conflict with the GDD's intended experience
+- **Balance adjustments** — numbers feel wrong, difficulty too spiked or too flat
+- **Bug reports** — clear implementation defects that are reproducible
+- **Polish items** — not blocking progress, but friction or feel issues for later
 
 Present the categorized list, then route:
 
@@ -137,23 +136,23 @@ Present the categorized list, then route:
 
 ## Phase 3b: Creative Director Player Experience Review
 
-**Review mode check** ??apply before spawning CD-PLAYTEST:
-- `solo` ??skip. Note: "CD-PLAYTEST skipped ??Solo mode." Proceed to Phase 4 (save the report).
-- `lean` ??skip (not a PHASE-GATE). Note: "CD-PLAYTEST skipped ??Lean mode." Proceed to Phase 4 (save the report).
-- `full` ??spawn as normal.
+**Review mode check** — apply before spawning CD-PLAYTEST:
+- `solo` → skip. Note: "CD-PLAYTEST skipped — Solo mode." Proceed to Phase 4 (save the report).
+- `lean` → skip (not a PHASE-GATE). Note: "CD-PLAYTEST skipped — Lean mode." Proceed to Phase 4 (save the report).
+- `full` → spawn as normal.
 
 After categorising findings, spawn `creative-director` via `Agent` using gate **CD-PLAYTEST** (`.agent/docs/director-gates/cd-playtest.md`).
 
 Pass: the structured report content, game pillars and core fantasy (from
 `design/gdd/game-concept.md`), the specific hypothesis being tested. **If
-`game-concept.md` does not exist** ??expected at `minimal`, where
-`design/game-brief.md` replaces it ??the brief has no pillars: pass its
+`game-concept.md` does not exist** — expected at `minimal`, where
+`design/game-brief.md` replaces it — the brief has no pillars: pass its
 pitch and its "Who it's for / what they feel" line instead, and say
 they stand in for pillars. If neither document exists, say so in the prompt:
-*"No pillars available ??assess against the hypothesis alone."* A director gate
+*"No pillars available — assess against the hypothesis alone."* A director gate
 handed silence about pillars will invent them.
 
-Present the creative director's assessment before saving the report. If CONCERNS or REJECT, add a `## Creative Director Assessment` section to the report capturing the verdict and feedback. If APPROVE, note the approval in the report. If NOT ASSESSED (the director lacked an input ??`.agent/docs/director-gates.md`), add the same section naming what was missing; it is not an approval.
+Present the creative director's assessment before saving the report. If CONCERNS or REJECT, add a `## Creative Director Assessment` section to the report capturing the verdict and feedback. If APPROVE, note the approval in the report. If NOT ASSESSED (the director lacked an input — `.agent/docs/director-gates.md`), add the same section naming what was missing; it is not an approval.
 
 ---
 
@@ -167,9 +166,8 @@ If yes, write the file, creating the directory if needed.
 
 ## Phase 5: Next Steps
 
-Verdict: **COMPLETE** ??playtest report generated.
+Verdict: **COMPLETE** — playtest report generated.
 
 - Act on the highest-priority finding category first.
 - After addressing design changes: re-run `/design-review` on the updated GDD.
 - After fixing bugs: re-run `/bug-triage` to update priorities.
-

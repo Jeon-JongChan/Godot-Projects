@@ -1,4 +1,4 @@
-# /test-setup ??Phase 1: Detect Engine and Existing State
+# /test-setup — Phase 1: Detect Engine and Existing State
 
 > Part of `/test-setup`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -15,10 +15,10 @@
      "Engine not configured. Run `/setup-engine` first, then re-run `/test-setup`."
 
 2. **Check for existing test infrastructure**:
-   - Glob `tests/` ??does the directory exist?
-   - Glob `tests/unit/` and `tests/integration/` ??do subdirectories exist?
-   - Glob `.github/workflows/` ??does a CI workflow file exist?
-   - Glob `addons/gdUnit4/bin/GdUnitCmdTool.gd` (Godot ??note the capital U) or
+   - Glob `tests/` — does the directory exist?
+   - Glob `tests/unit/` and `tests/integration/` — do subdirectories exist?
+   - Glob `.github/workflows/` — does a CI workflow file exist?
+   - Glob `addons/gdUnit4/bin/GdUnitCmdTool.gd` (Godot — note the capital U) or
      `Assets/Tests/EditMode/` (Unity) or `Source/*/Private/Tests/` (Unreal) or
      `package.json` and `playwright.config.ts` (Web) for
      engine-specific artifacts. These are the **test roots** in
@@ -32,8 +32,7 @@
      to regenerate. Proceeding will not overwrite existing test files."
 
 If the `force` argument is passed, skip the "already exists" early-exit and
-proceed ??but still do not overwrite files that already exist at a given path.
+proceed — but still do not overwrite files that already exist at a given path.
 Only create files that are missing.
 
 ---
-

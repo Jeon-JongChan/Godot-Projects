@@ -629,12 +629,22 @@ func _populate_guild_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 
 	rv.add_child(UiKit.merc_roster_list(GameState.roster, {
 		"empty_text": "현재 고용된 용병이 없습니다.\n우측 봉인서로 모험가를 영입하세요.",
-		"card_opts": {
-			"bg_color": Color("141116"),
-			"grade_in_title": false,
-			"subtitle_mode": "job_level",
-			"show_hp_bar": true,
-		},
+		"card_opts_fn": func(m: Mercenary, _idx: int) -> Dictionary:
+			var can_fire := (m.status == Mercenary.Status.READY)
+			return {
+				"bg_color": Color("141116"),
+				"grade_in_title": false,
+				"subtitle_mode": "job_level",
+				"show_hp_bar": true,
+				"action_text": "해고" if can_fire else "",
+				"action_color": UiKit.RED,
+				"action_min_size": Vector2(44, 28),
+				"on_action": func(target: Mercenary):
+					if GameState.dismiss_merc(target):
+						_popup_notice = "[%s] %s (%s Lv.%d) 용병을 해고했습니다." % [target.grade, target.merc_name, target.job, target.level]
+						_build_village_structures()
+						_open_large_building_popup(def),
+			},
 	}))
 
 	center_col.add_child(_build_popup_center_interior(def, 320.0))

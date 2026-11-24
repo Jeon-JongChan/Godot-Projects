@@ -1,4 +1,4 @@
-# /reverse-document ??brief: from a game
+# /reverse-document — brief: from a game
 
 > Part of `/reverse-document`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -9,8 +9,8 @@ Features it has marked built, so the next story is new work and never a rebuild.
 could not read, by name, instead of guessing. Run as `/reverse-document brief <file or folder>`,
 or read by `/prototype`'s door (One-shot 0) for a game it just brought in.
 
-**In this file:** 1 Read what is there 쨌 2 Enough to go on? 쨌 3 Read the code 쨌 4 Look at it 쨌
-5 The brief 쨌 6 The record 쨌 7 Show it and write
+**In this file:** 1 Read what is there · 2 Enough to go on? · 3 Read the code · 4 Look at it ·
+5 The brief · 6 The record · 7 Show it and write
 
 ## 1. Read what is there
 
@@ -106,4 +106,3 @@ or this becomes the game being worked on; the record. Only after the yes.
 Then name the next step in plain words: every `[ ]` item is new work. A change to the game itself
 is asked for as any change is (`/prototype`, for a game in `prototypes/`); `/create-stories`
 writes one story for each `[ ]` item, and none for an `[x]` one.
-

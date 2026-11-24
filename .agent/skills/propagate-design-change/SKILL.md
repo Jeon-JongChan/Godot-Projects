@@ -8,9 +8,8 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation,automation_always_ask,workflow,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
-block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.agent/docs/config-resolution.md`.
 
 Ask with the question tool. Without one, list the options numbered and end your turn
 to wait. A skipped or dismissed question is not an answer: ask again in plain text.
@@ -38,7 +37,7 @@ nothing to check (Phase 4).
 
 The text typed after the skill name, with any `--review <mode>` pair removed, is the
 changed GDD. It is required. Missing: "Usage: `/propagate-design-change
-design/gdd/[system].md` ??give the path to the GDD that changed." Not a file:
+design/gdd/[system].md` — give the path to the GDD that changed." Not a file:
 "[path] not found. Check the path and try again."
 
 ## Phase 2: What changed
@@ -53,7 +52,7 @@ Empty: the change may be committed already, so widen to the last commit that
 touched it: `git diff HEAD~1 HEAD -- design/gdd/[filename].md`.
 
 - No history at all (`git log --oneline -1 -- design/gdd/[filename].md` prints
-  nothing): "No previous version in git ??this is a new GDD, not a revision.
+  nothing): "No previous version in git — this is a new GDD, not a revision.
   Nothing to propagate." Stop.
 - History, but both diffs empty: report "no uncommitted or last-commit changes to
   `[file]`" and ask which revision to propagate. An empty diff means nothing changed
@@ -72,7 +71,7 @@ that section: `bash .agent/scripts/md-section.sh extract design/gdd/[file].md "[
 Date of revision: [today]
 
 Changed sections:
-- [Section]: [what changed ??new rule, removed rule, formula modified, ??
+- [Section]: [what changed — new rule, removed rule, formula modified, …]
 
 Unchanged sections:
 - [Section]
@@ -96,10 +95,10 @@ missing sections.
 - **`full`:** every ADR.
 - **`standard`:** the critical ones (the `layer` column reads Foundation, or holds
   no layer: when in doubt, critical) and any ADR that names the changed GDD.
-- **`minimal`:** report "No ADR check at minimal workflow ??design change recorded;
+- **`minimal`:** report "No ADR check at minimal workflow — design change recorded;
   no architecture impact analysis." Stop.
 
-Establish the denominator first: their count is **N**. N is 0: "No ADRs found in `docs/architecture/` ??nothing to
+Establish the denominator first: their count is **N**. N is 0: "No ADRs found in `docs/architecture/` — nothing to
 check." Stop.
 
 **Which ones reference this GDD.** Without reading whole ADRs:
@@ -114,9 +113,9 @@ The union of the two is the affected set **M**.
 
 | Result | Meaning | Action |
 |---|---|---|
-| **M ??1** | Normal. | Go on. The N ??M others are out of scope for this check: never describe them as verified unaffected. |
-| **M = 0**, and every in-scope ADR lacks GDD Requirements Addressed (`missing` column) | Traceability cannot be computed. | "[N] ADRs found, none has a 'GDD Requirements Addressed' section ??traceability cannot be computed (a pre-production gate blocker). Run `/architecture-decision retrofit [adr]`." Stop. |
-| **M = 0**, the sections exist | No ADR references this GDD. | "No ADR references [gdd] ??no architecture impact." Stop. |
+| **M ≥ 1** | Normal. | Go on. The N − M others are out of scope for this check: never describe them as verified unaffected. |
+| **M = 0**, and every in-scope ADR lacks GDD Requirements Addressed (`missing` column) | Traceability cannot be computed. | "[N] ADRs found, none has a 'GDD Requirements Addressed' section — traceability cannot be computed (a pre-production gate blocker). Run `/architecture-decision retrofit [adr]`." Stop. |
+| **M = 0**, the sections exist | No ADR references this GDD. | "No ADR references [gdd] — no architecture impact." Stop. |
 
 Read `docs/architecture/requirements-traceability.md` when it exists.
 
@@ -137,9 +136,9 @@ Classify each ADR:
 
 | Status | Meaning |
 |--------|---------|
-| ??**Still Valid** | The change does not touch what this ADR decided |
-| ?좑툘 **Needs Review** | The change may affect it; human judgement needed |
-| ?뵶 **Likely Superseded** | The change contradicts what this ADR assumed |
+| ✅ **Still Valid** | The change does not touch what this ADR decided |
+| ⚠️ **Needs Review** | The change may affect it; human judgement needed |
+| 🔴 **Likely Superseded** | The change contradicts what this ADR assumed |
 
 ```
 ### ADR-NNNN: [title]
@@ -180,7 +179,7 @@ ADRs referencing this GDD: [M]
 ```
 
 **The technical review.** Read the `review_gate` line above. `skill-gates=skip`
-(solo or lean): no agent; note `TD-CHANGE-IMPACT skipped ??[Solo | Lean] mode`.
+(solo or lean): no agent; note `TD-CHANGE-IMPACT skipped — [Solo | Lean] mode`.
 `skill-gates=run`: hand the review to the `technical-director` agent with gate
 **TD-CHANGE-IMPACT** (`.agent/docs/director-gates/td-change-impact.md`; the agent
 reads it itself). Brief:
@@ -203,12 +202,12 @@ Act on the verdict:
 - **NOT ASSESSED:** it is not an approval (`.agent/docs/director-gates.md`). Name
   what was missing, then supply it and run the review again; or, when the user
   chooses to go on without it, go to Phase 7 and state `TD-CHANGE-IMPACT: NOT
-  ASSESSED ??[input]` in the report and the final verdict line.
+  ASSESSED — [input]` in the report and the final verdict line.
 
 ## Phase 7: Resolve each ADR
 
 For each ADR marked Needs Review or Likely Superseded, one at a time, ask: "ADR-NNNN
-([title]) ??[status]. What would you like to do?" Options:
+([title]) — [status]. What would you like to do?" Options:
 
 - Mark it Superseded (I'll write the new ADR)
 - Update it in place (a small revision): note what to revise; the user edits it
@@ -220,7 +219,7 @@ replace only the body of its `## Status` section:
 
 ```
 bash .agent/scripts/md-section.sh replace docs/architecture/[adr-file].md "Status" <<'EOF'
-Superseded ??replacement pending (see docs/architecture/change-impact-[date]-[system-slug].md)
+Superseded — replacement pending (see docs/architecture/change-impact-[date]-[system-slug].md)
 EOF
 ```
 
@@ -259,6 +258,5 @@ From the resolutions:
 - Many ADRs affected: "Run `/architecture-review` once they are updated, to check
   the traceability matrix still holds together."
 
-End with `Verdict: COMPLETE ??change impact report saved` after the Phase 9 write,
-or `Verdict: BLOCKED ??user declined the write` when declined.
-
+End with `Verdict: COMPLETE — change impact report saved` after the Phase 9 write,
+or `Verdict: BLOCKED — user declined the write` when declined.

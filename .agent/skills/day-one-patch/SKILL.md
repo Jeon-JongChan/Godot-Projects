@@ -1,8 +1,9 @@
 ---
 name: day-one-patch
-description: "Day-one launch patch ??focused fix for known issues found after gold master. Mini-sprint with QA gate and rollback."
+description: "Day-one launch patch — focused fix for known issues found after gold master. Mini-sprint with QA gate and rollback."
 argument-hint: "[scope: known-bugs | cert-feedback | all]"
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion
 model: sonnet
 ---
@@ -12,7 +13,7 @@ model: sonnet
 Every shipped game has a day-one patch. Planning it before launch day prevents
 chaos. This skill scopes the patch to only what is safe and necessary, gates it
 through a lightweight QA pass, and ensures a rollback plan exists before anything
-ships. It is a mini-sprint ??not a hotfix, not a full sprint.
+ships. It is a mini-sprint — not a hotfix, not a full sprint.
 
 **When to run:**
 - After the gold master build is locked (cert approved or launch candidate tagged)
@@ -22,8 +23,8 @@ ships. It is a mini-sprint ??not a hotfix, not a full sprint.
 
 **Day-one patch scope rules:**
 - Only P1/P2 bugs that are SAFE to fix quickly
-- No new features ??this is fix-only
-- No refactoring ??minimum viable change
+- No new features — this is fix-only
+- No refactoring — minimum viable change
 - Any fix that requires more than 4 hours of dev time belongs in patch 1.1, not day-one
 
 **Output:** `production/releases/day-one-patch-[version].md`
@@ -33,22 +34,22 @@ ships. It is a mini-sprint ??not a hotfix, not a full sprint.
 ## Phase 1: Load Release Context
 
 Read:
-- `project.stage` in `project.yaml` (fallback `production/stage.txt`) ??confirm project is in Release stage
-- The most recent file in `production/gate-checks/` ??read the release gate verdict
-- `production/qa/bugs/*.md` ??load all bugs with Status: Open or Fixed ??Pending Verification
-- `production/sprints/` most recent ??understand what shipped
-- `production/security/security-audit-*.md` most recent ??check for any open security items
+- `project.stage` in `project.yaml` (fallback `production/stage.txt`) — confirm project is in Release stage
+- The most recent file in `production/gate-checks/` — read the release gate verdict
+- `production/qa/bugs/*.md` — load all bugs with Status: Open or Fixed — Pending Verification
+- `production/sprints/` most recent — understand what shipped
+- `production/security/security-audit-*.md` most recent — check for any open security items
 
-If the resolved stage (project.yaml ??stage.txt) is not `Release` or `Polish`:
+If the resolved stage (project.yaml → stage.txt) is not `Release` or `Polish`:
 > "Day-one patch prep is for Release-stage projects. Current stage: [stage]. This skill is not appropriate until you are approaching launch."
 
 **Check the premise, do not assume it.** This whole skill rests on there being a
-gold master that already passed a release gate ??that premise is what justifies
+gold master that already passed a release gate — that premise is what justifies
 its lightweight QA pass instead of a full one. So verify it rather than inferring
 it from the stage value:
 
 - **No file in `production/gate-checks/`**, or none recording a release-gate
-  verdict: report `Release gate: NOT ASSESSED ??no gate-check record found`. Do
+  verdict: report `Release gate: NOT ASSESSED — no gate-check record found`. Do
   not proceed silently. Say plainly that the reduced QA scope below is justified
   by a gate nobody can find, and ask whether to run `/gate-check` first or
   proceed with a full QA pass instead.
@@ -63,35 +64,35 @@ it from the stage value:
 
 ## Phase 2: Scope the Patch
 
-### Step 2a ??Classify open bugs for patch inclusion
+### Step 2a — Classify open bugs for patch inclusion
 
 For each open bug, evaluate:
 
 | Criterion | Include in day-one? |
 |-----------|-------------------|
-| S1 or S2 severity | Yes ??must include if safe to fix |
+| S1 or S2 severity | Yes — must include if safe to fix |
 | P1 priority | Yes |
 | Fix estimated < 4 hours | Yes |
-| Fix requires architecture change | No ??defer to 1.1 |
-| Fix introduces new code paths | No ??too risky |
-| Fix is data/config only (no code change) | Yes ??very low risk |
-| Cert feedback requirement | Yes ??required for platform approval |
+| Fix requires architecture change | No — defer to 1.1 |
+| Fix introduces new code paths | No — too risky |
+| Fix is data/config only (no code change) | Yes — very low risk |
+| Cert feedback requirement | Yes — required for platform approval |
 | S3/S4 severity | Only if trivial config fix; otherwise defer |
 
-### Step 2b ??Present patch scope to user
+### Step 2b — Present patch scope to user
 
 Use `AskUserQuestion`:
 - Prompt: "Based on open bugs and cert feedback, here is the proposed day-one patch scope. Does this look right?"
 - Show: table of included bugs (ID, severity, description, estimated effort)
 - Show: table of deferred bugs (ID, severity, reason deferred)
-- Options: `[A] Approve this scope` / `[B] Adjust ??I want to add or remove items` / `[C] No day-one patch needed`
+- Options: `[A] Approve this scope` / `[B] Adjust — I want to add or remove items` / `[C] No day-one patch needed`
 
 If [C]: output "No day-one patch required. Proceed to `/launch-checklist`." Stop.
 
-### Step 2c ??Check total scope
+### Step 2c — Check total scope
 
 Sum estimated effort. If total exceeds 1 day of work:
-> "?좑툘 Patch scope is [N hours] ??this exceeds a safe day-one window. Consider deferring lower-priority items to patch 1.1. A bloated day-one patch introduces more risk than it removes."
+> "⚠️ Patch scope is [N hours] — this exceeds a safe day-one window. Consider deferring lower-priority items to patch 1.1. A bloated day-one patch introduces more risk than it removes."
 
 Use `AskUserQuestion` to confirm proceeding or reduce scope.
 
@@ -122,25 +123,27 @@ For each code fix in the approved scope, spawn a focused implementation loop:
    - The constraint: minimum viable fix only, no cleanup
    - The affected files (from bug report Technical Context section)
 
-   It returns, for each bug, the minimal fix and the files it would change ??   writing nothing.
+   It returns, for each bug, the minimal fix and the files it would change —
+   writing nothing.
 
-2. Ask once, for the whole set: "May I apply these fixes? [BUG-ID ??files, one
+2. Ask once, for the whole set: "May I apply these fixes? [BUG-ID → files, one
    line each]". No code changes before this approval.
 
 3. On yes, hand each approved fix back to `lead-programmer` (a new `Agent` call
    carrying its plan) to implement it and run targeted tests with `commands.test`
-   from `project.yaml`, narrowed to the affected suite where the runner allows ??   never a runner line written from memory. If `commands.test` is unset, say so
-   and record `Tests: NOT RUN ??commands.test unset` for that bug.
+   from `project.yaml`, narrowed to the affected suite where the runner allows —
+   never a runner line written from memory. If `commands.test` is unset, say so
+   and record `Tests: NOT RUN — commands.test unset` for that bug.
 
 4. Spawn `qa-tester` via `Agent` to verify: does the bug reproduce after the fix?
 
-For config/data-only fixes: make the change directly (no programmer agent needed). First ask, naming the file and the change: "May I edit `[config file]` ??`[key]`: [old value] ??[new value]?" Confirm the value changed and re-run any relevant smoke test.
+For config/data-only fixes: make the change directly (no programmer agent needed). First ask, naming the file and the change: "May I edit `[config file]` — `[key]`: [old value] → [new value]?" Confirm the value changed and re-run any relevant smoke test.
 
 ---
 
 ## Phase 5: Patch QA Gate
 
-This is a lightweight QA pass ??not a full `/team-qa`. The patch is already QA-approved from the release gate; we are only re-verifying the changed areas.
+This is a lightweight QA pass — not a full `/team-qa`. The patch is already QA-approved from the release gate; we are only re-verifying the changed areas.
 
 Spawn `qa-lead` via `Agent` with:
 - List of all changed files
@@ -150,13 +153,13 @@ Spawn `qa-lead` via `Agent` with:
 Ask qa-lead to determine: **Is a targeted smoke check sufficient, or do any fixes touch systems that require a broader regression?**
 
 Run the required QA scope:
-- **Targeted smoke check** ??run `/smoke-check` (it takes no system argument)
-- **Broader regression** ??run the affected systems' tests in the engine's test root (`tests/unit/` and `tests/integration/` Godot and Web, `Assets/Tests/` Unity, `Source/<Module>/Private/Tests/` Unreal ??`.agent/docs/directory-structure.md`) with `commands.test` from `project.yaml`, narrowed to the affected suites where the runner allows ??never a runner line written from memory. If `commands.test` is unset, the broader regression is NOT ASSESSED; say so.
+- **Targeted smoke check** — run `/smoke-check` (it takes no system argument)
+- **Broader regression** — run the affected systems' tests in the engine's test root (`tests/unit/` and `tests/integration/` Godot and Web, `Assets/Tests/` Unity, `Source/<Module>/Private/Tests/` Unreal — `.agent/docs/directory-structure.md`) with `commands.test` from `project.yaml`, narrowed to the affected suites where the runner allows — never a runner line written from memory. If `commands.test` is unset, the broader regression is NOT ASSESSED; say so.
 
 QA verdict must be PASS or PASS WITH WARNINGS before proceeding. If FAIL: scope the failing fix out of the day-one patch and defer to 1.1.
 
 **If the QA verdict is `NOT ASSESSED`, that is not a pass.** `/smoke-check` returns
-it when the suite never ran ??no build, no runner, or a result nobody confirmed.
+it when the suite never ran — no build, no runner, or a result nobody confirmed.
 Do not proceed on it and do not re-read it as PASS WITH WARNINGS: the warnings
 value means somebody looked and saw something minor, and this means nobody looked.
 Either obtain the result (the verdict names what would make it runnable) or defer
@@ -198,7 +201,7 @@ one, which is the worst possible audience for an unverified change.
 **QA lead**: qa-lead agent
 **Date**: [date]
 **Warnings (if any)**: [list or "None"]
-**Not assessed (if any)**: [what could not be checked, and why ??or "None"]
+**Not assessed (if any)**: [what could not be checked, and why — or "None"]
 
 ---
 
@@ -238,15 +241,15 @@ After the patch record is written:
 1. Run `/patch-notes` to generate the player-facing version of the patch notes
 2. Run `/bug-report verify [BUG-ID]` for each fixed bug after the patch is live
 3. Run `/bug-report close [BUG-ID]` for each verified fix
-4. Schedule a post-launch review 48??2 hours after launch using `/retrospective [milestone-name]` for the launch milestone in `production/milestones/`
+4. Schedule a post-launch review 48–72 hours after launch using `/retrospective [milestone-name]` for the launch milestone in `production/milestones/`
 
 **If any S1 bugs remain open after the patch:**
-> "?좑툘 S1 bugs remain open and were not patched. These are accepted risks. Document them in the rollback plan trigger conditions ??if they occur at scale, rollback may be preferable to a follow-up patch."
+> "⚠️ S1 bugs remain open and were not patched. These are accepted risks. Document them in the rollback plan trigger conditions — if they occur at scale, rollback may be preferable to a follow-up patch."
 
 Use `AskUserQuestion`:
 - Prompt: "Day-one patch complete. What's next?"
 - Options:
-  - `[A] Run /patch-notes ??generate player-facing patch notes`
+  - `[A] Run /patch-notes — generate player-facing patch notes`
   - `[B] Run /bug-report to log any issues found post-deploy`
   - `[C] Stop here`
 
@@ -254,10 +257,9 @@ Use `AskUserQuestion`:
 
 ## Collaborative Protocol
 
-- **Scope discipline is everything** ??resist scope creep; every addition increases risk
-- **Rollback plan first, always** ??a patch without a rollback plan is irresponsible
-- **Deferred is not forgotten** ??every deferred bug is listed in the record's
+- **Scope discipline is everything** — resist scope creep; every addition increases risk
+- **Rollback plan first, always** — a patch without a rollback plan is irresponsible
+- **Deferred is not forgotten** — every deferred bug is listed in the record's
   "Deferred to 1.1" table; run `/bug-triage` afterwards to schedule them into the 1.1 sprint
   (if the project has no sprint plan, as on the default minimal workflow, into the brief's build order)
-- **Player communication is part of the patch** ??`/patch-notes` is a required output, not optional
-
+- **Player communication is part of the patch** — `/patch-notes` is a required output, not optional

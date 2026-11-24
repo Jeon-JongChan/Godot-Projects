@@ -12,14 +12,13 @@ model: sonnet
 When this skill is invoked:
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
 **Tier awareness.** The `workflow` tier resolved above governs which design
-artifact this skill expects and the finish path it recommends in 짠12:
-- **`minimal`** ??the design artifact is the one-page `design/game-brief.md`
+artifact this skill expects and the finish path it recommends in §12:
+- **`minimal`** — the design artifact is the one-page `design/game-brief.md`
   (no GDDs, systems decomposition, or per-system design at this tier).
   `/setup-engine` runs *first* in the minimal path, so a missing brief here is
   normal, not a gap. The finish path is the 4-step floor.
-- **`standard` / `full`** ??the design artifact is `design/gdd/game-concept.md`
+- **`standard` / `full`** — the design artifact is `design/gdd/game-concept.md`
   and the finish path is the full pipeline.
 
 If the block did not render (shell preprocessing disabled), assume `minimal` (the default).
@@ -31,55 +30,55 @@ to wait. A skipped or dismissed question is not an answer: ask again in plain te
 
 Modes:
 
-- **Full spec**: `/setup-engine godot 4.7` ??engine and version provided
-- **Engine only**: `/setup-engine unity` ??engine provided, version will be looked up
-- **Web**: `/setup-engine web` ??a browser game with Vite and TypeScript, at the
+- **Full spec**: `/setup-engine godot 4.7` — engine and version provided
+- **Engine only**: `/setup-engine unity` — engine provided, version will be looked up
+- **Web**: `/setup-engine web` — a browser game with Vite and TypeScript, at the
   versions the web scaffold pins, or an existing web project (a `package.json`),
   recorded as it is. **Read `references/web.md` now and follow it**:
   it replaces Sections 3, 6, 7 and 7.5 for Web and gives the values Sections 4, 5
   and 5.5 write
-- **No args**: `/setup-engine` ??guided mode: an existing project keeps its engine;
+- **No args**: `/setup-engine` — guided mode: an existing project keeps its engine;
   a new one is offered web first (Section 2)
-- **Refresh**: `/setup-engine refresh` ??update reference docs (see Section 10)
-- **Upgrade**: `/setup-engine upgrade [old-version] [new-version]` ??migrate to a new engine version (see Section 11)
+- **Refresh**: `/setup-engine refresh` — update reference docs (see Section 10)
+- **Upgrade**: `/setup-engine upgrade [old-version] [new-version]` — migrate to a new engine version (see Section 11)
 
 ---
 
 ## 2. Guided Mode (No Arguments)
 
-**Read `references/2-guided-mode.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/2-guided-mode.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 3. Look Up Current Version
 
-**Read `references/3-version.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/3-version.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 4. Update CLAUDE.md Technology Stack
 
-**Read `references/4-claude-md-stack.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/4-claude-md-stack.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 5. Populate Technical Preferences
 
-**Read `references/5-technical-preferences.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5-technical-preferences.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 5.5 Populate `project.yaml` (Primary Config Store)
 
-**Read `references/5.5-project-yaml.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/5.5-project-yaml.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 6. Determine Knowledge Gap
 
-**Read `references/6-knowledge-gap.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/6-knowledge-gap.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 7. Populate Engine Reference Docs
 
-**Read `references/7-reference-docs.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/7-reference-docs.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 7.5 Scaffold the Engine Project
 
-**Read `references/7.5-scaffold.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/7.5-scaffold.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 8. Verify the CLAUDE.md Import
 
-**Read `references/8-verify.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/8-verify.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 9. Update Agent Instructions
 
@@ -118,11 +117,11 @@ If invoked as `/setup-engine refresh`:
 
 ## 11. Upgrade Subcommand
 
-**Read `references/11-upgrade.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/11-upgrade.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## 12. Output Summary
 
-**Read `references/12-output-summary.md` now and follow it** ??this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
+**Read `references/12-output-summary.md` now and follow it** — this phase's steps are in that file, not here. Read it again if the conversation was compacted or resumed during this phase.
 
 ## Guardrails
 
@@ -134,11 +133,11 @@ If invoked as `/setup-engine refresh`:
 - If reference docs already exist for a different engine, ask before replacing
 - Always show the user what you're about to change before making CLAUDE.md edits
 - If a web search returns ambiguous results, show the user and let them decide
-- When the user chose **GDScript**: copy the GDScript CLAUDE.md template from **A1** in `references/godot-language-config.md` exactly. Do not add "C++ via GDExtension" to the Language field. GDScript projects may use GDExtension, but it is not a primary project language. The `godot-gdextension-specialist` in the routing table is available for when native extensions are needed ??it does not make C++ a project language.
+- When the user chose **GDScript**: copy the GDScript CLAUDE.md template from **A1** in `references/godot-language-config.md` exactly. Do not add "C++ via GDExtension" to the Language field. GDScript projects may use GDExtension, but it is not a primary project language. The `godot-gdextension-specialist` in the routing table is available for when native extensions are needed — it does not make C++ a project language.
 
 ---
 
-## Appendix A ??Godot Language Configuration
+## Appendix A — Godot Language Configuration
 
 Moved out of this file so it costs nothing on non-Godot runs.
 
@@ -146,9 +145,8 @@ Moved out of this file so it costs nothing on non-Godot runs.
 `references/godot-language-config.md`
 and use the subsection for the chosen language:
 
-- **A1** ??CLAUDE.md Technology Stack templates (GDScript / C# / Both)
-- **A2** ??naming conventions
-- **A3** ??engine specialist routing and file-extension tables
+- **A1** — CLAUDE.md Technology Stack templates (GDScript / C# / Both)
+- **A2** — naming conventions
+- **A3** — engine specialist routing and file-extension tables
 
-**Load discipline.** On any engine other than Godot, **never load it** ??nothing in Sections 4, 5 or 5.5 needs it, and reading it anyway spends the tokens the split exists to save. On Godot, read it once when you first reach Section 4 and keep using it for Sections 5 and 5.5; do not re-read it at each reference.
-
+**Load discipline.** On any engine other than Godot, **never load it** — nothing in Sections 4, 5 or 5.5 needs it, and reading it anyway spends the tokens the split exists to save. On Godot, read it once when you first reach Section 4 and keep using it for Sections 5 and 5.5; do not re-read it at each reference.

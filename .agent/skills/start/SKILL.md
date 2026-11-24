@@ -70,7 +70,7 @@ and it is neither guessed nor asked again (Phases 4 and 5).
 
 **Returning user** (an engine is set and `concept` is present): ask nothing. Say the engine, the
 concept or brief found, and the review mode: `modes.review_mode` if set, otherwise the one
-`modes.rigor` implies (`minimal` ??`solo`, `standard` ??`lean`, `full` ??`full`). Suggest `/next-step` for the next step, add the
+`modes.rigor` implies (`minimal` → `solo`, `standard` → `lean`, `full` → `full`). Suggest `/next-step` for the next step, add the
 template-remote note if it applies, and stop.
 
 ## Phase 2: Ask where the user is
@@ -157,7 +157,7 @@ Work out three values.
 
 **Rigor.** If `modes.rigor` is already set in `project.yaml`, keep it and say so. Otherwise infer
 it from what the user said in Phases 2 and 3, using the signals in
-`.agent/docs/settings-guidance.md` 짠3:
+`.agent/docs/settings-guidance.md` §3:
 
 | The user's words mention | Rigor |
 |---|---|
@@ -169,7 +169,7 @@ it from what the user said in Phases 2 and 3, using the signals in
 A path B hint is still a description: "some kind of open-world survival sim" is `full`.
 
 On path D, count the system GDDs: `gdd_files` less `game-concept.md` and `systems-index.md`
-when they exist. About 9 or more (`.agent/docs/settings-guidance.md` 짠4) proposes `standard`,
+when they exist. About 9 or more (`.agent/docs/settings-guidance.md` §4) proposes `standard`,
 with the reason "[N] system design documents; most projects this size run `standard`", unless
 the words above point to `full`. A `modes.rigor` already set is still kept.
 
@@ -233,7 +233,7 @@ If `modes.automation` is already set, say "Automation is `[value]`" and go on. O
 - `Autonomous`: I proceed and log decisions, stopping only for the always-ask categories. Fastest,
   most tokens.
 
-Mapping: `Guided` ??`guided`, `Collaborative` ??`collaborative`, `Autonomous` ??`autonomous`. The
+Mapping: `Guided` → `guided`, `Collaborative` → `collaborative`, `Autonomous` → `autonomous`. The
 pick is the consent to write it: run `bash .agent/scripts/config-set.sh modes.automation [value]`,
 unless the Phase 4 save was declined (then say it was not saved).
 
@@ -262,12 +262,15 @@ With no engine set, `/prototype` builds the brief as a playable browser game: li
 straight after `/brainstorm`, as the recommended next step, and `/setup-engine` after it.
 
 **`standard`** (studio mode)
-- Concept: `/setup-engine` ??`/brainstorm` ??`/prototype` ??`/art-bible` ??`/map-systems` ??  `/gate-check`. With no engine set, `/setup-engine` moves after `/prototype`: the playable
+- Concept: `/setup-engine` → `/brainstorm` → `/prototype` → `/art-bible` → `/map-systems` →
+  `/gate-check`. With no engine set, `/setup-engine` moves after `/prototype`: the playable
   first, the engine last
-- Systems Design: `/design-system` (once per system) ??`/review-all-gdds` ??`/gate-check`
-- Architecture: `/create-architecture` ??`/architecture-decision` (once per decision) ??  `/architecture-review` ??`/create-control-manifest` ??`/ux-design` (accessibility and
-  interaction patterns) ??`/test-setup` ??`/gate-check`
-- Pre-Production: `/ux-design` (HUD and key screens) ??`/create-epics` ??`/create-stories` ??  `/sprint-plan` ??`/gate-check`
+- Systems Design: `/design-system` (once per system) → `/review-all-gdds` → `/gate-check`
+- Architecture: `/create-architecture` → `/architecture-decision` (once per decision) →
+  `/architecture-review` → `/create-control-manifest` → `/ux-design` (accessibility and
+  interaction patterns) → `/test-setup` → `/gate-check`
+- Pre-Production: `/ux-design` (HUD and key screens) → `/create-epics` → `/create-stories` →
+  `/sprint-plan` → `/gate-check`
 - Production: `/dev-story`
 
 Each `/gate-check` moves the project one stage, and only when it passes.
@@ -313,4 +316,3 @@ conversation; after `Browser sketch first` it is "Type `/prototype --path html` 
 Verdict: **COMPLETE**, the user is oriented and handed off. A game already asked for (Phase 1)
 gives no verdict: `/prototype` takes over. If the user stopped before Phase 7, say which settings
 were saved and which were not.
-

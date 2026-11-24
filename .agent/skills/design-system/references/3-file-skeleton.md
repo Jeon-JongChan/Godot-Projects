@@ -1,4 +1,4 @@
-# /design-system ??Phase 3: Create File Skeleton
+# /design-system — Phase 3: Create File Skeleton
 
 > Part of `/design-system`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -14,17 +14,17 @@
 Once the user confirms, **immediately** create the GDD file with empty section
 headers. This ensures incremental writes have a target.
 
-**Scaffold only the sections required at the resolved tier** (짠1): at
+**Scaffold only the sections required at the resolved tier** (§1): at
 `standard`, omit Player Fantasy and Tuning Knobs (and Formulas only when the
-system defines no numeric rule ??see 짠1; the category is a hint, not the test);
+system defines no numeric rule — see §1; the category is a hint, not the test);
 at `full`, scaffold all 8.
-**Only the sections 짠1 named as omitted are skipped** ??do not leave empty
+**Only the sections §1 named as omitted are skipped** — do not leave empty
 `[To be designed]` placeholders for those. Every other section in the template
-is scaffolded with its placeholder, including the ones 짠4 has not decided yet.
+is scaffolded with its placeholder, including the ones §4 has not decided yet.
 This sentence governs the three tier omissions above (Player Fantasy, Tuning
 Knobs, and Formulas when no numeric rule exists) and nothing else: it is not a
-licence to strip a section because it looks optional, and 짠4 cannot fill a
-section 짠3 never created.
+licence to strip a section because it looks optional, and §4 cannot fill a
+section §3 never created.
 
 Use the template structure from `.agent/docs/templates/game-design-document.md`:
 
@@ -41,7 +41,7 @@ Use the template structure from `.agent/docs/templates/game-design-document.md`:
 
 [To be designed]
 
-> **Quick reference** ??Layer: `[Foundation | Core | Feature | Presentation]` 쨌 Priority: `[MVP | Vertical Slice | Alpha | Full Vision]` 쨌 Key deps: `[System names or "None"]`
+> **Quick reference** — Layer: `[Foundation | Core | Feature | Presentation]` · Priority: `[MVP | Vertical Slice | Alpha | Full Vision]` · Key deps: `[System names or "None"]`
 
 ## Overview
 
@@ -109,7 +109,7 @@ Use the template structure from `.agent/docs/templates/game-design-document.md`:
 Ask: "May I create the skeleton file at `design/gdd/[system-name].md`?"
 
 If the user declines: Stop with the following message:
-> "Verdict: **BLOCKED** ??skeleton creation declined. The design session cannot proceed without the skeleton file, as all subsequent phases use it as the base. Re-run `/design-system [system]` when ready to create the file."
+> "Verdict: **BLOCKED** — skeleton creation declined. The design session cannot proceed without the skeleton file, as all subsequent phases use it as the base. Re-run `/design-system [system]` when ready to create the file."
 Do not proceed to Section A.
 
 After writing, update `production/session-state/active.md`:
@@ -123,4 +123,3 @@ File content:
 - File: design/gdd/[system-name].md
 
 ---
-

@@ -8,8 +8,8 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation,workflow,docs.density,story_granularity,qa.level,system_overrides,engine_values,engine_row` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.agent/docs/config-resolution.md`.
 
 **Engine and roots** come from the `engine_values` and `engine_row` lines, never from
 anything else in context. `name=unset` means no engine is set: never assume one (not
@@ -120,8 +120,8 @@ named.
    what to add next".
    A `## Your systems` list changes the order:
    - **No `## Your systems` list** (or only its blank line): Build order.
-   - **A `## Your systems` list** (lines `- <system> 쨌 in the slice`, `쨌 thin
-     stand-in` or `쨌 later`, perhaps ending *(guessed)*): skeleton first, so the
+   - **A `## Your systems` list** (lines `- <system> · in the slice`, `· thin
+     stand-in` or `· later`, perhaps ending *(guessed)*): skeleton first, so the
      whole game stands up thin before any one part grows. Three steps, in this
      order:
      1. **Core:** the unbuilt Features items for the core loop and the `in the
@@ -136,7 +136,8 @@ named.
         one criterion is "built out as `design/gdd/<system>.md` describes", and
         `/design-system <system>` writes that doc before the story is built.
 
-     Each story's header names its step: `> **Build step**: core`, `thin ??     <system>` or `deepen ??<system>`. A Features item that names a system goes in
+     Each story's header names its step: `> **Build step**: core`, `thin —
+     <system>` or `deepen — <system>`. A Features item that names a system goes in
      that system's step. Thin and deepen stories for a `later` system build what
      Out of scope put off: the Phase 6 list says so, and the person can drop any.
 
@@ -185,8 +186,8 @@ Read no GDD, control manifest, TR registry or ADR at `minimal`. Go to Phase 3.
 status:
 
 ```
-Loaded: epic [name] 쨌 GDD [file] 쨌 manifest v[date], [layer] rules
-ADRs: ADR-0001 Accepted 쨌 ADR-0002 Accepted 쨌 ADR-0003 Accepted 쨌 ADR-0004 Proposed 쨌 [ADR-NNNN missing]
+Loaded: epic [name] · GDD [file] · manifest v[date], [layer] rules
+ADRs: ADR-0001 Accepted · ADR-0002 Accepted · ADR-0003 Accepted · ADR-0004 Proposed · [ADR-NNNN missing]
 ```
 
 Never say "all present" when one is missing, or name a manifest version when there
@@ -216,15 +217,15 @@ UI last. For each story:
   so.
 - **ADR:** the one that governs how to build it (the requirements table names it).
   - `Accepted`: embed it.
-  - `Proposed`: `Status: Blocked`, with "BLOCKED: ADR-NNNN is Proposed ??accept it
+  - `Proposed`: `Status: Blocked`, with "BLOCKED: ADR-NNNN is Proposed — accept it
     with `/architecture-decision accept ADR-NNNN` once decided".
   - `Deprecated` or `Superseded`: `Status: Blocked`, with "BLOCKED: ADR-NNNN is
-    [status] ??point the story at [successor] (edit its ADR field;
+    [status] — point the story at [successor] (edit its ADR field;
     `/create-stories` never rewrites an existing story) before implementing".
   - An `Accepted` ADR whose `depends_on` names an ADR that is not Accepted: Blocked
     the same way, naming that ADR.
   - Several apply: list them all, the most direct first.
-  - None applies: `ADR: N/A ??[reason]`, e.g. "pure data configuration". Never
+  - None applies: `ADR: N/A — [reason]`, e.g. "pure data configuration". Never
     blank: blank means unchecked.
 - **ADR Version:** the story's **ADR Version** is the ADR's `## Last Verified`
   date, else its `## Date`, else `unversioned` (the `version` column). `/dev-story`
@@ -238,7 +239,7 @@ UI last. For each story:
 ## Phase 5: QA lead review
 
 Read the `review_gate` line above. `skill-gates=skip` (solo or lean): no review;
-note "QL-STORY-READY skipped ??[Solo | Lean] mode" in the Phase 6 list and the
+note "QL-STORY-READY skipped — [Solo | Lean] mode" in the Phase 6 list and the
 closing block. `skill-gates=run`: read `references/qa-lead-gate.md` and
 `.agent/docs/director-gates.md`, and run it now, before the Phase 6 ask. On a skip,
 do not load it.
@@ -247,22 +248,22 @@ do not load it.
 
 ```
 ## Stories for Epic: [name]
-ADRs: ADR-0001 Accepted 쨌 ADR-0002 Accepted 쨌 ADR-0004 Proposed   (every ADR, from Phase 2)
+ADRs: ADR-0001 Accepted · ADR-0002 Accepted · ADR-0004 Proposed   (every ADR, from Phase 2)
 
-Story 001: [title] ??Logic ??ADR-0001 ??Ready ??Estimate M
+Story 001: [title] — Logic — ADR-0001 — Ready — Estimate M
   Covers: TR-[system]-001 ([one-line requirement])
   Test required: [test root]/unit/[system]/[the engine's test file name]
 
-Story 002: [title] ??Integration ??ADR-0004 ??BLOCKED (ADR-0004 is Proposed) ??Estimate L
+Story 002: [title] — Integration — ADR-0004 — BLOCKED (ADR-0004 is Proposed) — Estimate L
   Covers: TR-[system]-002, TR-[system]-003
   Test required: [test root]/integration/[system]/[the engine's test file name]
 
-Story 003: [title] ??Visual/Feel ??ADR-0001 ??Ready ??Estimate S
+Story 003: [title] — Visual/Feel — ADR-0001 — Ready — Estimate S
   Covers: TR-[system]-004
   Evidence required: retained screenshot + sign-off in production/qa/evidence/[slug]-evidence.md
 
 [N stories: N Logic, N Integration, N Visual/Feel, N UI, N Config/Data; N Blocked]
-QL-STORY-READY: [skipped ??Solo mode | its verdicts]
+QL-STORY-READY: [skipped — Solo mode | its verdicts]
 ```
 
 At `qa.level: minimal`, a Logic or Integration story's `Test required:` line reads
@@ -299,9 +300,9 @@ exactly:
 |---|---|
 | GDD | `design/game-brief.md` |
 | Requirement | `Brief MVP feature N`, or `Brief Your systems: <system>` for a thin or deepen story; never a TR-ID |
-| Build step | with a `## Your systems` list only: `core`, `thin ??<system>` or `deepen ??<system>`, as Phase 2 set it |
-| ADR Governing Implementation, ADR Decision Summary, ADR Version | `N/A (minimal ??no ADRs)` |
-| Manifest Version, Control Manifest Rules | `N/A (minimal ??no control manifest)` |
+| Build step | with a `## Your systems` list only: `core`, `thin — <system>` or `deepen — <system>`, as Phase 2 set it |
+| ADR Governing Implementation, ADR Decision Summary, ADR Version | `N/A (minimal — no ADRs)` |
+| Manifest Version, Control Manifest Rules | `N/A (minimal — no control manifest)` |
 | Engine | `engine.name` + `engine.version`; with no engine set, `not set (/setup-engine picks one; web for a new project)` |
 | Risk | the level `docs/engine-reference/<engine>/VERSION.md` gives the pinned version (its timeline row, or its overall rating). No file or no level: `NOT ASSESSED (no VERSION.md risk rating)`, never a guess. `/dev-story` reads NOT ASSESSED as HIGH |
 | Engine Notes | `none (no ADR engine-compatibility analysis at minimal)` |
@@ -309,7 +310,7 @@ exactly:
 
 At every tier:
 - **QA Test Cases:** when the review was skipped, write
-  `*N/A ??no qa-lead specs at this tier; implement against the Acceptance Criteria above*`.
+  `*N/A — no qa-lead specs at this tier; implement against the Acceptance Criteria above*`.
   Never improvise test cases.
 - **Test Evidence:** `qa.level` governs it. At `qa.level: minimal` tests are
   waived (advisory), but a Visual/Feel or UI story's retained screenshot is not.
@@ -366,12 +367,11 @@ notes from the ADRs, rules from the manifest; none are invented.
 answered (repeat it if you showed it earlier):
 
 ```
-Verdict: COMPLETE ??[N] stories written to production/epics/[epic-slug]/ ([N] Ready, [N] Blocked)
-Review: [QL-STORY-READY skipped ??Solo mode | skipped ??Lean mode | its verdicts]
+Verdict: COMPLETE — [N] stories written to production/epics/[epic-slug]/ ([N] Ready, [N] Blocked)
+Review: [QL-STORY-READY skipped — Solo mode | skipped — Lean mode | its verdicts]
 Index: [production/epics/index.md updated | Epics index not updated: production/epics/index.md absent]
 Next step: [/dev-story [first-story-path] | /story-readiness [first-story-path]]
 ```
 
-When the user declines the write: `Verdict: BLOCKED ??user declined. No story
+When the user declines the write: `Verdict: BLOCKED — user declined. No story
 files written.`
-

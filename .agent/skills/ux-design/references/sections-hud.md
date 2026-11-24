@@ -1,7 +1,7 @@
 > Section-authoring guidance, loaded by `/ux-design` for the ACTIVE MODE ONLY.
-> Never load the other two ??one mode applies per invocation.
+> Never load the other two — one mode applies per invocation.
 
-# Section Guidance ??HUD Design Mode
+# Section Guidance — HUD Design Mode
 
 **In this file:**
 
@@ -9,7 +9,7 @@
 - Section B: Information Architecture
 - Section C: Layout Zones
 - Section D: HUD Element Specifications
-- Sections E?밚: HUD States, Information Hierarchy, Visual Budget, Feedback & Notification, Platform Adaptation, Accessibility, Tuning Knobs, Acceptance Criteria
+- Sections E–L: HUD States, Information Hierarchy, Visual Budget, Feedback & Notification, Platform Adaptation, Accessibility, Tuning Knobs, Acceptance Criteria
 
 HUD design follows a different order from UX spec mode. Begin with philosophy;
 do not touch layout until the information architecture is complete.
@@ -20,10 +20,10 @@ Ask the user to describe the game's relationship with on-screen information in
 1-2 sentences.
 
 Offer framing examples to help:
-- "Nearly HUD-free ??atmosphere requires unobstructed immersion (e.g., Hollow Knight, Firewatch)"
-- "Minimal but present ??only critical information visible, everything else contextual (e.g., Dark Souls)"
-- "Information-dense ??all decision-relevant data always visible (e.g., Diablo IV, StarCraft II)"
-- "Adaptive ??HUD density responds to combat state, exploration mode, menus (e.g., God of War)"
+- "Nearly HUD-free — atmosphere requires unobstructed immersion (e.g., Hollow Knight, Firewatch)"
+- "Minimal but present — only critical information visible, everything else contextual (e.g., Dark Souls)"
+- "Information-dense — all decision-relevant data always visible (e.g., Diablo IV, StarCraft II)"
+- "Adaptive — HUD density responds to combat state, exploration mode, menus (e.g., God of War)"
 
 This philosophy becomes the design constraint for every subsequent HUD decision.
 If a proposed element conflicts with the stated philosophy, surface that conflict.
@@ -34,12 +34,12 @@ If a proposed element conflicts with the stated philosophy, surface that conflic
 
 Complete this before any layout work. Do not skip it.
 
-**Step 1 ??Full information inventory**:
+**Step 1 — Full information inventory**:
 Pull all information from GDD UI Requirements sections gathered in Phase 2.
 Present the full list: "These are all the things your game systems say they need
 to communicate to the player on screen."
 
-**Step 2 ??Categorization**:
+**Step 2 — Categorization**:
 For each item, ask the user to categorize it:
 
 | Category | Description |
@@ -50,7 +50,7 @@ For each item, ask the user to categorize it:
 | **Hidden** | Communicated through world/audio, never on-screen text |
 
 Use `AskUserQuestion` to step through items in groups of 3-4, not all at once.
-This is the most consequential design decision in the HUD ??do not rush it.
+This is the most consequential design decision in the HUD — do not rush it.
 
 **Conflict check**: If the information philosophy (Section A) says "nearly HUD-free"
 but the Must Show list is growing long, surface the conflict explicitly:
@@ -90,21 +90,21 @@ exist for status displays, resource bars, or cooldown indicators.
 
 ---
 
-#### Sections E?밚: HUD States, Information Hierarchy, Visual Budget, Feedback & Notification, Platform Adaptation, Accessibility, Tuning Knobs, Acceptance Criteria
+#### Sections E–L: HUD States, Information Hierarchy, Visual Budget, Feedback & Notification, Platform Adaptation, Accessibility, Tuning Knobs, Acceptance Criteria
 
 These parallel the UX spec's States, Interaction, and Accessibility sections.
-The guidance you need is below ??**do not load `sections-ux-spec.md`; one mode
+The guidance you need is below — **do not load `sections-ux-spec.md`; one mode
 file applies per invocation.** For the HUD, apply it as follows.
 
 **HUD States by Gameplay Context (states over time).** Cover at least
-exploration, combat, dialogue/cutscene and paused ??`/ux-review` checks for all
+exploration, combat, dialogue/cutscene and paused — `/ux-review` checks for all
 four. Beyond the happy path, capture what changes the HUD mid-gameplay and present
 it as a table for approval:
 
 | State / Variant | Trigger | What Changes |
 |-----------------|---------|--------------|
-| Default | Normal play | ??|
-| Low-resource | Health/ammo/etc. below threshold | [element pulses, recolors, ?? |
+| Default | Normal play | — |
+| Low-resource | Health/ammo/etc. below threshold | [element pulses, recolors, …] |
 | Empty / no-data | Element has nothing to show | [hidden, or placeholder] |
 | [etc.] | [trigger] | [changes] |
 
@@ -112,7 +112,7 @@ Ask specifically: what causes the HUD to change density mid-gameplay
 (combat vs. exploration), and what fades, pulses, or slams in on each transition?
 
 **Information Hierarchy.** Give every element in HUD Element Specifications a
-priority tier ??MUST KEEP, SHOULD KEEP, CAN HIDE or ALWAYS HIDE ??with the reason,
+priority tier — MUST KEEP, SHOULD KEEP, CAN HIDE or ALWAYS HIDE — with the reason,
 and what carries its information when it is hidden (a sound, a diegetic cue, or
 nothing). This is the order the Visual Budget below drops elements in.
 
@@ -121,20 +121,20 @@ the maximum share of the screen the HUD may cover, and which elements are droppe
 first when a state would exceed it.
 
 **Feedback & Notification Systems.** One row per transient notification type
-(pickup, XP gain, objective update, achievement) ??trigger system, screen position,
+(pickup, XP gain, objective update, achievement) — trigger system, screen position,
 duration, max simultaneous, priority and **queue behavior**: what happens when two
 arrive at once, which are held during combat, and which are never queued.
 `/ux-review` checks that every notification has queue/priority behavior defined.
 
 **Platform Adaptation.** Does mobile/console require different element sizes or
-positions? Note per-platform overrides ??touch targets, safe-area insets, and
+positions? Note per-platform overrides — touch targets, safe-area insets, and
 whether any element moves or is dropped on a given platform.
 
 **Accessibility.** Cross-reference `design/accessibility-requirements.md` if it
 exists, then walk this checklist for the HUD:
 - Gamepad/keyboard focus order for any interactive HUD element
 - Text contrast and minimum readable font sizes at gameplay distance
-- Color-independent communication (no state conveyed by color alone ??a
+- Color-independent communication (no state conveyed by color alone — a
   low-health cue must not be red-only)
 - Reduced-motion alternative for any pulsing/flashing HUD animation
 - Screen-reader considerations for non-text indicators
@@ -143,14 +143,13 @@ If no accessibility tier has been defined for this project, note the gap in the
 HUD design's Open Questions section (WCAG-AA is a reasonable baseline) and
 continue without stopping.
 
-**Tuning Knobs.** List every player-adjustable HUD setting ??overall scale,
-opacity, per-element show/hide, subtitle size ??with its range and default.
+**Tuning Knobs.** List every player-adjustable HUD setting — overall scale,
+opacity, per-element show/hide, subtitle size — with its range and default.
 
 **Acceptance Criteria.** At least 5 checkbox criteria a QA tester can verify
-without reading another document ??`/story-done` closes HUD stories against
+without reading another document — `/story-done` closes HUD stories against
 them. Cover at least: safe-zone margins on every target platform, the correct
 elements in each gameplay context above, the visual budget (screen share in
 exploration and in combat), one accessibility criterion for the committed tier,
 and notification queueing. Section 12 of `.agent/docs/templates/hud-design.md`
 has worked examples.
-

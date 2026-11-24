@@ -1,6 +1,6 @@
 ---
 name: onboard
-description: "Onboarding doc for a new contributor or agent ??project state, conventions, priorities relevant to the specified role."
+description: "Onboarding doc for a new contributor or agent — project state, conventions, priorities relevant to the specified role."
 argument-hint: "[role|area]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/onboard/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,39 +8,40 @@ model: haiku
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Onboard
 
-## Insufficient input ??check this before producing any report
+## Insufficient input — check this before producing any report
 
-**If the inputs this skill needs do not exist, the answer is "could not run" ??not a filled-in report.** Check first, and stop if the check fails.
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
 
 1. List the inputs this skill reads (data files, prior reports, profiler output,
    test results, registries, source code).
-2. For each, record `FOUND` or `ABSENT` ??not "assumed present".
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
 3. If any input required for a section is ABSENT, that section is
-   **`NOT ASSESSED ??NO DATA`**. Do not estimate it, do not infer it from an
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
    adjacent artifact, and do not leave a mandated cell to be filled by whoever
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
-   **`NOT ASSESSED ??NO DATA`** as the whole verdict, naming what was missing and
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
    which skill produces it.
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
 specific: a report whose verdict enum has no "could not run" state produces
-**false clean passes** ??an asset audit returning COMPLIANT on a project with no
+**false clean passes** — an asset audit returning COMPLIANT on a project with no
 assets and no standards, or a performance profile reporting ">99% headroom against
 a 16.67ms budget" with zero profiler data and no budget ever set.
 
 **Absence of evidence is never evidence of absence.** A scan that finds no
 matches because there are no files to scan has not verified anything. Say which of
-the two happened ??a reader cannot tell from a green result.
+the two happened — a reader cannot tell from a green result.
 
 ---
 
@@ -50,18 +51,18 @@ Read CLAUDE.md for project overview and standards.
 
 Read the relevant agent definition from `.agent/agents/` if a specific role is specified.
 
-`CLAUDE.md` and `.agent/agents/` ship with the framework ??no skill creates them. If either is missing, report it as missing from the install.
+`CLAUDE.md` and `.agent/agents/` ship with the framework — no skill creates them. If either is missing, report it as missing from the install.
 
 ---
 
 ## Phase 2: Scan Relevant Area
 
-- For programmers: scan the code root (resolve per `.agent/docs/code-root-resolution.md`) for architecture, patterns, key files. An unresolved root means the scan did not run: the sections it feeds read `NOT ASSESSED ??code root unresolved`, never a guess at `src/`
+- For programmers: scan the code root (resolve per `.agent/docs/code-root-resolution.md`) for architecture, patterns, key files. An unresolved root means the scan did not run: the sections it feeds read `NOT ASSESSED — code root unresolved`, never a guess at `src/`
 - For designers: scan `design/` for existing design documents
 - For narrative: scan `design/narrative/` for world-building and story docs
 - For QA: scan `tests/` for existing test coverage (`/test-setup` creates it)
 - For production: scan `production/` for current sprint and milestone
-- **No role or area given**: a general orientation ??list the top level of `design/`,
+- **No role or area given**: a general orientation — list the top level of `design/`,
   `docs/architecture/`, `production/` and the code root, read
   `production/session-state/active.md` if it exists, and say that a role would
   focus the next pass (e.g. `/onboard programmer`)
@@ -97,7 +98,7 @@ Read recent changes (git log if available) to understand current momentum.
 
 ## Current State of Your Area
 [What has been built, what is in progress, what is planned next. Name what
-Phase 2 found by path ??for a designer, each existing GDD and design doc ??or
+Phase 2 found by path — for a designer, each existing GDD and design doc — or
 say it found none]
 
 ## Current Sprint Context
@@ -134,9 +135,8 @@ If yes, write the file, creating the directory if needed.
 
 ## Phase 5: Next Steps
 
-Verdict: **COMPLETE** ??onboarding document generated.
+Verdict: **COMPLETE** — onboarding document generated.
 
 - Share the onboarding doc with the new contributor before their first session.
 - Run `/sprint-status` to show the new contributor current progress.
 - Run `/next-step` if the contributor needs guidance on what to work on next.
-

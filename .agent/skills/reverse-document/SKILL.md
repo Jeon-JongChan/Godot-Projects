@@ -5,7 +5,7 @@ argument-hint: "<type> <path> (e.g., 'design src/gameplay/combat', 'architecture
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(bash "*/.agent/skills/reverse-document/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/game-read.sh *)
 model: sonnet
-# Read-only diagnostic skill ??no specialist agent delegation needed
+# Read-only diagnostic skill — no specialist agent delegation needed
 ---
 
 # Reverse Documentation
@@ -26,40 +26,40 @@ appropriate design or architecture documentation. Use this when:
 **Format**: `/reverse-document <type> <path>`
 
 **Type options**:
-- `design` ??Generate a game design document (GDD section)
-- `architecture` ??Generate an Architecture Decision Record (ADR)
-- `concept` ??Generate a concept document from prototype
-- `brief` ??The one-page brief of a browser game someone already made (an `.html` file or a
+- `design` → Generate a game design document (GDD section)
+- `architecture` → Generate an Architecture Decision Record (ADR)
+- `concept` → Generate a concept document from prototype
+- `brief` → The one-page brief of a browser game someone already made (an `.html` file or a
   folder with `index.html`), its Features marked built. **Read `references/from-a-game.md` now
   and follow it**: it takes the place of Phases 2 to 7 for a game. For any other type, do not
   load it.
 
-**Path**: Directory or file to analyze, under the code root ??`src/` Godot,
+**Path**: Directory or file to analyze, under the code root — `src/` Godot,
 `Assets/` Unity, `Source/<Module>/` Unreal (`.agent/docs/code-root-resolution.md`)
-- `src/gameplay/combat/` ??All combat-related code (Godot)
-- `Assets/Scripts/Core/EventSystem.cs` ??Specific file (Unity)
-- `Source/MyGame/Private/AI/` ??A module folder (Unreal)
-- `prototypes/stealth-mech/` ??Prototype directory
+- `src/gameplay/combat/` → All combat-related code (Godot)
+- `Assets/Scripts/Core/EventSystem.cs` → Specific file (Unity)
+- `Source/MyGame/Private/AI/` → A module folder (Unreal)
+- `prototypes/stealth-mech/` → Prototype directory
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow,system_overrides,automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every question and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every question and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-Resolved above ??use as-is. No block ??defaults in
+Resolved above — use as-is. No block → defaults in
 `.agent/docs/config-resolution.md`.
 
 **Resolve the workflow tier** for the target system: map `<path>` to a system
 name, then use the `system_overrides` row for that system if the block above
 lists one, else the project `workflow` value. It sets how much document is
-generated ??see Phase 5. Semantics of each tier are in
+generated — see Phase 5. Semantics of each tier are in
 `.agent/docs/workflow-modes.md`.
 
-> **Resolve the tier ??do not assume it.** `workflow-modes.md` defines what each
+> **Resolve the tier — do not assume it.** `workflow-modes.md` defines what each
 > tier *means*, but it cannot say what *this project* is set to; take that from
-> the block above. The consequence is large here ??at `full` this skill
+> the block above. The consequence is large here — at `full` this skill
 > writes an 8-section GDD and at `minimal` a one-page brief, so a wrong tier
 > produces the wrong artifact entirely.
 
@@ -118,18 +118,18 @@ Ask about intent; the person can read the code already:
 - "The prototype emphasizes stealth over combat. Is that the intended pillar?"
 - "Players seem to exploit the grappling hook for speed. Feature or bug?"
 
-## Phase 3b: Sufficiency Check ??is there enough here to document?
+## Phase 3b: Sufficiency Check — is there enough here to document?
 
 **Run this before Phase 4, and stop here if it fails.** This skill infers a
 design from an implementation, so when the implementation is thin there is
-nothing to infer *from* ??and the template below will happily accept invented
+nothing to infer *from* — and the template below will happily accept invented
 content, because every section of it is mandatory.
 
 Count what Phase 2 actually found:
 
 | Signal | What counts |
 |---|---|
-| Mechanics | A named behaviour with observable rules ??not a stub, not an empty class |
+| Mechanics | A named behaviour with observable rules — not a stub, not an empty class |
 | Formulas | An expression computing a gameplay value from inputs |
 | Values | A tuning constant with a use site |
 
@@ -141,11 +141,11 @@ non-boilerplate code, stop and say so:**
 > Reverse-documentation infers design from behaviour; with no behaviour to read,
 > anything I produce would be invention wearing the format of a design document.
 > If the design exists only in your head, `/design-system [name]` is the skill
-> that captures it ??it asks rather than infers."
+> that captures it — it asks rather than infers."
 
 **Do not proceed on a partial count by filling the rest.** A path with two
 mechanics and no formulas gets a document with two mechanics and an explicit
-`FORMULAS DISCOVERED: none found in the source` ??see Phase 4.
+`FORMULAS DISCOVERED: none found in the source` — see Phase 4.
 
 ## Phase 4: Present Findings
 
@@ -165,21 +165,21 @@ FORMULAS DISCOVERED:
 - [Secondary output] = [formula]
 
 UNCLEAR INTENT AREAS:
-1. [Resource] system ??pacing or resource management?
-2. [Mechanic] ??core pillar or supporting feature?
-3. [Value] scaling ??intentional design or needs tuning?
+1. [Resource] system — pacing or resource management?
+2. [Mechanic] — core pillar or supporting feature?
+3. [Value] scaling — intentional design or needs tuning?
 
 Before I draft the design document, could you clarify these points?
 ```
 
 > **Every section above may be empty, and an empty one must say so.** Write
-> `none found in the source` under the heading ??never omit the heading (which
+> `none found in the source` under the heading — never omit the heading (which
 > reads as "not looked for") and never populate it from what a system like this
 > usually has. The bracketed rows are *shapes*, not quotas: a source with one
 > mechanic yields one row, not four.
 >
 > This matters more here than in a report, because the output of this skill is not
-> a report ??it is a **design document**, and `/design-review`, `/create-epics` and
+> a report — it is a **design document**, and `/design-review`, `/create-epics` and
 > `/create-stories` will read it as a statement of authored intent. A fabricated
 > formula in a GDD does not stay a documentation error; it becomes a requirement,
 > and then a story, and then code written to satisfy it.
@@ -188,10 +188,10 @@ Wait for user to clarify intent before drafting.
 
 **If the user does not answer the `UNCLEAR INTENT AREAS` questions, do not draft
 the resolved version anyway.** Those questions exist because **code cannot tell
-you why** ??it records what was built, never what was intended, and the gap
+you why** — it records what was built, never what was intended, and the gap
 between them is the entire content of a design document. Unanswered items are
 carried into the draft verbatim as open questions, in the document, marked
-`INTENT UNKNOWN ??inferred from implementation, not confirmed`. An inferred
+`INTENT UNKNOWN — inferred from implementation, not confirmed`. An inferred
 intent presented as a settled one is the failure mode of this whole skill.
 
 ## Phase 5: Draft Document Using Template
@@ -206,11 +206,11 @@ Based on type, use appropriate template:
 | `brief` | `.agent/docs/templates/game-brief.md` (`references/from-a-game.md`) | `prototypes/[name]/brief.md`, and `design/game-brief.md` |
 
 **The `design` output scales with the workflow tier** (resolved in Phase 1):
-- **`full`** ??generate a full 8-section GDD.
-- **`standard`** ??generate a 5-section GDD (Overview, Detailed Design, Edge Cases,
+- **`full`** — generate a full 8-section GDD.
+- **`standard`** — generate a 5-section GDD (Overview, Detailed Design, Edge Cases,
   Dependencies, Acceptance Criteria; + Formulas when the recovered system defines
   numeric rules). Skip Player Fantasy and Tuning Knobs.
-- **`minimal`** ??generate a **game brief** in the one-page format
+- **`minimal`** — generate a **game brief** in the one-page format
   (`.agent/docs/templates/game-brief.md`), not a GDD. For the whole game
   (the path is the code root itself) write `design/game-brief.md`; for a single
   reverse-engineered system write
@@ -224,7 +224,7 @@ Based on type, use appropriate template:
 - Identify **what's missing** (edge cases not handled, gaps in design)
 - Flag **follow-up work** (balance tuning, missing features)
 
-### Stamp the provenance ??required, at the top of every document this skill writes
+### Stamp the provenance — required, at the top of every document this skill writes
 
 A document produced here lands at the same path, in the same format, as one a
 designer wrote by hand, and **every downstream consumer treats the two
@@ -234,13 +234,13 @@ criteria. Nothing anywhere asks where it came from.
 
 The difference is not cosmetic: an authored GDD states **intent**, and this one
 states **observed behaviour plus inference**. When they disagree, the code is
-what needs changing in the first case and the document in the second ??and a
+what needs changing in the first case and the document in the second — and a
 reader cannot tell which they are holding unless the document says.
 
 Emit this immediately under the title:
 
 ```markdown
-> **Reverse-documented from implementation** ??generated by `/reverse-document`
+> **Reverse-documented from implementation** — generated by `/reverse-document`
 > from `[path]` on `[date]`, at commit `[short-sha]`.
 > This records what the code **does**; intent marked `INTENT UNKNOWN` below was
 > inferred, not confirmed by the author. Where this document and the code
@@ -248,7 +248,7 @@ Emit this immediately under the title:
 ```
 
 Keep the banner on revision. If a human later confirms the intent and adopts the
-document as authored design, removing it is their explicit act ??not a
+document as authored design, removing it is their explicit act — not a
 side effect of the next edit.
 
 ## Phase 6: Show Draft and Request Approval
@@ -274,11 +274,11 @@ May I write this to [output path]?
 Use the tier-correct output path in the prompt: `design/gdd/[system-name].md` for
 a `full`/`standard` GDD, or `design/[system-name]-brief.md` for a `minimal` brief.
 
-**At `collaborative`** ??wait for approval; the user may request changes before
-writing. **At `guided`** ??this is a *new* file, so `automation-modes.md:81`
+**At `collaborative`** — wait for approval; the user may request changes before
+writing. **At `guided`** — this is a *new* file, so `automation-modes.md:81`
 still has it asked ("May I write?" is asked for new files only); if the target
 already exists, present the diff and proceed without waiting for an explicit
-"yes". **At `autonomous`** ??write and log the decision.
+"yes". **At `autonomous`** — write and log the decision.
 
 ## Phase 7: Write Document with Metadata
 
@@ -306,7 +306,7 @@ verified-by: [User name]
 After writing, suggest next steps:
 
 ```
-??Written to design/gdd/combat-system.md
+✅ Written to design/gdd/combat-system.md
 
 FOLLOW-UP RECOMMENDED:
 1. Run /balance-check on combat formulas (exponential scaling concern)
@@ -325,11 +325,11 @@ Would you like me to tackle any of these now?
 
 | If analyzing... | Use template... | Because... |
 |----------------|-----------------|------------|
-| `<code root>/gameplay/*` | design-doc-from-implementation.md | Gameplay mechanics ??GDD |
-| `<code root>/core/*`, `<code root>/ai/*` | architecture-doc-from-code.md | Core systems ??ADR |
-| `prototypes/*` | concept-doc-from-prototype.md | Experiments ??concept doc |
-| `<code root>/networking/*` | architecture-doc-from-code.md | Technical systems ??ADR |
-| `<code root>/ui/*` | design-doc-from-implementation.md | UI/UX ??design spec |
+| `<code root>/gameplay/*` | design-doc-from-implementation.md | Gameplay mechanics → GDD |
+| `<code root>/core/*`, `<code root>/ai/*` | architecture-doc-from-code.md | Core systems → ADR |
+| `prototypes/*` | concept-doc-from-prototype.md | Experiments → concept doc |
+| `<code root>/networking/*` | architecture-doc-from-code.md | Technical systems → ADR |
+| `<code root>/ui/*` | design-doc-from-implementation.md | UI/UX → design spec |
 
 ---
 
@@ -347,10 +347,10 @@ Agent: I've analyzed <code root>/gameplay/[system]/. Here's what I found:
        Before drafting, could you clarify:
        1. [Resource] system intent?
        2. Is [mechanic] a core pillar?
-       3. [Value] scaling ??intentional or needs tuning?
+       3. [Value] scaling — intentional or needs tuning?
 
 User: 1. [Resource] is for pacing, prevent [unwanted behavior]
-      2. [Mechanic] is core ??I want [design intent]
+      2. [Mechanic] is core — I want [design intent]
       3. Yeah, exponential is too much, should be linear
 
 Agent: Perfect, that clarifies the vision. Let me draft the design document.
@@ -360,9 +360,9 @@ Agent: Perfect, that clarifies the vision. Let me draft the design document.
 
 User: Yes, write it.
 
-Agent: ??Written to design/gdd/[system-name].md
-       ??Marked as [REVERSE-DOCUMENTED]
-       ??Flagged [value] scaling for rebalancing
+Agent: ✅ Written to design/gdd/[system-name].md
+       ✅ Marked as [REVERSE-DOCUMENTED]
+       ✅ Flagged [value] scaling for rebalancing
 
        Next steps:
        - Update [formula] to [corrected scaling]
@@ -382,8 +382,7 @@ This skill follows the collaborative design principle:
 4. **User Clarifies**: Separate intent from accidents
 5. **Draft Document**: Create doc based on reality + intent
 6. **Show Draft**: Display key sections, explain additions
-7. **Get Approval**: "May I write to [filepath]?" On approval: Verdict: **COMPLETE** ??document generated. On decline: Verdict: **BLOCKED** ??user declined write.
+7. **Get Approval**: "May I write to [filepath]?" On approval: Verdict: **COMPLETE** — document generated. On decline: Verdict: **BLOCKED** — user declined write.
 8. **Flag Follow-Up**: Suggest related work, don't auto-execute
 
 **Never assume intent. Always ask before documenting "why".**
-

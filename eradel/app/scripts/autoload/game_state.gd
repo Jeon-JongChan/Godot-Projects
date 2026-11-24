@@ -232,10 +232,28 @@ func available_mercs() -> Array[Mercenary]:
 	return out
 
 
+## 파티 편성 상태에서 해당 위치값(열)에 배치된 인원 수를 반환한다.
+func party_row_count(row: int) -> int:
+	var n := 0
+	for p in party:
+		if p.row == row:
+			n += 1
+	return n
+
+
+## 용병을 자신의 위치값 열에만 편성한다(열당 최대 3명). 파티 배열은 전열→중열→후열 순으로 유지한다.
 func add_to_party(m: Mercenary) -> bool:
 	if party.size() >= MAX_PARTY or party.has(m) or not m.is_available():
 		return false
-	party.append(m)
+	if party_row_count(m.row) >= Mercenary.ROW_SLOTS:
+		return false
+	# 열 순서를 유지하도록 같은 열 마지막 뒤에 삽입
+	var idx := party.size()
+	for i in party.size():
+		if party[i].row > m.row:
+			idx = i
+			break
+	party.insert(idx, m)
 	party_changed.emit()
 	return true
 
@@ -243,6 +261,18 @@ func add_to_party(m: Mercenary) -> bool:
 func remove_from_party(m: Mercenary) -> void:
 	party.erase(m)
 	party_changed.emit()
+
+
+## 대기 상태(READY)인 용병을 영지 로스터에서 해고한다. 파티에 편성되어 있었다면 파티에서도 함께 제거한다.
+func dismiss_merc(m: Mercenary) -> bool:
+	if m == null or m.status != Mercenary.Status.READY or not roster.has(m):
+		return false
+	if party.has(m):
+		party.erase(m)
+		party_changed.emit()
+	roster.erase(m)
+	roster_changed.emit()
+	return true
 
 
 func party_attack_bonus() -> int:

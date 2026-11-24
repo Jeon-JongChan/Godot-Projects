@@ -3,13 +3,14 @@ name: story-done
 description: "Closes a finished story: verifies each acceptance criterion, checks for design or ADR deviations and updates its status. Use when the user says a story is done, finished or ready to close."
 argument-hint: "[story-file-path] [--review full|lean|solo]"
 user-invocable: true
+disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion, Agent, Bash(bash "*/.agent/skills/story-done/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .agent/scripts/story-facts.sh *), Bash(bash .agent/scripts/story-status.sh*), Bash(bash .agent/scripts/adr-status.sh *), Bash(bash .agent/scripts/md-section.sh *), Bash(bash .agent/scripts/review-receipts.sh check *), Bash(bash .agent/scripts/session-state.sh *), Bash(git status --porcelain*), Bash(git add -- *), Bash(git commit -m *)
 model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation,automation_always_ask,workflow,qa.level,gate_level,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.agent/docs/config-resolution.md`.
 
 Ask with the question tool. Without one, list the options numbered and end your turn
 to wait. A skipped or dismissed question is not an answer: ask again in plain text.
@@ -57,7 +58,7 @@ pair removed, is the story path. With nothing typed:
    closing?" with one option per story.
 3. None: ask for the path. When `production/epics/` holds no story file at all,
    stop:
-   "No stories found in `production/epics/` ??run `/create-stories [epic-slug]` to make them (at `standard` and `full`, run `/create-epics` first if there is no epic yet)."
+   "No stories found in `production/epics/` — run `/create-stories [epic-slug]` to make them (at `standard` and `full`, run `/create-epics` first if there is no epic yet)."
 
 **Its facts.** `bash .agent/scripts/story-facts.sh <story-path>` gives the status,
 type, layer, TR-IDs, ADRs, criteria count, test-evidence status and dependencies.
@@ -65,7 +66,7 @@ Then read the story in full: the criteria text, the Test Evidence path, `## File
 Out of Scope.
 
 **Tier.** `workflow` for the story's system, keyed on the GDD filename stem of its
-`GDD:` path (`design/gdd/<stem>.md` ??`<stem>`; the `[system]` of its TR-ID only
+`GDD:` path (`design/gdd/<stem>.md` → `<stem>`; the `[system]` of its TR-ID only
 when there is no GDD path): that system's `system_overrides` row if there is one,
 else the project value.
 
@@ -83,7 +84,7 @@ Logic story's unit test.
 
 The look is never waived: a Visual/Feel or UI story needs its screenshot at every
 level. **Gate level** per type is the `gate_level` line above. At `full`, a
-Config/Data default (`config=advisory(default??`) becomes blocking; an explicit
+Config/Data default (`config=advisory(default…)`) becomes blocking; an explicit
 `testing.strict.config: false` still makes it advisory.
 
 ## Phase 2: What the story is checked against
@@ -115,12 +116,13 @@ Take each acceptance criterion in turn:
   exists (report "test file present", never "test passes": nothing here runs it);
   numeric literals in gameplay code that belong in data files; player-facing
   strings in the code root that belong in localization files (resolve the root
-  per `.agent/docs/code-root-resolution.md`; unresolved, report `NOT ASSESSED ??  code root unresolved`, never zero hits).
-- **Asked:** behaviour ("the player takes damage when??), feel, and performance
+  per `.agent/docs/code-root-resolution.md`; unresolved, report `NOT ASSESSED —
+  code root unresolved`, never zero hits).
+- **Asked:** behaviour ("the player takes damage when…"), feel, and performance
   criteria. Never mark one passed from reading the code: the code says what should
   happen, not what the build does. Up to four per ask: "Does [criterion]?" Options:
-  Yes ??passes / No ??fails / I'll check it when I play / Not tested yet.
-  `I'll check it when I play` is `DEFERRED ??requires playtest session`: it does not
+  Yes — passes / No — fails / I'll check it when I play / Not tested yet.
+  `I'll check it when I play` is `DEFERRED — requires playtest session`: it does not
   block. `Not tested yet` is UNTESTED, and keeps the verdict at best NOT ASSESSED until
   someone checks it. On a grown game, a criterion the same-seed run's screenshot plainly
   shows is seen on screen (below) and is not asked: `production/qa/evidence/grow-<name>/`
@@ -129,19 +131,19 @@ Take each acceptance criterion in turn:
   image under `production/qa/evidence/[story-slug]/` (`[story-slug]`: the story
   file's name without `.md`) that you opened and saw it in.
   Never describe an image you have not opened; a checkpoint's `Run result:
-  OBSERVED ??<text>` is `/dev-story`'s description, to quote as such.
-- **Needs a full playtest:** `DEFERRED ??requires playtest session`. It does not
+  OBSERVED — <text>` is `/dev-story`'s description, to quote as such.
+- **Needs a full playtest:** `DEFERRED — requires playtest session`. It does not
   block.
 
 Then map each criterion to what covers it: a test under the test root, a
-"Yes ??passes", or a retained image.
+"Yes — passes", or a retained image.
 
 ```
 | Criterion | Covered by | Status |
 |-----------|------------|--------|
 | AC-1: [text] | tests/unit/[system]/[file]::[test] | COVERED |
 | AC-2: [text] | production/qa/evidence/[slug]/01-[what].png | COVERED |
-| AC-3: [text] | ??| UNTESTED |
+| AC-3: [text] | — | UNTESTED |
 ```
 
 Untested criteria escalate by the Phase 1 table: blocking above the line; below it,
@@ -172,15 +174,16 @@ beside it is not evidence: a described check is an assertion.
 
 **Is the evidence older than its code?** For a retained image, run
 `bash .agent/scripts/review-receipts.sh check production/qa/evidence/[story-slug]/stamp.txt`.
-Each `CHANGED:` or `GONE:` file: "[file] changed after the evidence was captured ??re-capture it." `RECEIPT: NONE`: "no stamp ??whether the evidence is older than the
+Each `CHANGED:` or `GONE:` file: "[file] changed after the evidence was captured —
+re-capture it." `RECEIPT: NONE`: "no stamp — whether the evidence is older than the
 code cannot be told". Report these lines; they never change the verdict.
 
 **Run result, every other type.** Take the `Run result:` line from the `/dev-story`
 checkpoint (only when its **Current task** names this story) or the story's Completion Notes.
-`OBSERVED` with a path: note it. `N/A ??<reason>`: accept only a reason that says
+`OBSERVED` with a path: note it. `N/A — <reason>`: accept only a reason that says
 why nothing is observable ("it's a Logic story" is not one). `NOT VERIFIED` on a
 story whose criteria name something on screen: a gap at the gate level. No line:
-advisory, "confirm the build was launched and looked at". A user's "Yes ??passes"
+advisory, "confirm the build was launched and looked at". A user's "Yes — passes"
 to an on-screen criterion with no retained image is an assertion, not an
 observation: a gap at the gate level.
 
@@ -189,7 +192,7 @@ observation: a gap at the gate level.
 from the same checkpoint or Completion Notes. `SAME` or `CHANGED, accepted`: note it. `CHANGED, not accepted`: BLOCKING in every mode,
 "this story changed how the game plays and the change was not accepted: fix it, then
 `/dev-story [path]` plays the run again". No line: NOT ASSESSED, "the same-seed run was not
-played after this story: `/dev-story [path]` plays it". `NOT ASSESSED ??<reason>`: advisory,
+played after this story: `/dev-story [path]` plays it". `NOT ASSESSED — <reason>`: advisory,
 with the reason.
 
 ## Phase 5: Deviations and scope
@@ -199,7 +202,7 @@ Run, by tier (`minimal` skips 1 and 3):
 1. **GDD rules** (`full`; `standard` on its required sections): search the changed
    files for the names the current GDD text and TR requirement use.
 2. **Manifest:** the story's `Manifest Version` older than the manifest's: ADVISORY,
-   "written against manifest v[story]; current is v[current] ??run
+   "written against manifest v[story]; current is v[current] — run
    `/story-readiness` to check". No manifest: skip. A `Manifest-Note:` line in the
    story is carried into the deviations as written.
 3. **ADR constraints** (`full`; `standard` for a critical ADR): search for the
@@ -210,8 +213,8 @@ Run, by tier (`minimal` skips 1 and 3):
    is OUT OF SCOPE. Leave out a file that a `Complete` story in the same epic lists under its
    `## Files`: it is that story's work, not committed yet. A story with no `## Files` section: use the checkpoint's
    **Files in progress** when its Current task names this story; else report
-   `Scope: NOT ASSESSED ??the story lists no files`. A clean working tree: report
-   `Scope: not checked ??no uncommitted changes to compare`.
+   `Scope: NOT ASSESSED — the story lists no files`. A clean working tree: report
+   `Scope: not checked — no uncommitted changes to compare`.
 
 Each deviation is **BLOCKING** (contradicts the GDD or ADR), **ADVISORY** (drifts
 but works the same; the user decides) or **OUT OF SCOPE** (for awareness). State
@@ -230,7 +233,7 @@ one plain line each with where it is: "Coins fall at 70 a second
 calls. Then ask about each, in every automation mode, and wait for the answers
 before Phase 6: the report shows each answer, and a call with no answer is not
 kept. The question: "Keep this, or change it?"
-Options: Keep it / Change it ??say how. Several calls can share one question with
+Options: Keep it / Change it — say how. Several calls can share one question with
 one option each to keep, and a free answer for the rest.
 
 - **Kept:** recorded on the story on close (step 2 of the close).
@@ -239,16 +242,16 @@ one option each to keep, and a free answer for the rest.
   `/story-done` lists the calls again.
 - **None found:** say `Own calls: none beyond the design`, naming what was read.
 - **No changed files to read** (none listed and a clean tree): `Own calls: NOT
-  ASSESSED ??no changed files to read`, a NOT ASSESSED item.
+  ASSESSED — no changed files to read`, a NOT ASSESSED item.
 
 ## Phase 6: Review gates
 
 Read the `review_gate` line above.
 
-- **`skill-gates=skip`:** no agent. Note `QL-TEST-COVERAGE skipped ??[Solo | Lean]
-  mode` and `LP-CODE-REVIEW skipped ??[Solo | Lean] mode`. In `lean` mode, ask: "Did
-  you run `/code-review` on the implemented files?" Options: Yes ??it passed or was
-  approved with suggestions / No ??skipping review for this story / No ??I'll run
+- **`skill-gates=skip`:** no agent. Note `QL-TEST-COVERAGE skipped — [Solo | Lean]
+  mode` and `LP-CODE-REVIEW skipped — [Solo | Lean] mode`. In `lean` mode, ask: "Did
+  you run `/code-review` on the implemented files?" Options: Yes — it passed or was
+  approved with suggestions / No — skipping review for this story / No — I'll run
   it before the sprint close-out. The answer sets Reviewed by.
 - **`skill-gates=run`:** read `references/review-gates.md` and
   `.agent/docs/director-gates.md`, and run both gates now. On a skip, do not load
@@ -263,26 +266,26 @@ exists yet.
 
 ```markdown
 ## Story Done: [title]
-**Story**: [path] 쨌 **Type**: [type] 쨌 **Date**: [today]
+**Story**: [path] · **Type**: [type] · **Date**: [today]
 
 ### Acceptance Criteria: [X/Y passing]
-- [x] [criterion] ??[how verified]
-- [ ] [criterion] ??FAILS: [reason]
-- [?] [criterion] ??DEFERRED: requires playtest
+- [x] [criterion] — [how verified]
+- [ ] [criterion] — FAILS: [reason]
+- [?] [criterion] — DEFERRED: requires playtest
 
 ### Traceability
 [the Phase 3 table]
 
 ### Test Evidence
 **Required**: [what the type needs at this qa.level, or "waived at qa.level minimal"]
-**Found**: [YES ??path | NO ??BLOCKING | NO ??ADVISORY]
-**Same-seed run**: [a grown game only: the line /dev-story gave, or NOT ASSESSED ??not played after this story]
+**Found**: [YES — path | NO — BLOCKING | NO — ADVISORY]
+**Same-seed run**: [a grown game only: the line /dev-story gave, or NOT ASSESSED — not played after this story]
 
 ### Deviations
-[NONE, or each: BLOCKING / ADVISORY / OUT OF SCOPE ??description ??reference]
+[NONE, or each: BLOCKING / ADVISORY / OUT OF SCOPE — description — reference]
 
 ### Own calls
-[each call: kept | change to <the person's words> (BLOCKING) 쨌 or "none beyond the design" 쨌 or NOT ASSESSED ??why]
+[each call: kept | change to <the person's words> (BLOCKING) · or "none beyond the design" · or NOT ASSESSED — why]
 
 ### Review
 **Reviewed by**: [value]
@@ -306,8 +309,8 @@ exists yet.
 4. **COMPLETE:** every criterion passes, nothing advisory.
 
 **Then ask, before writing anything:** "How do you want to proceed?" Options:
-Close the story ??mark it Complete and log notes (Recommended) / Close and log the
-advisory deviations as tech debt / Don't close yet ??I'll fix things first / Close
+Close the story — mark it Complete and log notes (Recommended) / Close and log the
+advisory deviations as tech debt / Don't close yet — I'll fix things first / Close
 anyway, accepting the deviations. On BLOCKED or NOT ASSESSED, recommend "Don't close
 yet" and list what must change. Closing such a story is a `scope_changes` decision:
 when the `automation_always_ask` line lists it, ask in every automation mode, even
@@ -330,7 +333,7 @@ close.
    **Same-seed run**: [a grown game only: the line as /dev-story gave it]
 
    ## Calls beyond the design
-   - [each call the person kept, with where it is] 쨌 kept [date]
+   - [each call the person kept, with where it is] · kept [date]
    ```
    With no calls, the section reads `- none beyond the design`.
 3. "Close and log as tech debt": read `references/tech-debt-row.md` and add one
@@ -340,7 +343,7 @@ close.
    The close answer covers it.
 5. At `workflow: minimal`, when the story's Requirement reads `Brief MVP feature N`
    and it is the last story for item N that is not `Complete`, set that Features line in
-   `design/game-brief.md` to `[x]`; a `deepen ??<system>` story ticks the Features line
+   `design/game-brief.md` to `[x]`; a `deepen — <system>` story ticks the Features line
    that names its system, when one does. The brief is the design record that `/next-step`,
    `/create-stories` and `/cut` read.
 6. On close, set this story's Status cell in `production/epics/[epic-slug]/EPIC.md`'s
@@ -365,8 +368,8 @@ one (`TODO`):
 
 ```
 ### Next Up
-**[Story NNN: title]** ??[one line]
-Run `/story-done [path]` to close it (In Review) ??else `/dev-story [path]` to implement it.
+**[Story NNN: title]** — [one line]
+Run `/story-done [path]` to close it (In Review) — else `/dev-story [path]` to implement it.
 ```
 
 When the `workflow` line above reads `minimal`, print no `/story-readiness` line at
@@ -390,7 +393,7 @@ With a sprint plan: read `references/sprint-next.md`.
 ```
 **Updated:** [date]
 **Branch:** `[current git branch]`
-**Current task:** /story-done ??[story path]: [verdict], [closed | left open]
+**Current task:** /story-done — [story path]: [verdict], [closed | left open]
 **Next step:** [the Next Up command, or the fix the verdict named]
 **Blocked on:** [nothing, or what blocked the verdict]
 **Files in progress:** none
@@ -400,9 +403,8 @@ With a sprint plan: read `references/sprint-next.md`.
 **The run's last reply ends with this block** (repeat it if you showed it earlier):
 
 ```
-Verdict: [COMPLETE | COMPLETE WITH NOTES | NOT ASSESSED | BLOCKED] ??[story path]
-Story: [closed ??Status: Complete | left open ??Status: [status]]
+Verdict: [COMPLETE | COMPLETE WITH NOTES | NOT ASSESSED | BLOCKED] — [story path]
+Story: [closed — Status: Complete | left open — Status: [status]]
 Review: [Reviewed by value; the gates' skip notes]
 Next step: [/dev-story [path] | /story-done [path] | the fix | play the build]
 ```
-

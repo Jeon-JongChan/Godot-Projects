@@ -18,9 +18,9 @@ How do you want to go on?" Options:
   (never today's date, or the next run mismatches again), and the ADR Decision
   Summary and `## Implementation Notes` are replaced with the guidance you read.
   The programmer's brief carries the new guidance, never the old summary.
-- **Implement from the story's summary ??I accept the drift.** The brief carries the
+- **Implement from the story's summary — I accept the drift.** The brief carries the
   summary and tells the agent it predates the current ADR. Note it under Deviations.
-- **Stop ??I want to review the ADR first.** No agent runs.
+- **Stop — I want to review the ADR first.** No agent runs.
 
 ## The control manifest
 
@@ -32,10 +32,10 @@ v[current]. How do you want to go on?" Options:
 - **Update the story's manifest version and use the current rules (Recommended).**
   Set the story's `Manifest Version` to the current date, then read the layer's
   rules for the brief.
-- **Use the old rules ??I accept the risk.** Set `Manifest Version` to the current
-  date and add `Manifest-Note: Proceeded with old manifest rules on [date] ??  non-compliance risk accepted.` to the story header. Note it under Deviations;
+- **Use the old rules — I accept the risk.** Set `Manifest Version` to the current
+  date and add `Manifest-Note: Proceeded with old manifest rules on [date] —
+  non-compliance risk accepted.` to the story header. Note it under Deviations;
   `/story-done` carries the note into its deviations.
-- **Stop ??I want to review the manifest first.** No agent runs.
+- **Stop — I want to review the manifest first.** No agent runs.
 
 Each option names the story edit it makes, so choosing it is the ask.
-

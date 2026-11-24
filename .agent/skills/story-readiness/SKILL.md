@@ -8,8 +8,8 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,review_gate,automation,workflow,qa.level,gate_level,story_granularity,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode`. No block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.agent/docs/config-resolution.md`.
 
 Ask with the question tool. Without one, list the options numbered and end your turn
 to wait. A skipped or dismissed question is not an answer: ask again in plain text.
@@ -54,7 +54,7 @@ the story, epic or sprint the user's request names is the scope.
   All stories in the current sprint / All stories in production/epics/ / The
   stories of one epic.
 
-**Zero stories in scope: stop with `NOT ASSESSED ??no stories in scope`.** Name the
+**Zero stories in scope: stop with `NOT ASSESSED — no stories in scope`.** Name the
 scope and the path that was empty, and route to `/create-stories` (at `standard`
 and `full`, `/create-epics` first). Never print a `Ready: 0 / Needs Work: 0` summary
 over an empty list: it reads as a clean result. For `sprint`, "no sprint plan
@@ -132,16 +132,17 @@ lowers READY by itself.
 - [ ] **ADR status**, at every tier: each ADR the story cites, by the Phase 2
   table.
   - `Accepted`: pass.
-  - `Proposed`: BLOCKED. Fix: `BLOCKED: ADR-NNNN is Proposed ??accept it with
+  - `Proposed`: BLOCKED. Fix: `BLOCKED: ADR-NNNN is Proposed — accept it with
     /architecture-decision accept ADR-NNNN once decided`.
-  - `Deprecated` or `Superseded`: BLOCKED. Fix: `BLOCKED: ADR-NNNN is [status] ??    point the story at [successor] (edit its ADR field;
+  - `Deprecated` or `Superseded`: BLOCKED. Fix: `BLOCKED: ADR-NNNN is [status] —
+    point the story at [successor] (edit its ADR field;
     /create-stories never rewrites an existing story)`.
   - No such ADR file: BLOCKED.
   - No readable status: NOT ASSESSED for this item; name the file.
   At `standard`, a **critical** ADR (its `layer` is Foundation, or missing) that
   is missing or Proposed blocks; for other ADRs the items below are advisory.
 - [ ] **ADR cited or N/A stated**: an ADR, or an explicit N/A with a reason
-  (`ADR: N/A ??[reason]`, or `N/A (minimal ??no ADRs)`). Blank fails.
+  (`ADR: N/A — [reason]`, or `N/A (minimal — no ADRs)`). Blank fails.
 - [ ] **TR-ID valid**: each `TR-[system]-NNN` is in the registry with `status:
   active`. `deprecated` or `superseded-by` (quoted or not): NEEDS WORK, Fix: point
   the story at the current requirement. Not in the registry: NEEDS WORK (the story
@@ -156,8 +157,8 @@ lowers READY by itself.
   Version to [current date]." Passes with no `Manifest Version` field, or no
   manifest.
 - [ ] **Engine notes**: post-cutoff engine APIs the story touches have notes or a
-  verification step, or the story states "N/A ??no engine API involved".
-- [ ] **Manifest rules noted**: the layer's rules are listed, or "N/A ??manifest
+  verification step, or the story states "N/A — no engine API involved".
+- [ ] **Manifest rules noted**: the layer's rules are listed, or "N/A — manifest
   not yet created". Passes when there is no manifest.
 
 ### Scope Clarity
@@ -198,7 +199,7 @@ lowers READY by itself.
   | `fine` | 1 | 1 | 1 |
 
 - [ ] **Performance noted**: a story touching the gameplay loop, rendering or
-  physics states a budget, or "no performance impact expected ??[reason]".
+  physics states a budget, or "no performance impact expected — [reason]".
 - [ ] **Type declared**: no `type_missing` or `type_unknown` row. Fix: add
   `Type: [Logic|Integration|Visual/Feel|UI|Config/Data]` to the header.
 - [ ] **Test evidence clear**: a `## Test Evidence` section saying where evidence
@@ -221,7 +222,7 @@ items: list both.
 ## Phase 5: QA lead review
 
 Read the `review_gate` line above. `skill-gates=skip` (solo or lean): skip it, and
-the reply says "QL-STORY-READY skipped ??[Solo | Lean] mode". `skill-gates=run`:
+the reply says "QL-STORY-READY skipped — [Solo | Lean] mode". `skill-gates=run`:
 read `references/qa-lead-gate.md` and `.agent/docs/director-gates.md`, and run it
 before reporting. On a skip, do not load it.
 
@@ -251,7 +252,7 @@ Definition of Done: [passing items]
 ```
 
 Name all six groups every time, by these exact names. A group with nothing
-passing says "none ??see Gaps", so the reader sees it was checked.
+passing says "none — see Gaps", so the reader sees it was checked.
 
 Gaps lists failed checklist items only: never a passing or N/A item, and never an
 observation from outside the checklist (a sprint status, another document).
@@ -260,8 +261,8 @@ Several stories: a summary first, then the one-story block for each story that i
 not READY.
 
 ```
-## Story Readiness Summary ??[scope] ??[date]
-Ready: [N] 쨌 Needs Work: [N] 쨌 Blocked: [N] 쨌 Not Assessed: [N]
+## Story Readiness Summary — [scope] — [date]
+Ready: [N] · Needs Work: [N] · Blocked: [N] · Not Assessed: [N]
 
 Ready: [title] ([path]), ...
 Needs Work: [title]: [main gap]
@@ -294,9 +295,8 @@ Redirects:
 **End the reply with:**
 
 ```
-Review: [QL-STORY-READY skipped ??Solo mode | skipped ??Lean mode | its verdict]
+Review: [QL-STORY-READY skipped — Solo mode | skipped — Lean mode | its verdict]
 Next ready stories: [up to 3 | no sprint file found | none ready in [sprint]]   (one-story scope)
 Next step: [/dev-story [path] when READY | fix the gaps above, then /story-readiness [path]]
 Files changed: none
 ```
-

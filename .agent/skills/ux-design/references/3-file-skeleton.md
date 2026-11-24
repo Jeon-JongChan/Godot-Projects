@@ -1,4 +1,4 @@
-# /ux-design ??Section 3: Create File Skeleton
+# /ux-design — Section 3: Create File Skeleton
 
 > Part of `/ux-design`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -15,7 +15,7 @@
 Once the user confirms, **immediately** create the output file with empty section
 headers. This ensures incremental writes have a target and work survives interruptions.
 
-Ask: "May I create the skeleton file at `design/ux/[filename].md`?" ??except in
+Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except in
 `accessibility` mode, where the path is `design/accessibility-requirements.md`
 (see the mode table in Section 1; it is deliberately not under `design/ux/`).
 
@@ -283,7 +283,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" ??except in
 
 ### Skeleton for Accessibility Requirements
 
-Section list mirrors `.agent/docs/templates/accessibility-requirements.md` ??if
+Section list mirrors `.agent/docs/templates/accessibility-requirements.md` — if
 the template gains or loses a section, this skeleton follows it, not the reverse.
 
 ```markdown
@@ -369,7 +369,7 @@ the template gains or loses a section, this skeleton follows it, not the reverse
 > the file to exist *with an accessibility tier committed*, and
 > `gate-production.md` checks that tier is addressed in every key screen spec.
 > A skeleton whose Tier Definition is still `[To be designed]` satisfies the
-> glob but not the gate ??author that section first.
+> glob but not the gate — author that section first.
 
 ---
 
@@ -379,4 +379,3 @@ After writing the skeleton, update `production/session-state/active.md` with:
 - File: design/ux/[filename].md (or `design/accessibility-requirements.md` in `accessibility` mode)
 
 ---
-

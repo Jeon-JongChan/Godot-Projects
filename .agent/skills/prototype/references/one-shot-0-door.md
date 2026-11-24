@@ -1,4 +1,4 @@
-# /prototype ??One-shot 0: Bring it in
+# /prototype — One-shot 0: Bring it in
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -7,8 +7,8 @@ The person already has a game that runs in a browser: one `.html` file, or a fol
 `index.html`. This brings a copy in, exactly as it is, so it can be changed, tuned and grown like
 a one-shot. The original is only ever read: nothing in it is edited, moved or deleted.
 
-**In this file:** 1 When it runs 쨌 2 Look first 쨌 3 The one question 쨌 4 Copy, commit, tag 쨌
-5 Screenshots 쨌 6 The brief 쨌 7 Where its files came from 쨌 8 Exports from an engine or tool 쨌
+**In this file:** 1 When it runs · 2 Look first · 3 The one question · 4 Copy, commit, tag ·
+5 Screenshots · 6 The brief · 7 Where its files came from · 8 Exports from an engine or tool ·
 9 After the door
 
 ## 1. When it runs
@@ -102,15 +102,15 @@ about the game, and the Features list left for them to fill in, and go on.
 Then the card, with a line left out when it has nothing in it:
 
 ```text
-<Pitch> 쨌 <Genre> 쨌 Controls: <controls>
-Brought in: <source> ??prototypes/<name>/ (<n> files, <size>) 쨌 tag baseline/<name>
+<Pitch> · <Genre> · Controls: <controls>
+Brought in: <source> → prototypes/<name>/ (<n> files, <size>) · tag baseline/<name>
 Made with: <plain HTML and JavaScript | <library> from the network | ...>
-Has: <the [x] Features> 쨌 Next: <the [ ] Features, or "tell me what you want next">
+Has: <the [x] Features> · Next: <the [ ] Features, or "tell me what you want next">
 Keep: tell me what you love about it, and I'll never change it without asking
 Origin: unknown for <n> files: tell me if you made them, and how
 Fan game: <reference>'s name, art, characters and UI stay its owner's: build and learn freely, not to sell or publish
 Not read: <each not-read item, with why>
-Checked: <the four screenshots, and what they reached> 쨌 not assessed: <what, and why>
+Checked: <the four screenshots, and what they reached> · not assessed: <what, and why>
 Writes: prototypes/<name>/brief.md, assets/provenance.yaml, evidence/, .gitattributes [, design/game-brief.md]
 ```
 
@@ -163,4 +163,3 @@ remake instead:
   can ask for, like any other.
 - **Growing it** works as for any one-shot (One-shot 5).
 - The door writes nothing to `project.yaml`.
-

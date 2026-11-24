@@ -1,4 +1,4 @@
-# /architecture-review ??Phases 5 and 5b: Engine Cross-Check and Design Revision Flags
+# /architecture-review — Phases 5 and 5b: Engine Cross-Check and Design Revision Flags
 
 > Part of `/architecture-review`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -30,7 +30,7 @@ Across all ADRs, check for engine consistency:
 
 ### Missing Engine Compatibility Sections
 - List all ADRs that are missing the Engine Compatibility section entirely
-- These are blind spots ??their engine assumptions are unknown
+- These are blind spots — their engine assumptions are unknown
 
 Output format:
 ```
@@ -39,10 +39,10 @@ Engine: [name + version]
 ADRs with Engine Compatibility section: X / Y total
 
 Deprecated API References:
-  - ADR-0002: uses [deprecated API] ??deprecated since [version]
+  - ADR-0002: uses [deprecated API] — deprecated since [version]
 
 Stale Version References:
-  - ADR-0001: written for [older version] ??current project version is [version]
+  - ADR-0001: written for [older version] — current project version is [version]
 
 Post-Cutoff API Conflicts:
   - ADR-0004 and ADR-0007 both use [API] with incompatible assumptions
@@ -54,14 +54,14 @@ Post-Cutoff API Conflicts:
 
 After completing the engine audit above, take the **primary engine specialist's** second look yourself, here. Spawn no agent for it, even when the person asks for "the Godot specialist's" view: what the specialist checked is in `references/lens-engine.md`.
 - Resolve the engine from `engine.name` in `project.yaml` (Godot, Unity, Unreal, or Web, which uses the lead programmer's section); if `engine.name` is absent or empty, read the Primary line of the `## Engine Specialists` section in `.agent/docs/technical-preferences.md`
-- If no engine is configured (neither source yields an engine), skip this look **Record ``Engine validation: NOT ASSESSED ??no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
+- If no engine is configured (neither source yields an engine), skip this look **Record ``Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 - Otherwise read `references/lens-engine.md` and apply its section for the engine to all ADRs that contain engine-specific decisions or `Post-Cutoff APIs Used` fields, with the engine reference docs and the audit findings: confirm or challenge each finding, find the engine anti-patterns the audit missed (e.g., using the wrong Godot node type, Unity component coupling, Unreal subsystem misuse), and flag ADRs that assume engine behaviour the pinned version does not have.
 
-Incorporate additional findings under `### Engine Specialist Findings` in the Phase 5 output. These feed into the final verdict ??these issues carry the same weight as audit-identified issues.
+Incorporate additional findings under `### Engine Specialist Findings` in the Phase 5 output. These feed into the final verdict — these issues carry the same weight as audit-identified issues.
 
 ---
 
-## Phase 5b: Design Revision Flags (Architecture ??GDD Feedback)
+## Phase 5b: Design Revision Flags (Architecture → GDD Feedback)
 
 For each **HIGH RISK engine finding** from Phase 5, check whether any GDD makes an
 assumption that the verified engine reality contradicts.
@@ -83,29 +83,28 @@ Specific cases to check:
 For each conflict found, record it in the GDD Revision Flags table:
 
 ```
-### GDD Revision Flags (Architecture ??Design Feedback)
+### GDD Revision Flags (Architecture → Design Feedback)
 These GDD assumptions conflict with verified engine behaviour or accepted ADRs.
 The GDD should be revised before its system enters implementation.
 
 | GDD | Assumption | Reality (from ADR/engine-reference) | Action |
 |-----|-----------|--------------------------------------|--------|
-| combat.md | "Use HingeJoint3D damp for weapon recoil" | Jolt ignores damp ??ADR-0003 | Revise GDD |
+| combat.md | "Use HingeJoint3D damp for weapon recoil" | Jolt ignores damp — ADR-0003 | Revise GDD |
 ```
 
-If no revision flags are found, write: "No GDD revision flags ??all GDD assumptions
+If no revision flags are found, write: "No GDD revision flags — all GDD assumptions
 are consistent with verified engine behaviour."
 
-Before asking, display the proposed change inline ??show the current systems-index row for each flagged GDD and the proposed updated row side by side so the user can see exactly what will change.
+Before asking, display the proposed change inline — show the current systems-index row for each flagged GDD and the proposed updated row side by side so the user can see exactly what will change.
 
 Then use `AskUserQuestion`:
 - "I found [N] GDD revision flag(s). May I update the systems index?"
-  - [A] Yes ??apply all [N] updates to the systems index now
+  - [A] Yes — apply all [N] updates to the systems index now
   - [B] Show me the full diff first, then ask again
-  - [C] No ??leave the systems index unchanged for now
+  - [C] No — leave the systems index unchanged for now
 
-If [A]: apply the updates. Status field must be exactly `Needs Revision` ??no parentheticals
+If [A]: apply the updates. Status field must be exactly `Needs Revision` — no parentheticals
 (other skills match that exact string and parentheticals break the match).
 If [B]: display the complete proposed systems-index section, then re-ask with `AskUserQuestion`.
 
 ---
-

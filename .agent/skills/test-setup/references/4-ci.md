@@ -1,4 +1,4 @@
-# /test-setup ??Phase 4: Create CI/CD Workflow
+# /test-setup — Phase 4: Create CI/CD Workflow
 
 > Part of `/test-setup`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -233,4 +233,3 @@ is in every Claude Code Game Studios project. `test-results/` holds Playwright's
 screenshots of a failing test, and is empty when every test passed.
 
 ---
-

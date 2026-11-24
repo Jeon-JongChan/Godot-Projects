@@ -8,40 +8,40 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,qa.level` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
 # Retrospective
 
 
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
-## Insufficient input ??check this before producing any report
+## Insufficient input — check this before producing any report
 
-**If the inputs this skill needs do not exist, the answer is "could not run" ??not a filled-in report.** Check first, and stop if the check fails.
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
 
 1. List the inputs this skill reads (data files, prior reports, profiler output,
    test results, registries, source code).
-2. For each, record `FOUND` or `ABSENT` ??not "assumed present".
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
 3. If any input required for a section is ABSENT, that section is
-   **`NOT ASSESSED ??NO DATA`**. Do not estimate it, do not infer it from an
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
    adjacent artifact, and do not leave a mandated cell to be filled by whoever
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
-   **`NOT ASSESSED ??NO DATA`** as the whole verdict, naming what was missing and
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
    which skill produces it.
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
 specific: a report whose verdict enum has no "could not run" state produces
-**false clean passes** ??an asset audit returning COMPLIANT on a project with no
+**false clean passes** — an asset audit returning COMPLIANT on a project with no
 assets and no standards, or a performance profile reporting ">99% headroom against
 a 16.67ms budget" with zero profiler data and no budget ever set.
 
 **Absence of evidence is never evidence of absence.** A scan that finds no
 matches because there are no files to scan has not verified anything. Say which of
-the two happened ??a reader cannot tell from a green result.
+the two happened — a reader cannot tell from a green result.
 
 ---
 
@@ -62,11 +62,11 @@ Before loading any data, glob for an existing retrospective file:
 If a matching file is found, use `AskUserQuestion`:
 - Prompt: "An existing retrospective was found: [filename]. How do you want to proceed?"
 - Options:
-  - `[A] Update existing ??load it and add/revise sections with new data`
-  - `[B] Start fresh ??generate a new retrospective (archive the old one)`
+  - `[A] Update existing — load it and add/revise sections with new data`
+  - `[B] Start fresh — generate a new retrospective (archive the old one)`
 
 If [A]: read the existing file and carry its content forward, revising sections with new data.
-If [B]: continue to Phase 2 with a blank slate. Before writing the new file, rename the existing one with a `-archived-[date]` suffix. That rename is a write too: it happens in Phase 5, only once the ask there ??which names it ??is approved.
+If [B]: continue to Phase 2 with a blank slate. Before writing the new file, rename the existing one with a `-archived-[date]` suffix. That rename is a write too: it happens in Phase 5, only once the ask there — which names it — is approved.
 
 ---
 
@@ -92,21 +92,21 @@ retained screenshot still is.
 
 Then use `AskUserQuestion` to present these options ([C] only at `workflow: minimal`):
 
-- **[A] Provide data manually** ??ask the user to paste or describe the sprint
+- **[A] Provide data manually** — ask the user to paste or describe the sprint
   tasks, dates, and outcomes; use that as the source of truth for the retrospective.
-- **[B] Stop** ??abort the skill. Verdict: **BLOCKED** ??no sprint data available.
-- **[C] Look back over the closed stories** ??use the stories with
+- **[B] Stop** — abort the skill. Verdict: **BLOCKED** — no sprint data available.
+- **[C] Look back over the closed stories** — use the stories with
   `Status: Complete` as the record of what was done.
 
 If the user chooses [A], collect the data and continue to Phase 3 using what they provide.
 If the user chooses [B], stop here.
 If the user chooses [C], read those stories and continue to Phase 3. Sections that
 need sprint data (planned vs actual, velocity, carryover, estimation accuracy)
-are `NOT ASSESSED ??NO DATA`.
+are `NOT ASSESSED — NO DATA`.
 
 Extract: planned tasks, estimated effort, owners, and goals.
 
-Run git log for the sprint period to understand what was actually committed and when. Use the Bash tool (which uses Git Bash on Windows ??the `2>/dev/null` is bash syntax, not PowerShell):
+Run git log for the sprint period to understand what was actually committed and when. Use the Bash tool (which uses Git Bash on Windows — the `2>/dev/null` is bash syntax, not PowerShell):
 
 ```
 Bash: git log --oneline --since="4 weeks ago" 2>/dev/null || git log --oneline -20
@@ -143,8 +143,8 @@ Read previous retrospectives (if any) from `production/retrospectives/` to check
 - How has velocity trended?
 
 With no earlier sprint or retrospective, Velocity Trend keeps only the current
-sprint's row and reads `NOT ASSESSED ??NO DATA`, and Previous Action Items
-Follow-Up is that one line ??no invented earlier rows, no empty table.
+sprint's row and reads `NOT ASSESSED — NO DATA`, and Previous Action Items
+Follow-Up is that one line — no invented earlier rows, no empty table.
 
 ---
 
@@ -175,7 +175,7 @@ Generated: [Date]
 | [N-1] | [X] | [Y] | [Z%] |
 | [N] (current) | [X] | [Y] | [Z%] |
 
-**Trend**: [Increasing / Stable / Decreasing ??or `NOT ASSESSED ??NO DATA` with no earlier sprint to compare]
+**Trend**: [Increasing / Stable / Decreasing — or `NOT ASSESSED — NO DATA` with no earlier sprint to compare]
 [One sentence explaining the trend]
 
 ### What Went Well
@@ -250,13 +250,13 @@ Present the retrospective and top findings to the user (completion rate, velocit
 
 Ask: "May I write this to `production/retrospectives/retro-sprint-[N]-[date].md`?" (or `production/retrospectives/retro-[milestone-name]-[date].md` for milestone retrospectives)
 
-After Start fresh in Phase 1b, the same ask also names the rename: "?쫆nd rename
+After Start fresh in Phase 1b, the same ask also names the rename: "…and rename
 `[old file]` to `[old file name]-archived-[date].md`?" On yes, rename first, then
 write; on no, neither happens.
 
-If yes, write the file, creating the `production/retrospectives/` directory if needed. Verdict: **COMPLETE** ??retrospective saved.
+If yes, write the file, creating the `production/retrospectives/` directory if needed. Verdict: **COMPLETE** — retrospective saved.
 
-If no, stop here. Verdict: **BLOCKED** ??user declined write.
+If no, stop here. Verdict: **BLOCKED** — user declined write.
 
 ---
 
@@ -269,8 +269,8 @@ order.
 Otherwise, use `AskUserQuestion`:
 - Prompt: "Retrospective complete. The action items and velocity data are ready. Would you like to start sprint planning now with this data pre-loaded?"
 - Options:
-  - `[A] Yes ??open sprint planning with retro action items and velocity delta pre-populated`
-  - `[B] No ??I'll reference the retrospective file manually when I'm ready`
+  - `[A] Yes — open sprint planning with retro action items and velocity delta pre-populated`
+  - `[B] No — I'll reference the retrospective file manually when I'm ready`
 
 If the user selects [A]: Proceed to invoke `/sprint-plan new`, passing the retrospective file path and a summary of the action items and velocity change so the sprint planner can reference them.
 
@@ -284,4 +284,3 @@ If the user selects [A]: Proceed to invoke `/sprint-plan new`, passing the retro
 - Every action item must have an owner and a deadline.
 - Check whether previous action items were completed. Recurring unaddressed items are a process smell.
 - If this is a milestone retrospective, also evaluate whether the milestone goals were achieved and what that means for the overall project timeline.
-

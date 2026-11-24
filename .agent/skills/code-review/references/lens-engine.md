@@ -65,4 +65,3 @@ the reference does not cover is marked unverified, never asserted from memory.
 Each finding names file and line and quotes the code or gives the input that
 triggers it. A spot that only looks wrong (a deliberate pattern, a guarded case)
 is checked by enumerating its inputs before it is called a defect.
-

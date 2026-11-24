@@ -1,6 +1,6 @@
 ---
 name: test-helpers
-description: "Generate engine-specific test helper libraries ??assertion utilities, factory functions, mocks in the engine's test folder. Reduces boilerplate."
+description: "Generate engine-specific test helper libraries — assertion utilities, factory functions, mocks in the engine's test folder. Reduces boilerplate."
 argument-hint: "[system-name | all | scaffold]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.agent/skills/test-helpers/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,10 +8,10 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Test Helpers
@@ -19,14 +19,15 @@ every file write follows `.agent/docs/automation-modes.md`
 Writing test cases is faster and more consistent when common setup, teardown,
 and assertion patterns are abstracted into helpers. This skill generates a
 `tests/helpers/` library tailored to the project's actual engine, language,
-and systems ??so every developer writes less boilerplate and more assertions.
+and systems — so every developer writes less boilerplate and more assertions.
 
-**Output:** engine-specific helper files in the engine's **helper root** ??the only place its test runner compiles them (`.agent/docs/directory-structure.md`):
+**Output:** engine-specific helper files in the engine's **helper root** —
+the only place its test runner compiles them (`.agent/docs/directory-structure.md`):
 
 | Engine | Helper root |
 |---|---|
 | Godot | `tests/helpers/` |
-| Unity | `Assets/Tests/EditMode/Helpers/` ??inside the `EditModeTests` assembly `/test-setup` creates. If PlayMode tests need the same helpers, ask before creating `Assets/Tests/Helpers/TestHelpers.asmdef` and referencing it from both test assemblies. |
+| Unity | `Assets/Tests/EditMode/Helpers/` — inside the `EditModeTests` assembly `/test-setup` creates. If PlayMode tests need the same helpers, ask before creating `Assets/Tests/Helpers/TestHelpers.asmdef` and referencing it from both test assemblies. |
 | Unreal | `Source/<Module>/Private/Tests/Helpers/` |
 
 `tests/helpers/` below means the helper root for the project's engine.
@@ -41,7 +42,7 @@ and systems ??so every developer writes less boilerplate and more assertions.
 ## Assertions: use the project's test framework, never bare `assert()`
 
 **Generated helpers must assert through the configured test framework's assertion
-API**, resolved from `testing.framework` ??not through GDScript's built-in
+API**, resolved from `testing.framework` — not through GDScript's built-in
 `assert()`.
 
 Two things go wrong with a bare `assert()` in a helper, and both are silent:
@@ -52,11 +53,11 @@ Two things go wrong with a bare `assert()` in a helper, and both are silent:
    after it.
 2. **It is stripped in release builds.** A helper library built on `assert()`
    stops asserting entirely in exactly the build you most want checked, and does
-   so without any error ??the tests still "pass".
+   so without any error — the tests still "pass".
 
 **Look up the assertion form for the configured framework before generating
 code.** Do not copy the forms in this file or in other skills' examples as
-authoritative ??they are illustrative and have drifted (`assert_eq`,
+authoritative — they are illustrative and have drifted (`assert_eq`,
 `assert_true` and `assert_that` all appear across the repo). If you cannot
 confirm the correct API for the project's framework, say so and generate no
 helper rather than guessing.
@@ -71,12 +72,12 @@ extend the suite.
 ## 1. Parse Arguments
 
 **Modes:**
-- `/test-helpers [system-name]` ??generate helpers for a specific system
+- `/test-helpers [system-name]` — generate helpers for a specific system
   (e.g., `/test-helpers combat`)
-- `/test-helpers all` ??generate helpers for all systems with test files
-- `/test-helpers scaffold` ??generate only the base helper library (no
+- `/test-helpers all` — generate helpers for all systems with test files
+- `/test-helpers scaffold` — generate only the base helper library (no
   system-specific helpers); use this on first run
-- No argument ??run `scaffold` if no helpers exist, else `all`
+- No argument — run `scaffold` if no helpers exist, else `all`
 
 ---
 
@@ -112,11 +113,11 @@ This ensures generated helpers match the project's existing style, not a
 generic template.
 
 Also read:
-- `design/gdd/systems-index.md` ??to know which systems exist
-- In-scope GDD(s) ??to understand what data types and values need testing. Read
+- `design/gdd/systems-index.md` — to know which systems exist
+- In-scope GDD(s) — to understand what data types and values need testing. Read
   them by section: find the headings you need with the Grep tool (pattern `^#`,
   content mode) and Read those ranges with offset and limit.
-- `docs/architecture/tr-registry.yaml` ??to map requirements to tested systems
+- `docs/architecture/tr-registry.yaml` — to map requirements to tested systems
 
 ---
 
@@ -126,20 +127,20 @@ Also read:
 
 > **`FAIL_IF(...)` in the example below is a PLACEHOLDER, not an API.** It marks
 > the one line you must resolve from the project's actual test framework before
-> emitting any of this, per the rule in 짠2. Substitute the framework's real
-> failure call ??the form that **registers a failure with the runner and lets the
-> suite continue** ??and delete the marker comment.
+> emitting any of this, per the rule in §2. Substitute the framework's real
+> failure call — the form that **registers a failure with the runner and lets the
+> suite continue** — and delete the marker comment.
 >
 > **It is deliberately not spelled `assert_that`, `assert_eq` or `assert_true`.**
 > All three appear somewhere in this repo, they disagree, and **GdUnit4's API is
-> not covered by `docs/engine-reference/`** ??so writing any of them here would be
+> not covered by `docs/engine-reference/`** — so writing any of them here would be
 > asserting an API this repo cannot source, in the file whose whole job is to stop
 > people doing that. If you cannot confirm the correct call for the configured
-> framework, 짠2 already tells you the answer: **generate no helper.** An
+> framework, §2 already tells you the answer: **generate no helper.** An
 > unresolved `FAIL_IF` reaching disk is a bug; a missing helper is a task.
 >
-> Worked examples must obey 짠2 too ??a bare `assert()` here would be the exact
-> form 짠2 forbids, sixty lines below 짠2 forbidding it. A rule stated in prose
+> Worked examples must obey §2 too — a bare `assert()` here would be the exact
+> form §2 forbids, sixty lines below §2 forbidding it. A rule stated in prose
 > does not reach its own worked example unless someone makes it.
 
 **Base helper** (`tests/helpers/game_assertions.gd`):
@@ -148,7 +149,7 @@ Also read:
 ## Game-specific assertion utilities for [Project Name] tests.
 ## Domain-specific helpers built on the project's test framework.
 ##
-## Usage (static ??no instance needed):
+## Usage (static — no instance needed):
 ##   GameAssertions.assert_in_range(entity.health, 0, entity.max_health, "health")
 
 class_name GameAssertions
@@ -162,7 +163,7 @@ static func assert_in_range(
     max_val: float,
     label: String = "value"
 ) -> void:
-    # FRAMEWORK ASSERT ??resolve per the rule above; do not emit `assert()`.
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
     FAIL_IF(
         not (value >= min_val and value <= max_val),
         "%s %.2f is outside expected range [%.2f, %.2f]" % [label, value, min_val, max_val]
@@ -181,7 +182,7 @@ static func assert_signal_emitted(
     var state := {"emitted": false}
     obj.connect(signal_name, func(...args): state.emitted = true)
     action.call()
-    # FRAMEWORK ASSERT ??resolve per the rule above; do not emit `assert()`.
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
     FAIL_IF(not state.emitted, "Expected signal '%s' to be emitted, but it was not." % signal_name)
 
 ## Assert that a callable does NOT emit a signal.
@@ -193,12 +194,12 @@ static func assert_signal_not_emitted(
     var state := {"emitted": false}  # a Dictionary, as above
     obj.connect(signal_name, func(...args): state.emitted = true)
     action.call()
-    # FRAMEWORK ASSERT ??resolve per the rule above; do not emit `assert()`.
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
     FAIL_IF(state.emitted, "Expected signal '%s' NOT to be emitted, but it was." % signal_name)
 
 ## Assert a node exists at path within a parent.
 static func assert_node_exists(parent: Node, path: NodePath) -> void:
-    # FRAMEWORK ASSERT ??resolve per the rule above; do not emit `assert()`.
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
     FAIL_IF(
         not parent.has_node(path),
         "Expected node at path '%s' to exist." % str(path)
@@ -234,7 +235,8 @@ static func make_player(health: int = 100) -> Node:
 class_name SceneRunnerHelper
 extends RefCounted
 
-## Load a scene under `host` ??the calling test suite, which passes `self` ??## and wait one frame for _ready() to complete. A plain class, so the runner
+## Load a scene under `host` — the calling test suite, which passes `self` —
+## and wait one frame for _ready() to complete. A plain class, so the runner
 ## never discovers this file as a suite with zero tests.
 static func load_scene_and_wait(host: Node, scene_path: String) -> Node:
     var scene: Node = load(scene_path).instantiate()
@@ -378,7 +380,7 @@ namespace GameTestHelpers
 
 For `[system-name]` or `all` modes, generate a helper per system:
 
-Read only the GDD sections this needs ??`Grep pattern="^## ([0-9]+\. )?(Formulas|Edge Cases|Detailed Rules|Detailed Design)" path="design/gdd/[system].md" output_mode="content" -A 30` (the optional number matches a reverse-documented GDD's `## 4. Formulas`) ??rather than a full read (every peer skill section-greps GDDs; in `all` mode a full read multiplies across each system's 400+-line GDD). Extract:
+Read only the GDD sections this needs — `Grep pattern="^## ([0-9]+\. )?(Formulas|Edge Cases|Detailed Rules|Detailed Design)" path="design/gdd/[system].md" output_mode="content" -A 30` (the optional number matches a reverse-documented GDD's `## 4. Formulas`) — rather than a full read (every peer skill section-greps GDDs; in `all` mode a full read multiplies across each system's 400+-line GDD). Extract:
 - Data types (entity types, component names)
 - Formula variables and their bounds
 - Common test scenarios mentioned in Edge Cases
@@ -434,19 +436,19 @@ Base helpers (engine: [engine], helper root: [helper root]):
 [engine-specific extras]
 
 System helpers ([mode]):
-- [helper root]/[system]_factory.[ext]  ??from [system] GDD
+- [helper root]/[system]_factory.[ext]  ← from [system] GDD
 ```
 
 Ask: "May I write these helper files to `[helper root]`?"
 
 **Never overwrite existing files.** If a file already exists, report:
-"Skipping `[path]` ??already exists. Remove the file manually if you want it
+"Skipping `[path]` — already exists. Remove the file manually if you want it
 regenerated."
 
-After writing: Verdict: **COMPLETE** ??helper files created.
+After writing: Verdict: **COMPLETE** — helper files created.
 
 "Helper files created. To use them in a test:
-- Godot: `class_name` is auto-imported ??no explicit import needed
+- Godot: `class_name` is auto-imported — no explicit import needed
 - Unity: Add `using` directive or reference the test assembly
 - Unreal: `#include \"Tests/Helpers/GameTestHelpers.h\"` (from inside the module)"
 
@@ -454,18 +456,17 @@ After writing: Verdict: **COMPLETE** ??helper files created.
 
 ## Collaborative Protocol
 
-- **Never overwrite existing helpers** ??they may contain hand-written
+- **Never overwrite existing helpers** — they may contain hand-written
   customisations. Only generate new files that don't exist yet
-- **Generated code is a starting point** ??the generated factory functions use
+- **Generated code is a starting point** — the generated factory functions use
   metadata patterns for simplicity; adapt to the actual class structure once
   the code exists
-- **Helpers should reflect the GDD** ??bounds and constants in helpers should
+- **Helpers should reflect the GDD** — bounds and constants in helpers should
   trace to GDD Formulas sections, not invented values
-- **Ask before writing** ??always confirm before creating files in `tests/`
+- **Ask before writing** — always confirm before creating files in `tests/`
 
 ## Next Steps
 
 - Run `/test-setup` if the test framework has not been scaffolded yet.
-- Use `/dev-story` to implement stories ??helpers reduce boilerplate in new test files.
+- Use `/dev-story` to implement stories — helpers reduce boilerplate in new test files.
 - Run `/skill-test` to validate other skills that may need helper coverage.
-

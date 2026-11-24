@@ -1,4 +1,4 @@
-# /setup-engine ??Section 2: Guided Mode
+# /setup-engine — Section 2: Guided Mode
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -33,10 +33,11 @@ Only a project with neither goes on below.
 Read the design artifact for the resolved tier (see **Tier awareness** above), by
 section: list its headings with `bash .agent/scripts/md-section.sh list <file>` and read only
 the ones you need with `md-section.sh extract <file> "<heading>"`:
-- **`standard` / `full`**: read `design/gdd/game-concept.md` if it exists ??  extract genre, scope, platform targets, art style, team size, and the engine
+- **`standard` / `full`**: read `design/gdd/game-concept.md` if it exists —
+  extract genre, scope, platform targets, art style, team size, and the engine
   preference `/brainstorm` recorded (an engine the user named, or "undecided":
   `/brainstorm` never recommends one, so the recommendation is made here).
-- **`minimal`**: read `design/game-brief.md` if it exists ??extract genre,
+- **`minimal`**: read `design/game-brief.md` if it exists — extract genre,
   scope, platform, and art direction from its fields. Its absence is **expected**
   at `minimal` (the brief is authored *after* engine setup in the minimal path), so
   do not treat a missing brief as a gap.
@@ -65,20 +66,20 @@ their words ("Your brief says console: Unity or Unreal fit that better").
 
 ### Help me choose
 
-**Question 1 ??Prior experience.** Ask: "Have you made a game in any of these
+**Question 1 — Prior experience.** Ask: "Have you made a game in any of these
 before?" Options: `Web (TypeScript or JavaScript)` / `Godot` / `Unity` /
 `Unreal Engine 5`; a typed "none" or "several" is an answer too.
-- A specific engine ??recommend it. Prior experience outweighs all other factors. Confirm with them and skip the rest.
-- None or several ??continue below.
+- A specific engine → recommend it. Prior experience outweighs all other factors. Confirm with them and skip the rest.
+- None or several → continue below.
 
-**Question 2 ??Target platform.** Ask: "Where should the game be played?" Options:
+**Question 2 — Target platform.** Ask: "Where should the game be played?" Options:
 `Browser or PC` / `Phone` / `Console` / `Several`. Platform weighs engines before
 any other factor:
-  - Browser ??Web; Godot exports to the web too; Unity's web build works; Unreal has no web build
-  - Mobile ??Unity strongly preferred; Unreal is a poor fit; Godot is viable for simple mobile; Web needs a wrapper for the stores
-  - Console ??Unity or Unreal; Godot console support requires third-party publishers or significant extra work; Web cannot
-  - PC only ??all engines viable; other factors decide
-  - Several ??Unity is the most portable across PC, mobile and console
+  - Browser → Web; Godot exports to the web too; Unity's web build works; Unreal has no web build
+  - Mobile → Unity strongly preferred; Unreal is a poor fit; Godot is viable for simple mobile; Web needs a wrapper for the stores
+  - Console → Unity or Unreal; Godot console support requires third-party publishers or significant extra work; Web cannot
+  - PC only → all engines viable; other factors decide
+  - Several → Unity is the most portable across PC, mobile and console
 
 Then, in plain text:
 1. **What kind of game?** (2D, 3D, or both?)
@@ -89,7 +90,7 @@ Then, in plain text:
 
 ### Produce a recommendation
 
-Do not use a simple scoring matrix that eliminates engines. Instead, reason through the user's profile against the honest tradeoffs below, then present 1-2 recommendations with full context. Always end with the user choosing ??never force a verdict.
+Do not use a simple scoring matrix that eliminates engines. Instead, reason through the user's profile against the honest tradeoffs below, then present 1-2 recommendations with full context. Always end with the user choosing — never force a verdict.
 
 **Engine honest tradeoffs:**
 
@@ -106,8 +107,8 @@ Do not use a simple scoring matrix that eliminates engines. Instead, reason thro
 
 **Unity**
 - Genuine strengths: Industry standard for mid-scope 3D and mobile; massive asset store and tutorial ecosystem; C# is a professional language; best console certification support for indie; strong community for almost every genre
-- Real limitations: Licensing controversy in 2023 damaged trust (runtime fee was proposed then walked back ??the risk of policy changes remains real); C# has a steeper initial curve than GDScript; heavier editor than Godot for simple projects
-- Licensing reality: Unity Personal is free below a revenue ceiling; the terms changed several times in 2023??024, so check Unity's current pricing page before quoting a threshold, and cite it.
+- Real limitations: Licensing controversy in 2023 damaged trust (runtime fee was proposed then walked back — the risk of policy changes remains real); C# has a steeper initial curve than GDScript; heavier editor than Godot for simple projects
+- Licensing reality: Unity Personal is free below a revenue ceiling; the terms changed several times in 2023–2024, so check Unity's current pricing page before quoting a threshold, and cite it.
 - Best fit: Mobile games; mid-scope 3D; games targeting console; developers with C# background; projects needing large asset store; teams of 2-5
 
 **Unreal Engine 5**
@@ -117,28 +118,28 @@ Do not use a simple scoring matrix that eliminates engines. Instead, reason thro
 - Best fit: AAA-quality 3D; large open-world games; photorealistic visuals; developers with C++ experience or willing to use Blueprint; games targeting high-end PC/console where visual fidelity is a core selling point
 
 **Genre-specific guidance** (factor this into the recommendation):
-- Small 2D, puzzle, arcade or jam game, or one to share by link ??Web
-- 2D any style ??Godot strongly preferred
-- 3D stylized / atmospheric / contained world ??Godot viable, Unity solid alternative
-- 3D open world (large, seamless) ??Unity or Unreal; Godot is not production-proven for this
-- 3D photorealistic / AAA-quality ??Unreal
-- Mobile-first ??Unity strongly preferred
-- Console-first ??Unity or Unreal; Godot console support requires extra work
-- Horror / narrative / walking sim ??any engine; match to art style and team experience
-- Action RPG / Soulslike ??Unity or Unreal for 3D; community support and assets matter here
-- Platformer 2D ??Godot
-- Strategy / top-down / RTS ??Godot or Unity depending on 2D vs 3D
+- Small 2D, puzzle, arcade or jam game, or one to share by link → Web
+- 2D any style → Godot strongly preferred
+- 3D stylized / atmospheric / contained world → Godot viable, Unity solid alternative
+- 3D open world (large, seamless) → Unity or Unreal; Godot is not production-proven for this
+- 3D photorealistic / AAA-quality → Unreal
+- Mobile-first → Unity strongly preferred
+- Console-first → Unity or Unreal; Godot console support requires extra work
+- Horror / narrative / walking sim → any engine; match to art style and team experience
+- Action RPG / Soulslike → Unity or Unreal for 3D; community support and assets matter here
+- Platformer 2D → Godot
+- Strategy / top-down / RTS → Godot or Unity depending on 2D vs 3D
 
 **Recommendation format:**
 1. Show a comparison table with the user's specific factors as rows
 2. Give a primary recommendation with honest reasoning
 3. Name the best alternative and when to choose it instead
-4. Explicitly state: "This is a starting point, not a verdict ??you can always migrate engines, and many developers switch between projects."
+4. Explicitly state: "This is a starting point, not a verdict — you can always migrate engines, and many developers switch between projects."
 5. Ask: "Does this recommendation feel right, or would you like to explore a different engine?"
    - Options: `[Primary engine] (Recommended)` / `[Alternative engine]` / `[Third engine]` / `Explore further`
 
 **If the user picks "Explore further":**
-Ask about concept-specific deep-dive topics; more than one may be picked. Always generate these options from the user's actual concept ??do not use generic options. Always include at minimum:
+Ask about concept-specific deep-dive topics; more than one may be picked. Always generate these options from the user's actual concept — do not use generic options. Always include at minimum:
 - The primary engine's specific limitations for this concept (e.g., "How far can Godot 3D actually go for [genre]?")
 - The alternative engine's specific tradeoffs for this concept
 - Language choice impact on this concept's technical challenges
@@ -147,4 +148,3 @@ Ask about concept-specific deep-dive topics; more than one may be picked. Always
 The user can select multiple topics. Answer each selected topic in depth before returning to the engine confirmation question.
 
 ---
-

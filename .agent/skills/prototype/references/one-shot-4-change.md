@@ -1,4 +1,4 @@
-# /prototype ??One-shot 4: Change it
+# /prototype — One-shot 4: Change it
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -7,8 +7,8 @@ The person has played and asks for a change. Make it without touching what they 
 brief in step, and make each change they accept a checkpoint they can go back to. The asks in one
 message are one change, unless they ask to split it into rounds (section 4).
 
-**In this file:** 1 Which game 쨌 2 Read again 쨌 3 Their hand edits 쨌 4 Check the ask 쨌 5 Make the
-change 쨌 6 Keep the brief in step 쨌 7 Check before accept 쨌 8 Accept or undo 쨌 Going back 쨌
+**In this file:** 1 Which game · 2 Read again · 3 Their hand edits · 4 Check the ask · 5 Make the
+change · 6 Keep the brief in step · 7 Check before accept · 8 Accept or undo · Going back ·
 Share it
 
 ## 1. Which game
@@ -91,7 +91,7 @@ With every change, in the game's brief (both copies while they are the same game
   is there already is never rewritten.
 - **Keep:** each thing they say they love becomes a line in their words, marked *(you said)*, then
   the `config.js` values behind it as they are now, when there are any:
-  `- the dash feels snappy *(you said)* 쨌 pins: dash_speed 14, dash_time 0.12`
+  `- the dash feels snappy *(you said)* · pins: dash_speed 14, dash_time 0.12`
   A line with no value behind it ("the music") has no pins. Never add a line they did not say, and
   never move a pin without their yes or their own hand edit.
 - **Avoid:** each thing they turn down ("no screen shake") becomes a line in their words.
@@ -149,7 +149,7 @@ the screen.
 Show the 1 to 3 shots that show the change best, then this block:
 
 ```text
-Changed: <what, from ??to>
+Changed: <what, from → to>
 Errors: none | <each, in a few words> | not checked: <why>
 ```
 
@@ -188,4 +188,3 @@ the page's `tune.js` tag is taken out.
 Give the folder's path; for itch.io, zip what is inside it.
 A `found` row is a `tune.js` reference the script could not take out: take it out of the game and
 run it again. Share `dist/`, never the game's own folder.
-

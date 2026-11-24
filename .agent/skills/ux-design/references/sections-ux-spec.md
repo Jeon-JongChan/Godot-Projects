@@ -1,7 +1,7 @@
 > Section-authoring guidance, loaded by `/ux-design` for the ACTIVE MODE ONLY.
-> Never load the other two ??one mode applies per invocation.
+> Never load the other two — one mode applies per invocation.
 
-# Section Guidance ??UX Spec Mode
+# Section Guidance — UX Spec Mode
 
 **In this file:**
 
@@ -48,14 +48,14 @@ Offer to map this against the journey phases if the player journey doc exists.
 
 #### Section B2: Navigation Position
 
-Where does this screen sit in the game's navigation hierarchy? This is a one-paragraph orientation map ??not a full flow diagram.
+Where does this screen sit in the game's navigation hierarchy? This is a one-paragraph orientation map — not a full flow diagram.
 
 **Questions to ask**:
 - "Is this screen accessed from the main menu, from pause, from within gameplay, or from another screen?"
 - "Is it a top-level destination (always reachable) or a context-dependent one (only accessible in certain states)?"
 - "Can the player reach this screen from more than one place in the game?"
 
-Present as: "This screen lives at: [root] ??[parent] ??[this screen]" plus any alternate entry paths.
+Present as: "This screen lives at: [root] → [parent] → [this screen]" plus any alternate entry paths.
 
 ---
 
@@ -66,7 +66,7 @@ Map every way the player can arrive at and leave this screen.
 **Questions to ask**:
 - "What are all the ways a player can reach this screen?" (List each trigger: button press, game event, redirect from another screen, etc.)
 - "What can the player do to exit? What happens when they do?" (Back button, confirm action, timeout, game event)
-- "Are there any exits that are one-way ??where the player cannot return to this screen without starting over?"
+- "Are there any exits that are one-way — where the player cannot return to this screen without starting over?"
 
 Present as two tables:
 
@@ -84,22 +84,22 @@ Present as two tables:
 
 This is the largest and most interactive section. Work through it in sub-sections:
 
-**Sub-section 1 ??Information Hierarchy** (establish this before any layout):
+**Sub-section 1 — Information Hierarchy** (establish this before any layout):
 - Ask the user to list every piece of information this screen must communicate.
 - Then ask them to rank the items: "What is the single most important thing a player
   needs to see first? What is second? What can be discovered rather than immediately visible?"
 - Present the resulting hierarchy for approval before moving to zones.
 
-**Sub-section 2 ??Layout Zones**:
+**Sub-section 2 — Layout Zones**:
 - Based on the information hierarchy, propose rough screen zones (header, content
   area, action bar, sidebar, etc.).
 - Offer 2-3 zone arrangements with rationale for each. Reference platform and
   input context gathered from game concept.
 - Use `AskUserQuestion` to capture the choice:
   - "Which zone arrangement fits best?"
-  - Options: [the 2-3 named arrangements you just presented] + "None ??build a custom arrangement"
+  - Options: [the 2-3 named arrangements you just presented] + "None — build a custom arrangement"
 
-**Sub-section 3 ??Component Inventory**:
+**Sub-section 3 — Component Inventory**:
 - For each zone, list the UI components it contains. For each component, note:
   - Component type (button, list, card, stat display, input field, etc.)
   - Content it displays
@@ -107,7 +107,7 @@ This is the largest and most interactive section. Work through it in sub-section
   - If it uses an existing pattern from the library (reference by pattern name)
   - If it introduces a new pattern (flag for later addition to the library)
 
-**Sub-section 4 ??ASCII Wireframe**:
+**Sub-section 4 — ASCII Wireframe**:
 - Offer to generate an ASCII wireframe based on the zone layout and component list.
 - Use `AskUserQuestion`: "Want an ASCII wireframe as part of this spec?"
   - Options: "Yes, include one", "No, I'll attach a separate file"
@@ -123,7 +123,7 @@ Guide the user to think beyond the happy path.
 **Questions to ask** (work through these one at a time):
 - "What does this screen look like the very first time a player sees it, when there
   is no data yet? (empty state)"
-- "What happens when something goes wrong ??an error, a failed action, a missing
+- "What happens when something goes wrong — an error, a failed action, a missing
   resource? (error state)"
 - "Is there ever a loading wait on this screen? If so, what does it show? (loading state)"
 - "Are there any player progression states that change what this screen shows? For
@@ -134,7 +134,7 @@ Present the collected states as a table for approval:
 
 | State / Variant | Trigger | What Changes |
 |-----------------|---------|--------------|
-| Default | Normal load | ??|
+| Default | Normal load | — |
 | Empty | No data available | [content area description] |
 | [etc.] | [trigger] | [changes] |
 
@@ -148,7 +148,7 @@ For each interactive component identified in the Layout Specification, define:
 - The immediate feedback (visual, audio, haptic)
 - The outcome (navigation target, state change, data write)
 
-Use the input methods resolved in Phase 2h ??do
+Use the input methods resolved in Phase 2h — do
 not ask the user again. State them upfront: "Mapping interactions for:
 [Input Methods resolved in Phase 2h]. Covering [Gamepad Support] gamepad support."
 
@@ -160,11 +160,11 @@ an existing UX spec or note it as a spec dependency.
 
 #### Section E2: Events Fired
 
-For every player action in the Interaction Map, document the corresponding event the game or analytics system should fire ??or explicitly note "no event" if none applies.
+For every player action in the Interaction Map, document the corresponding event the game or analytics system should fire — or explicitly note "no event" if none applies.
 
 **Questions to ask**:
 - "For each action, should the game fire an analytics event, trigger a game-state change, or both?"
-- "Are there any actions that should NOT fire an event ??and is that a deliberate choice?"
+- "Are there any actions that should NOT fire an event — and is that a deliberate choice?"
 
 Present as a table alongside the Interaction Map:
 
@@ -172,7 +172,7 @@ Present as a table alongside the Interaction Map:
 |---|---|---|
 | [action] | [EventName] or none | [data passed with event] |
 
-Flag any action that modifies persistent game state (save data, progress, economy) ??these need explicit attention from the architecture team.
+Flag any action that modifies persistent game state (save data, progress, economy) — these need explicit attention from the architecture team.
 
 ---
 
@@ -184,7 +184,7 @@ Specify how the screen enters and exits, and how it responds to state changes.
 - "How does this screen appear? (fade in, slide from right, instant pop, scale from button)"
 - "How does it dismiss? (fade out, slide back, cut)"
 - "Are there any in-screen state transitions that need animation? (loading spinner, success state, error flash)"
-- "Is there any animation that could cause motion sickness ??and does the game have a reduced-motion option?"
+- "Is there any animation that could cause motion sickness — and does the game have a reduced-motion option?"
 
 Minimum required:
 - Screen enter transition
@@ -210,19 +210,20 @@ Present the data requirements as a table:
 
 | Data | Source System | Read / Write | Notes |
 |------|--------------|--------------|-------|
-| [item] | [system] | Read | ??|
+| [item] | [system] | Read | — |
 | [item] | [system] | Write | [concern if any] |
 
 ---
 
 #### Section F2: Input Method Completeness Checklist
 
-One checklist block per input method in the spec's **Platform Target** line ??keyboard, gamepad, mouse, touch; drop the blocks for methods this game does not
+One checklist block per input method in the spec's **Platform Target** line —
+keyboard, gamepad, mouse, touch; drop the blocks for methods this game does not
 support and say so. Take the items from section 11 of
 `.agent/docs/templates/ux-spec.md` (reachability, tab/d-pad order, visible
 focus, focus trap for modals, Esc/back behavior, hit-target sizes, controller
 disconnect). Tick an item only when the Interaction Map above already specifies
-it; an unticked item is an open implementation question ??list it under Open
+it; an unticked item is an open implementation question — list it under Open
 Questions rather than ticking it.
 
 ---
@@ -240,7 +241,7 @@ Walk through the ux-designer agent's standard checklist for this screen:
 - Any motion or animation that needs a reduced-motion alternative
 
 If no accessibility tier has been defined for this project, note the gap in the UX spec's Open Questions section:
-> "Accessibility tier not yet defined ??consider WCAG-AA as a baseline. Run `/gate-check` to see whether this blocks any phase gates."
+> "Accessibility tier not yet defined — consider WCAG-AA as a baseline. Run `/gate-check` to see whether this blocks any phase gates."
 Then continue to the next section without stopping.
 
 ---
@@ -251,7 +252,7 @@ Document constraints that affect how this screen behaves when text is translated
 
 **Questions to ask**:
 - "Which text elements on this screen are the longest? What is the maximum character count that fits the layout?"
-- "Are there any elements where text length is layout-critical ??e.g., a button label that must stay on one line?"
+- "Are there any elements where text length is layout-critical — e.g., a button label that must stay on one line?"
 - "Are there any elements that display numbers, dates, or currencies that need locale-specific formatting?"
 
 Note: aim to flag any element where a 40% text expansion (common in translations from English to German or French) would break the layout. Mark those as HIGH PRIORITY for the localization engineer.
@@ -270,7 +271,7 @@ Write at least 5 specific, testable criteria that a QA tester can verify without
 - [ ] [Navigation action] correctly routes to [destination screen]
 - [ ] Error state appears when [condition] and shows [specific message or icon]
 - [ ] Keyboard/gamepad navigation reaches all interactive elements in logical order
-- [ ] [Accessibility requirement] is met ??e.g., "all interactive elements have focus indicators"
+- [ ] [Accessibility requirement] is met — e.g., "all interactive elements have focus indicators"
 ```
 
 **Minimum required**:
@@ -282,5 +283,4 @@ Write at least 5 specific, testable criteria that a QA tester can verify without
 
 Use `AskUserQuestion` to confirm:
 - "Do these acceptance criteria cover what would make this screen 'done' for your QA process?"
-- Options: "Yes ??these are solid", "Add one more criterion", "Remove or rephrase one"
-
+- Options: "Yes — these are solid", "Add one more criterion", "Remove or rephrase one"

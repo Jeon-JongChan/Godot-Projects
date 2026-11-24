@@ -1,4 +1,4 @@
-# /setup-engine ??Section 11: Upgrade Subcommand
+# /setup-engine — Section 11: Upgrade Subcommand
 
 > Part of `/setup-engine`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -7,23 +7,23 @@
 
 **In this file:**
 
-- Step 1 ??Read Current Version State
-- Step 2 ??Fetch Migration Guide
-- Step 3 ??Pre-Upgrade Audit
-- Step 4 ??Confirm Before Updating
-- Step 5 ??Update VERSION.md
-- Step 6 ??Post-Upgrade Reminder
+- Step 1 — Read Current Version State
+- Step 2 — Fetch Migration Guide
+- Step 3 — Pre-Upgrade Audit
+- Step 4 — Confirm Before Updating
+- Step 5 — Update VERSION.md
+- Step 6 — Post-Upgrade Reminder
 
 If invoked as `/setup-engine upgrade [old-version] [new-version]`:
 
-### Step 1 ??Read Current Version State
+### Step 1 — Read Current Version State
 
 Read `docs/engine-reference/<engine>/VERSION.md` to confirm the current pinned
 version, risk level, and any migration note URLs already recorded. If
 `old-version` was not provided as an argument, use the pinned version from this
 file.
 
-### Step 2 ??Fetch Migration Guide
+### Step 2 — Fetch Migration Guide
 
 Search the web for the official migration guide between
 `old-version` and `new-version`:
@@ -36,7 +36,7 @@ Search the web for the official migration guide between
 Extract: renamed APIs, removed APIs, changed defaults, behavior changes, and
 any "must migrate" items.
 
-### Step 3 ??Pre-Upgrade Audit
+### Step 3 — Pre-Upgrade Audit
 
 Scan the **code root** (resolve per `.agent/docs/code-root-resolution.md`) for code that uses APIs known to be deprecated or changed in the
 target version:
@@ -48,7 +48,7 @@ target version:
 Present the audit results as a table:
 
 ```
-Pre-Upgrade Audit: [engine] [old-version] ??[new-version]
+Pre-Upgrade Audit: [engine] [old-version] → [new-version]
 ==========================================================
 
 Files requiring changes:
@@ -68,30 +68,30 @@ Recommended migration order (dependency-sorted):
 ```
 
 If no deprecated APIs are found in the code root, report: "No deprecated API usage
-found in the code root ??upgrade may be low-risk."
+found in the code root — upgrade may be low-risk."
 
-### Step 4 ??Confirm Before Updating
+### Step 4 — Confirm Before Updating
 
 Ask the user before making any changes:
 
 > "Pre-upgrade audit complete. Found [N] files using deprecated APIs.
 > Proceed with upgrading VERSION.md to [new-version]?
-> (This will update the pinned version and add migration notes ??it does NOT
+> (This will update the pinned version and add migration notes — it does NOT
 > change any source files. Source migration is done manually or via stories.)"
 
 Wait for explicit confirmation before continuing.
 
-### Step 5 ??Update VERSION.md
+### Step 5 — Update VERSION.md
 
 After confirmation:
 
 1. Update `docs/engine-reference/<engine>/VERSION.md`:
-   - `Engine Version` ??`[new-version]`
-   - `Project Pinned` ??today's date
-   - `Last Docs Verified` ??today's date
+   - `Engine Version` → `[new-version]`
+   - `Project Pinned` → today's date
+   - `Last Docs Verified` → today's date
    - Re-evaluate and update the `Risk Level` and `Post-Cutoff Version Timeline`
      table if the new version falls beyond the LLM knowledge cutoff
-   - Add a `## Migration Notes ??[old-version] ??[new-version]` section
+   - Add a `## Migration Notes — [old-version] → [new-version]` section
      containing: migration guide URL, key breaking changes, deprecated APIs
      found in this project, and recommended migration order from the audit
 
@@ -102,22 +102,21 @@ After confirmation:
    first, then update `engine.version` to `[new-version]` so the primary config
    store stays in sync with VERSION.md.
 
-### Step 6 ??Post-Upgrade Reminder
+### Step 6 — Post-Upgrade Reminder
 
 After updating VERSION.md, output:
 
 ```
-VERSION.md updated: [engine] [old-version] ??[new-version]
+VERSION.md updated: [engine] [old-version] → [new-version]
 
 Next steps:
 1. Migrate deprecated API usages in the [N] files listed above
 2. Run /setup-engine refresh after upgrading the actual engine binary to
    verify no new deprecations were missed
-3. Run /architecture-review ??the engine upgrade may invalidate ADRs that
+3. Run /architecture-review — the engine upgrade may invalidate ADRs that
    reference specific APIs or engine capabilities
 4. If any ADRs are invalidated, run /propagate-design-change to update
    downstream stories
 ```
 
 ---
-

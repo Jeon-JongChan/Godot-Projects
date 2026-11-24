@@ -1,10 +1,10 @@
-# /prototype ??The one-shot's files
+# /prototype — The one-shot's files
 
 > Part of `/prototype`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
 
-**In this file:** The folder 쨌 config.js 쨌 Built to be checked 쨌 3D 쨌 Origin lines and
-placeholders 쨌 The person's references 쨌 Never
+**In this file:** The folder · config.js · Built to be checked · 3D · Origin lines and
+placeholders · The person's references · Never
 
 ## The folder
 
@@ -95,7 +95,7 @@ The script fetches three.js 0.186.1, which differs from older versions you may k
 - `PCFSoftShadowMap` is removed and falls back to `PCFShadowMap`; use `PCFShadowMap` or
   `VSMShadowMap`.
 - `THREE.Clock` is deprecated in favour of `THREE.Timer`; game logic runs on the step anyway.
-- `FogExp2` fades as 1 - exp(-(density 횞 distance)짼): density 0.02 is about 30% fog at 30 m.
+- `FogExp2` fades as 1 - exp(-(density × distance)²): density 0.02 is about 30% fog at 30 m.
 
 **The cheap render.** Every screenshot and check asks for it (`render=cheap` in the address, the
 starter's `CHEAP`), because headless Chrome draws WebGL in software, where each frame costs
@@ -133,7 +133,7 @@ references/
 A `notes.md` line names a file or a link, then what to take, what to avoid, or `use`:
 
 ```text
-- cave-ui.png: take: the HUD in the corners, the dark blue 쨌 avoid: the pixel font
+- cave-ui.png: take: the HUD in the corners, the dark blue · avoid: the pixel font
 - https://www.youtube.com/watch?v=<id>: take: how the dash snaps
 - my-hero.png: use
 ```
@@ -155,4 +155,3 @@ A `notes.md` line names a file or a link, then what to take, what to avoid, or `
   game to the project root.
 - An import from the project's code root, or the code root importing from `prototypes/`.
 - `tune.js` in anything shared: share `dist/`, which `one-shot-share.sh` makes without it.
-

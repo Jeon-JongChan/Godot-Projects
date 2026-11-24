@@ -1,4 +1,4 @@
-# /design-system ??Phase 4: Section-by-Section Design
+# /design-system — Phase 4: Section-by-Section Design
 
 > Part of `/design-system`. `SKILL.md` names when to read this file; the settings it
 > resolved and the rules under its later headings still apply here.
@@ -19,14 +19,14 @@
 - Section H: Acceptance Criteria
 - Optional Sections: Visual/Audio, Game Feel, UI Requirements, Cross-References, Open Questions
 
-**Author only the sections required at the resolved tier** (짠1). At `standard`,
+**Author only the sections required at the resolved tier** (§1). At `standard`,
 the walk covers A (Overview), C (Detailed Design), E (Edge Cases),
-F (Dependencies), H (Acceptance Criteria) ??plus D (Formulas) when the system
-defines numeric rules (see 짠1; the category is a hint, not the test); skip B (Player Fantasy) and
+F (Dependencies), H (Acceptance Criteria) — plus D (Formulas) when the system
+defines numeric rules (see §1; the category is a hint, not the test); skip B (Player Fantasy) and
 G (Tuning Knobs) unless `workflow_overrides.tuning_knobs: true` forces G. At
-`full`, walk all eight (A?밐). At `minimal`, the GDD is optional ??if authoring
+`full`, walk all eight (A–H). At `minimal`, the GDD is optional — if authoring
 voluntarily, walk the standard set. Any `system_overrides.<system>` tier was
-already folded into the resolved tier in 짠1.
+already folded into the resolved tier in §1.
 
 Walk through each required section in order. For **each section**, follow this cycle:
 
@@ -55,11 +55,11 @@ Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Approval  ->  
 6. **Approval**: Per the resolved `modes.automation` mode
    (`.agent/docs/automation-modes.md`):
 
-   **In `collaborative` mode**: Immediately after the draft ??in the SAME
-   response ??use `AskUserQuestion`, not plain text, and do not skip
+   **In `collaborative` mode**: Immediately after the draft — in the SAME
+   response — use `AskUserQuestion`, not plain text, and do not skip
    this step: a plain-text ask is easy to miss.
    - Prompt: "Approve the [Section Name] section?"
-   - Options: `[A] Approve ??write it to file` / `[B] Make changes ??describe what to fix` / `[C] Start over`
+   - Options: `[A] Approve — write it to file` / `[B] Make changes — describe what to fix` / `[C] Start over`
 
    The draft and the approval widget go together in one response: a draft
    without the widget leaves the user at a blank prompt with no path forward.
@@ -74,7 +74,7 @@ Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Approval  ->  
 
 7. **Write**: Use the Edit tool to replace the placeholder with the approved content.
    Always include the section heading in the `old_string` to ensure
-   uniqueness ??never match `[To be designed]` alone, as multiple sections use the
+   uniqueness — never match `[To be designed]` alone, as multiple sections use the
    same placeholder and the Edit tool requires a unique match. Use this pattern:
    ```
    old_string: "## [Section Name]\n\n[To be designed]"
@@ -82,7 +82,7 @@ Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Approval  ->  
    ```
    Confirm the write.
 
-8. **Registry conflict check** (Sections C and D only ??Detailed Design and Formulas):
+8. **Registry conflict check** (Sections C and D only — Detailed Design and Formulas):
    After writing, scan the section content for entity names, item names, formula
    names, and numeric constants that appear in the registry. For each match:
    - Compare the value just written against the registry entry.
@@ -94,7 +94,7 @@ Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Approval  ->  
      (will be handled in Phase 5).
 
 After writing each section, update `production/session-state/active.md` with the
-completed section name. Use Glob to check if the file exists ??use Write to create
+completed section name. Use Glob to check if the file exists — use Write to create
 it if absent, Edit to update it if present.
 
 ### Section-Specific Guidance
@@ -104,8 +104,8 @@ look at the section through a specialist's lens (`references/lens-*.md`), in thi
 conversation. **No step here spawns an agent.**
 
 **Every skipped specialist step is announced.** When a section's review-mode check below
-skips its specialist ??in `lean` as well as `solo` ??print that section's note
-with the mode it ran in, e.g. "`creative-director` not consulted ??Lean mode.
+skips its specialist — in `lean` as well as `solo` — print that section's note
+with the mode it ran in, e.g. "`creative-director` not consulted — Lean mode.
 Review manually before production." A section drafted without its specialist
 must say so in the output, whichever mode skipped it.
 
@@ -116,19 +116,19 @@ must say so in the output, whichever mode skipped it.
 **Goal**: One paragraph a stranger could read and understand.
 
 **Derive recommended options before building the widget**: Read the system's category and layer from the systems index (already in context from Phase 2), then determine the recommended option for each tab:
-- **Framing tab**: keyed on the `Category` column (`Core 쨌 Gameplay 쨌 Progression 쨌 Economy 쨌 Persistence 쨌 UI 쨌 Audio 쨌 Narrative 쨌 Meta`). Player-facing ??`Gameplay`, `UI`, `Audio`, `Narrative` ??`[C] Both` recommended. Internal ??`Core`, `Persistence`, `Meta` ??`[A]` recommended. Mixed ??`Economy`, `Progression` ??`[C] Both`. **Tiebreak, when Layer and Category disagree** (a `Foundation`-layer `Gameplay` system is the common case): **Category wins** ??the framing describes what the section is *about*, and a player-facing system stays player-facing wherever it sits in the dependency graph.
-- **ADR ref tab**: Glob `docs/architecture/adr-*.md` and grep for the system name in the GDD Requirements section of any ADR. If a matching ADR is found ??`[A] Yes ??cite the ADR` recommended. If none found ??`[B] No` recommended.
-- **Fantasy tab**: Foundation/Infrastructure layer ??`[B] No` recommended. All other categories ??`[A] Yes` recommended.
+- **Framing tab**: keyed on the `Category` column (`Core · Gameplay · Progression · Economy · Persistence · UI · Audio · Narrative · Meta`). Player-facing — `Gameplay`, `UI`, `Audio`, `Narrative` → `[C] Both` recommended. Internal — `Core`, `Persistence`, `Meta` → `[A]` recommended. Mixed — `Economy`, `Progression` → `[C] Both`. **Tiebreak, when Layer and Category disagree** (a `Foundation`-layer `Gameplay` system is the common case): **Category wins** — the framing describes what the section is *about*, and a player-facing system stays player-facing wherever it sits in the dependency graph.
+- **ADR ref tab**: Glob `docs/architecture/adr-*.md` and grep for the system name in the GDD Requirements section of any ADR. If a matching ADR is found → `[A] Yes — cite the ADR` recommended. If none found → `[B] No` recommended.
+- **Fantasy tab**: Foundation/Infrastructure layer → `[B] No` recommended. All other categories → `[A] Yes` recommended.
 
 Append `(Recommended)` to the appropriate option text in each tab.
 
 **Framing questions (ask BEFORE drafting)**: Use `AskUserQuestion` with a multi-tab widget:
-- Tab "Framing" ??"How should the overview frame this system?" Options: `[A] As a data/infrastructure layer (technical framing)` / `[B] Through its player-facing effect (design framing)` / `[C] Both ??describe the data layer and its player impact`
-- Tab "ADR ref" ??"Should the overview reference the existing ADR for this system?" Options: `[A] Yes ??cite the ADR for implementation details` / `[B] No ??keep the GDD at pure design level`
-- Tab "Fantasy" ??"Does this system have a player fantasy worth stating?" Options: `[A] Yes ??players feel it directly` / `[B] No ??pure infrastructure, players feel what it enables`
+- Tab "Framing" — "How should the overview frame this system?" Options: `[A] As a data/infrastructure layer (technical framing)` / `[B] Through its player-facing effect (design framing)` / `[C] Both — describe the data layer and its player impact`
+- Tab "ADR ref" — "Should the overview reference the existing ADR for this system?" Options: `[A] Yes — cite the ADR for implementation details` / `[B] No — keep the GDD at pure design level`
+- Tab "Fantasy" — "Does this system have a player fantasy worth stating?" Options: `[A] Yes — players feel it directly` / `[B] No — pure infrastructure, players feel what it enables`
 
 Use the answers to shape the draft. **In `collaborative` mode, do not answer
-these questions yourself and auto-draft** ??the widget must appear. In `guided`
+these questions yourself and auto-draft** — the widget must appear. In `guided`
 and `autonomous`, this is a MINOR framing decision: select the recommended
 option derived above, state it in one line, and proceed (that is the whole
 point of pre-deriving recommendations). Applies to every "ask BEFORE drafting"
@@ -137,15 +137,15 @@ widget in this section walk, not just this one.
 **Questions to ask**:
 - What is this system in one sentence?
 - How does a player interact with it? (active/passive/automatic)
-- Why does this system exist ??what would the game lose without it?
+- Why does this system exist — what would the game lose without it?
 
 **Cross-reference**: Check that the description aligns with how the systems index
 describes it. Flag discrepancies.
 
 **Design vs. implementation boundary**: Overview questions must stay at the behavior
-level ??what the system *does*, not *how it is built*. If implementation questions
+level — what the system *does*, not *how it is built*. If implementation questions
 arise during the Overview (e.g., "Should this use an Autoload singleton or a signal
-bus?"), note them as "??becomes an ADR" and move on. Implementation patterns belong
+bus?"), note them as "→ becomes an ADR" and move on. Implementation patterns belong
 in `/architecture-decision`, not the GDD. The GDD describes behavior; the ADR
 describes the technical approach used to achieve it.
 
@@ -153,22 +153,22 @@ describes the technical approach used to achieve it.
 
 ### Section B: Player Fantasy
 
-**Goal**: The emotional target ??what the player should *feel*.
+**Goal**: The emotional target — what the player should *feel*.
 
 **Derive recommended option before building the widget**: Read the system's category and layer from Phase 2 context:
-Keyed on the `Category` column (`Core 쨌 Gameplay 쨌 Progression 쨌 Economy 쨌 Persistence 쨌 UI 쨌 Audio 쨌 Narrative 쨌 Meta`):
-- Player-facing ??`Gameplay`, `UI`, `Audio`, `Narrative` ??`[A] Direct` recommended
-- Internal ??`Core`, `Persistence`, `Meta` ??`[B] Indirect` recommended
-- Mixed ??`Economy`, `Progression` ??`[C] Both` recommended
+Keyed on the `Category` column (`Core · Gameplay · Progression · Economy · Persistence · UI · Audio · Narrative · Meta`):
+- Player-facing — `Gameplay`, `UI`, `Audio`, `Narrative` → `[A] Direct` recommended
+- Internal — `Core`, `Persistence`, `Meta` → `[B] Indirect` recommended
+- Mixed — `Economy`, `Progression` → `[C] Both` recommended
 
-**When Layer and Category disagree, Category wins** ??same tiebreak as the
+**When Layer and Category disagree, Category wins** — same tiebreak as the
 Framing tab above.
 
 Append `(Recommended)` to the appropriate option text.
 
 **Framing question (ask BEFORE drafting)**: Use `AskUserQuestion`:
 - Prompt: "Is this system something the player engages with directly, or infrastructure they experience indirectly?"
-- Options: `[A] Direct ??player actively uses or feels this system` / `[B] Indirect ??player experiences the effects, not the system` / `[C] Both ??has a direct interaction layer and infrastructure beneath it`
+- Options: `[A] Direct — player actively uses or feels this system` / `[B] Indirect — player experiences the effects, not the system` / `[C] Both — has a direct interaction layer and infrastructure beneath it`
 
 Use the answer to frame the Player Fantasy section appropriately. Do not assume the answer.
 
@@ -181,9 +181,9 @@ Use the answer to frame the Player Fantasy section appropriately. Do not assume 
 quote the relevant pillar text.
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note: "`creative-director` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Draft the section without it. Add a note: "`creative-director` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
+- `full` → run it as described below.
 
 **Specialist step (MANDATORY in `full`)**: After the framing answer is given but before
 drafting, read `references/lens-creative-director.md` and, from the system name, the
@@ -193,7 +193,7 @@ to one player moment and a quoted pillar, in the game's established tone. Presen
 them to the user alongside the draft; the user picks.
 
 **Do not draft Section B without that step.** The framing answer tells us *what kind*
-of fantasy it is; the lens shapes *how it's described* ??tone, language, the specific
+of fantasy it is; the lens shapes *how it's described* — tone, language, the specific
 player moment to anchor to.
 
 ---
@@ -217,9 +217,9 @@ This is usually the largest section. Break it into sub-sections:
 - What can the player NOT do? (Constraints are as important as capabilities)
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note naming them: "`[the Section 6 routing table's Primary and Supporting Agents for this category]` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Draft the section without it. Add a note naming them: "`[the Section 6 routing table's Primary and Supporting Agents for this category]` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
+- `full` → run it as described below.
 
 **Specialist step (MANDATORY in `full`)**: Before drafting Section C:
 - Look up the system category in the routing table (Section 6 of this skill) and take its Primary and Supporting roles
@@ -242,7 +242,7 @@ system expects something different, flag the conflict.
 **Goal**: Every mathematical formula, with variables defined, ranges specified,
 and edge cases noted.
 
-**Completion Steering ??always begin each formula with this exact structure:**
+**Completion Steering — always begin each formula with this exact structure:**
 
 ```
 The [formula_name] formula is defined as:
@@ -252,7 +252,7 @@ The [formula_name] formula is defined as:
 **Variables:**
 | Variable | Type | Range | Source | Description |
 |----------|------|-------|--------|-------------|
-| [name] | float/int | [min?뱈ax] | data file / calculated / constant | [what it represents] |
+| [name] | float/int | [min–max] | data file / calculated / constant | [what it represents] |
 
 **Output Range:** [min] to [max] under normal play; [behaviour at extremes]
 **Example:** [worked example with real numbers]
@@ -264,7 +264,7 @@ table. A formula without defined variables cannot be implemented without guesswo
 > **These columns match `templates/guidance/game-design-document-guide.md`
 > exactly; do not rename them.** The `Source` column carries
 > the coding-standards rule *"gameplay values must be data-driven (external
-> config), never hardcoded"* into the design document ??a variable marked
+> config), never hardcoded"* into the design document — a variable marked
 > `data file` is a tuning knob, one marked `constant` is a deliberate exception,
 > and the distinction is invisible under a `Symbol` column. Put a symbol, where
 > one helps, in the expression itself.
@@ -275,9 +275,9 @@ table. A formula without defined variables cannot be implemented without guesswo
 - What should the output ranges be at early/mid/late game?
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note: "`systems-designer` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Draft the section without it. Add a note: "`systems-designer` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
+- `full` → run it as described below.
 
 **Specialist step (MANDATORY outside `solo`)**: Before proposing any formulas or balance values, read `references/lens-systems-designer.md`:
 - **Always apply its Section D checks**: from Core Rules (Section C), the user's tuning goals and the dependency GDDs' balance context, propose formulas with variable tables and output ranges, and work every variable at its minimum, its maximum and 0 to find values the system cannot use.
@@ -287,7 +287,7 @@ table. A formula without defined variables cannot be implemented without guesswo
 - **Do not offer formula values or balance numbers without the reasoning behind them.** A user without balance design expertise cannot evaluate raw numbers.
 
 **Cross-reference**: If a dependency GDD defines a formula whose output feeds into
-this system, reference it explicitly. Don't reinvent ??connect.
+this system, reference it explicitly. Don't reinvent — connect.
 
 ---
 
@@ -295,14 +295,14 @@ this system, reference it explicitly. Don't reinvent ??connect.
 
 **Goal**: Explicitly handle unusual situations so they don't become bugs.
 
-**Completion Steering ??format each edge case as:**
+**Completion Steering — format each edge case as:**
 - **If [condition]**: [exact outcome]. [rationale if non-obvious]
 
 Example (adapt terminology to the game's domain):
 - **If [resource] reaches 0 while [protective condition] is active**: hold at minimum until condition ends, then apply consequence.
 - **If two [triggers/events] fire simultaneously**: resolve in [defined priority order]; ties use [defined tiebreak rule].
 
-Do not write vague entries like "handle appropriately" ??each must name the exact
+Do not write vague entries like "handle appropriately" — each must name the exact
 condition and the exact resolution. An edge case without a resolution is an open
 design question, not a specification.
 
@@ -312,9 +312,9 @@ design question, not a specification.
 - What happens if a player finds an unintended interaction? (Identify degenerate strategies)
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note: "`systems-designer` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Draft the section without it. Add a note: "`systems-designer` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
+- `full` → run it as described below.
 
 **Specialist step (MANDATORY in `full`)**: Before finalising edge cases, apply the Section E checks in `references/lens-systems-designer.md` to the completed Sections C and D (re-read them from the file), looking for edge cases in the formula and rule space your first draft missed. For narrative systems, also apply the narrative-director row of `references/lens-specialists.md`. Present the findings and ask the user which to include.
 
@@ -350,9 +350,9 @@ system]". Flag any one-directional dependencies for correction.
 - Which knobs interact with each other? (Changing A makes B irrelevant)
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Derive the knobs from Section D's variable table yourself. Add a note: "`systems-designer` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless Section D defines a formula whose knobs interact (changing one makes another inert).
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Derive the knobs from Section D's variable table yourself. Add a note: "`systems-designer` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless Section D defines a formula whose knobs interact (changing one makes another inert).
+- `full` → run it as described below.
 
 **Specialist step**: If formulas are complex, apply the Section G checks in
 `references/lens-systems-designer.md` to derive tuning knobs from the formula
@@ -364,7 +364,7 @@ variables.
 > those same formulas.
 
 **Cross-reference**: If a dependency GDD lists tuning knobs that affect this system,
-reference them here. Don't create duplicate knobs ??point to the source of truth.
+reference them here. Don't create duplicate knobs — point to the source of truth.
 
 ---
 
@@ -372,7 +372,7 @@ reference them here. Don't create duplicate knobs ??point to the source of truth
 
 **Goal**: Testable conditions that prove the system works as designed.
 
-**Completion Steering ??format each criterion as Given-When-Then:**
+**Completion Steering — format each criterion as Given-When-Then:**
 - **GIVEN** [initial state], **WHEN** [action or trigger], **THEN** [measurable outcome]
 
 Example (adapt terminology to the game's domain):
@@ -380,31 +380,31 @@ Example (adapt terminology to the game's domain):
 - **GIVEN** [a constraint is active], **WHEN** [player attempts an action], **THEN** [feedback shown and action result].
 
 Include at least: one criterion per core rule from Section C, and one per formula
-from Section D. Do not write "the system works as designed" ??every criterion must
+from Section D. Do not write "the system works as designed" — every criterion must
 be independently verifiable by a QA tester without reading the GDD.
 
 > **When Section D was not authored** (Formulas optional at this tier because the
 > system defines no numeric rule), there are no formulas to cover and the
-> criteria come from Section C alone ??say so in one line rather than silently
+> criteria come from Section C alone — say so in one line rather than silently
 > writing fewer criteria. **If Section D was skipped but Section C states a
-> quantity** ??a rate, threshold, cost or curve ??that is the 짠1 test being met
+> quantity** — a rate, threshold, cost or curve — that is the §1 test being met
 > after the fact: stop, tell the user Formulas is required for this system, and
 > author it before finalising the criteria. A criterion cannot verify a number
 > the GDD never defines.
 >
-> **That escalation applies at `standard` only.** It re-runs 짠1's *conditional*
-> Formulas test, and 짠1 disables that conditional at `minimal` outright ??*"the
+> **That escalation applies at `standard` only.** It re-runs §1's *conditional*
+> Formulas test, and §1 disables that conditional at `minimal` outright — *"the
 > conditional Formulas rule does NOT re-apply at minimal"*. At `minimal` a
 > Section C quantity is expected and does **not** pull Formulas back in: state
 > the value inline in Core Rules so it stays implementable, and move on. At
 > `full`, Section D is unconditionally required, so the case cannot arise. Read
 > without this scope, the two rules contradict each other for any `minimal`
-> system that defines a rate ??which is most of them.
+> system that defines a rate — which is most of them.
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note: "`qa-lead` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
-- `full` ??run it as described below.
+- `solo` → skip the specialist step. Draft the section without it. Add a note: "`qa-lead` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without it.
+- `full` → run it as described below.
 
 **Specialist step (MANDATORY outside `solo`)**: Before finalising acceptance criteria, read `references/lens-qa-lead.md` and check the criteria against the completed sections C, D and E (re-read them from the file): independently testable, covering every core rule and formula. Surface any gaps or untestable criteria to the user.
 
@@ -420,42 +420,42 @@ not just this system in isolation.
 
 ### Optional Sections: Visual/Audio, Game Feel, UI Requirements, Cross-References, Open Questions
 
-These five are the template sections that are **not** among 짠1's eight. They are
-governed here, not by the tier: 짠1's per-tier lists decide the *required* set,
+These five are the template sections that are **not** among §1's eight. They are
+governed here, not by the tier: §1's per-tier lists decide the *required* set,
 and this block decides the rest independently. Adding a section here therefore
 never changes a tier's section count.
 
-Visual/Audio and Game Feel are **REQUIRED** for some categories ??not optional.
+Visual/Audio and Game Feel are **REQUIRED** for some categories — not optional.
 Determine the requirement level before asking:
 
-**Keyed on the `Category` column of `systems-index.md`** ??the nine values
+**Keyed on the `Category` column of `systems-index.md`** — the nine values
 `templates/systems-index.md` defines. Every one of the nine appears below
 exactly once, so nothing falls through:
 
-**Visual/Audio is REQUIRED (mandatory ??do not offer to skip) for:**
-- `Gameplay` ??combat, AI, stealth, movement, interaction: everything the player
+**Visual/Audio is REQUIRED (mandatory — do not offer to skip) for:**
+- `Gameplay` — combat, AI, stealth, movement, interaction: everything the player
   sees resolve
-- `UI` ??HUD, menus, inventory screens, dialogue UI
-- `Narrative` ??dialogue, quests, cutscenes, lore delivery
-- `Audio` ??by definition
+- `UI` — HUD, menus, inventory screens, dialogue UI
+- `Narrative` — dialogue, quests, cutscenes, lore delivery
+- `Audio` — by definition
 
 > **`Gameplay` belongs in this list.** It is the category `/map-systems` assigns
-> to combat, AI and movement ??the largest bucket in most action games.
+> to combat, AI and movement — the largest bucket in most action games.
 
-For required systems: **run the art-director step** before drafting this section: read the Visual/Audio part of `references/lens-specialists.md` and, from the system name, game concept, game pillars and art bible sections 1?? if they exist, specify: (1) VFX and visual feedback requirements for this system's events, (2) any animation or visual style constraints, (3) which art bible principles most directly apply to this system. Present it; do not leave this section as `[To be designed]` for visual systems.
+For required systems: **run the art-director step** before drafting this section: read the Visual/Audio part of `references/lens-specialists.md` and, from the system name, game concept, game pillars and art bible sections 1–4 if they exist, specify: (1) VFX and visual feedback requirements for this system's events, (2) any animation or visual style constraints, (3) which art bible principles most directly apply to this system. Present it; do not leave this section as `[To be designed]` for visual systems.
 
 **Review mode check** (apply before the specialist step):
-- `solo` ??skip the specialist step. Draft the section without it. Add a note: "`art-director` not consulted ??Solo mode. Review manually before production."
-- `lean` ??skip unless this system's visual feedback is central to it (a `Gameplay` or `UI` system whose events the player reads to play). Otherwise draft without it.
-- `full` ??run it as described above.
+- `solo` → skip the specialist step. Draft the section without it. Add a note: "`art-director` not consulted — Solo mode. Review manually before production."
+- `lean` → skip unless this system's visual feedback is central to it (a `Gameplay` or `UI` system whose events the player reads to play). Otherwise draft without it.
+- `full` → run it as described above.
 
 > This block applies even though the step above is worded as mandatory (*"do
 > NOT leave this section as `[To be designed]`"*). `director-gates.md`'s *"solo
-> ??no director gates anywhere"* governs director **gates**, not specialist
-> steps, so it does not settle this step ??this block does.
+> → no director gates anywhere"* governs director **gates**, not specialist
+> steps, so it does not settle this step — this block does.
 
-**Game Feel is REQUIRED (mandatory ??do not offer to skip) for `Gameplay` and
-`UI`** ??the categories whose systems the player directly operates, where
+**Game Feel is REQUIRED (mandatory — do not offer to skip) for `Gameplay` and
+`UI`** — the categories whose systems the player directly operates, where
 responsiveness, weight and snap are design targets rather than polish. It is
 optional for the other seven. The template's guide argues the point itself: feel *"drives
 animation budgets, input handling architecture, and hitbox timing. Retrofitting
@@ -464,23 +464,23 @@ feel targets after implementation is expensive."*
 **Cross-References is REQUIRED whenever the Dependencies section names another
 GDD.** The rule is derived, not category-keyed: if this document references
 another system's mechanic, value or rule anywhere, that reference belongs in the
-table. Where Dependencies names nothing, write *"None ??this system references no
+table. Where Dependencies names nothing, write *"None — this system references no
 other GDD"* rather than leaving the placeholder. `/review-all-gdds` Phase 2c
 reads this table when it exists.
 
-For the remaining five categories ??`Core`, `Progression`, `Economy`,
-`Persistence`, `Meta` ??Visual/Audio is optional: offer the optional sections
+For the remaining five categories — `Core`, `Progression`, `Economy`,
+`Persistence`, `Meta` — Visual/Audio is optional: offer the optional sections
 after the required sections.
 
-> **At `minimal`, force nothing.** 짠1 says a voluntary `minimal` GDD is *"exactly
+> **At `minimal`, force nothing.** §1 says a voluntary `minimal` GDD is *"exactly
 > the 5 standard sections"*, which contradicts a category rule that makes
-> Visual/Audio or Game Feel mandatory. 짠1 wins: at `minimal` both drop to
+> Visual/Audio or Game Feel mandatory. §1 wins: at `minimal` both drop to
 > optional and the whole set goes through the widget below.
 
 Use `AskUserQuestion`:
 - "The required sections for this workflow tier are complete. Which of the
   remaining template sections do you want to define?"
-  - Options: "All of them", "Just Cross-References and open questions", "Skip ??I'll add these later"
+  - Options: "All of them", "Just Cross-References and open questions", "Skip — I'll add these later"
   - List in the question only the ones still outstanding: Visual/Audio, Game
     Feel, UI Requirements, Cross-References, Open Questions **minus** any this
     system's category or dependencies already made mandatory above. Offering to
@@ -492,22 +492,22 @@ Use `AskUserQuestion`:
     without one an unattended run has nothing to choose by and skips.
 
   Do **not** state a section count here. The required set is tier-dependent
-  (짠1: 8 at `full`, 5 + conditional Formulas at `standard`, 5 at a voluntary
+  (§1: 8 at `full`, 5 + conditional Formulas at `standard`, 5 at a voluntary
   `minimal`), so a fixed "8 required sections are complete" is false on every
-  run below `full` ??it tells a `standard`-tier user that 8 sections exist when
+  run below `full` — it tells a `standard`-tier user that 8 sections exist when
   6 have been authored.
 
 For **Visual/Audio** (non-required systems): Coordinate with `art-director` and `audio-director` if detail is needed. Often a brief note suffices at the GDD stage.
 
 > **Asset Spec Flag**: After the Visual/Audio section is written with real content, output this notice:
-> "?뱦 **Asset Spec** ??Visual/Audio requirements are defined. After the art bible is approved, run `/asset-spec system:[system-name]` to produce per-asset visual descriptions, dimensions, and generation prompts from this section."
+> "📌 **Asset Spec** — Visual/Audio requirements are defined. After the art bible is approved, run `/asset-spec system:[system-name]` to produce per-asset visual descriptions, dimensions, and generation prompts from this section."
 
 For **UI Requirements**: Coordinate with `ux-designer` for complex UI systems.
 After writing this section, check whether it contains real content (not just
 `[To be designed]` or a note that this system has no UI). If it does have real
 UI requirements, output this flag immediately:
 
-> **?뱦 UX Flag ??[System Name]**: This system has UI requirements. In Phase 4
+> **📌 UX Flag — [System Name]**: This system has UI requirements. In Phase 4
 > (Pre-Production), run `/ux-design` to create a UX spec for each screen or
 > HUD element this system contributes to **before** writing epics. Stories that
 > reference UI should cite `design/ux/[screen].md`, not the GDD directly.
@@ -518,4 +518,3 @@ For **Open Questions**: Capture anything that came up during design that wasn't
 fully resolved. Each question should have an owner and target resolution date.
 
 ---
-

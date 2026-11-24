@@ -1,6 +1,6 @@
 ---
 name: ux-review
-description: "Validate a UX spec, HUD design or pattern library ??accessibility, GDD alignment, readiness. APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED."
+description: "Validate a UX spec, HUD design or pattern library — accessibility, GDD alignment, readiness. APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED."
 argument-hint: "[file-path or 'all' or 'hud' or 'patterns']"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash(bash "*/.agent/skills/ux-review/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,8 +8,7 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is. No block ??defaults in
+Resolved above — use as-is. No block → defaults in
 `.agent/docs/config-resolution.md`.
 
 # UX Review
@@ -28,11 +27,11 @@ the `/team-ui` pipeline.
 - After major revisions to a UX spec
 
 **Verdict levels:**
-- **APPROVED** ??spec is complete, consistent, and implementation-ready
-- **NOT ASSESSED** ??one or more review dimensions had no criterion to check
+- **APPROVED** — spec is complete, consistent, and implementation-ready
+- **NOT ASSESSED** — one or more review dimensions had no criterion to check
   against, or the spec could not be read; name which
-- **NEEDS REVISION** ??specific gaps found; fix before handoff but not a full redesign
-- **MAJOR REVISION NEEDED** ??fundamental issues with scope, player need, or
+- **NEEDS REVISION** — specific gaps found; fix before handoff but not a full redesign
+- **MAJOR REVISION NEEDED** — fundamental issues with scope, player need, or
   completeness; needs significant rework
 
 **`NOT ASSESSED` ranks above APPROVED and below the two revision verdicts.** A
@@ -57,10 +56,10 @@ For `all`, output a summary table first (file | verdict | primary issue) then
 full detail for each.
 
 **Which checklist a file gets** (a file path, or each file under `all`): its
-`> **Template**:` header line, which `/ux-design` writes ??`UX Spec` ??Phase 3A,
-`HUD Design` ??3B, `Interaction Pattern Library` ??3C. A file without that line
-is classified by name ??`hud.md` ??3B, `interaction-patterns.md` ??3C, anything
-else ??3A ??and the report says which checklist it assumed, and why.
+`> **Template**:` header line, which `/ux-design` writes — `UX Spec` → Phase 3A,
+`HUD Design` → 3B, `Interaction Pattern Library` → 3C. A file without that line
+is classified by name — `hud.md` → 3B, `interaction-patterns.md` → 3C, anything
+else → 3A — and the report says which checklist it assumed, and why.
 
 ---
 
@@ -73,12 +72,12 @@ Before validating any spec, load:
    `platform.touch_support`); if `project.yaml` has no `platform` block, fall
    back to the `## Input & Platform` section of
    `.agent/docs/technical-preferences.md`. For the set of supported input
-   methods: when reading from `project.yaml`, derive it ??keyboard/mouse if
+   methods: when reading from `project.yaml`, derive it — keyboard/mouse if
    `PC` or `Web` is in `targets`; gamepad if `gamepad_support` is Full or
    Partial; touch if `touch_support` is Full or Partial; plus `primary_input`.
    When falling back to `technical-preferences.md`, use its explicit Input
    Methods field instead. This is the authoritative source for the Input Method
-   Coverage checks in Phase 3A ??not the spec's own header. If neither source is
+   Coverage checks in Phase 3A — not the spec's own header. If neither source is
    configured, fall back to the spec header.
 2. The accessibility tier committed to in `design/accessibility-requirements.md`
    (if it exists)
@@ -99,25 +98,25 @@ Run all checks against a `ux-spec.md`-based document.
 ### Completeness (required sections)
 
 - [ ] Document header present with Status, Author, Platform Target
-- [ ] Purpose & Player Need ??has a player-perspective need statement (not
+- [ ] Purpose & Player Need — has a player-perspective need statement (not
   developer-perspective)
-- [ ] Player Context on Arrival ??describes player's state and prior activity
-- [ ] Navigation Position ??shows where screen sits in hierarchy
-- [ ] Entry & Exit Points ??all entry sources and exit destinations documented
-- [ ] Layout Specification ??zones defined, component inventory table present
-- [ ] States & Variants ??at minimum: loading, empty/populated, and error states
+- [ ] Player Context on Arrival — describes player's state and prior activity
+- [ ] Navigation Position — shows where screen sits in hierarchy
+- [ ] Entry & Exit Points — all entry sources and exit destinations documented
+- [ ] Layout Specification — zones defined, component inventory table present
+- [ ] States & Variants — at minimum: loading, empty/populated, and error states
   documented
-- [ ] Interaction Map ??covers all target input methods (check platform target
+- [ ] Interaction Map — covers all target input methods (check platform target
   in header)
-- [ ] Data Requirements ??every displayed data element has a source system and owner
-- [ ] Events Fired ??every player action has a corresponding event or null
+- [ ] Data Requirements — every displayed data element has a source system and owner
+- [ ] Events Fired — every player action has a corresponding event or null
   explanation
-- [ ] Transitions & Animations ??at least enter/exit transitions specified
-- [ ] Input Method Completeness Checklist ??a block for each input method in
+- [ ] Transitions & Animations — at least enter/exit transitions specified
+- [ ] Input Method Completeness Checklist — a block for each input method in
   the Platform Target line; any unticked item is listed under Open Questions
-- [ ] Accessibility Requirements ??screen-level requirements present
-- [ ] Localization Considerations ??max character counts for text elements
-- [ ] Acceptance Criteria ??at least 5 specific testable criteria
+- [ ] Accessibility Requirements — screen-level requirements present
+- [ ] Localization Considerations — max character counts for text elements
+- [ ] Acceptance Criteria — at least 5 specific testable criteria
 
 ### Quality Checks
 
@@ -142,7 +141,8 @@ Run all checks against a `ux-spec.md`-based document.
 
 **Data Architecture**
 - [ ] No data element has "UI" listed as the owner (UI must not own game state)
-- [ ] Update frequency is specified for all real-time data (not just "realtime" ??  what triggers update?)
+- [ ] Update frequency is specified for all real-time data (not just "realtime" —
+  what triggers update?)
 - [ ] Null handling is specified for all data elements (what shows when data is
   unavailable?)
 
@@ -198,7 +198,7 @@ Run all checks against a `hud-design.md`-based document.
 - [ ] Visual Budget defined (max simultaneous elements, max screen %)
 - [ ] Platform Adaptation covers all target platforms
 - [ ] Tuning Knobs present for player-adjustable elements
-- [ ] Acceptance Criteria ??at least 5 specific testable criteria
+- [ ] Acceptance Criteria — at least 5 specific testable criteria
 
 ### Quality Checks
 
@@ -241,13 +241,13 @@ Run all checks against a `hud-design.md`-based document.
 **Date**: [date]
 **Reviewer**: ux-review skill
 **Document**: [file path]
-**Checklist**: [3A / 3B / 3C ??from its Template line, or assumed from the file name]
+**Checklist**: [3A / 3B / 3C — from its Template line, or assumed from the file name]
 **Platform Target**: [from header]
 **Accessibility Tier**: [from header or accessibility-requirements.md]
 
 ### Completeness: [X/Y sections present]
 - [x] Purpose & Player Need
-- [ ] States & Variants ??MISSING: error state not documented
+- [ ] States & Variants — MISSING: error state not documented
 
 ### Quality Issues: [N found]
 1. **[Issue title]** [BLOCKING / ADVISORY]
@@ -256,7 +256,7 @@ Run all checks against a `hud-design.md`-based document.
    - Fix: [specific action to take]
 
 ### GDD Alignment: [ALIGNED / GAPS FOUND]
-- GDD [name] UI Requirements ??[X/Y requirements covered]
+- GDD [name] UI Requirements — [X/Y requirements covered]
 - Missing: [list any uncovered GDD requirements]
 
 ### Accessibility: [COMPLIANT / GAPS / NON-COMPLIANT / NOT ASSESSED]
@@ -265,8 +265,8 @@ Run all checks against a `hud-design.md`-based document.
 
 > **If `design/accessibility-requirements.md` is absent there is no committed
 > tier, so this dimension has no criterion.** Report
-> `Accessibility: NOT ASSESSED ??no committed tier (design/accessibility-requirements.md absent)`
-> and do NOT report it as COMPLIANT ??a gate compared against an absent standard
+> `Accessibility: NOT ASSESSED — no committed tier (design/accessibility-requirements.md absent)`
+> and do NOT report it as COMPLIANT — a gate compared against an absent standard
 > passes the way an assertion that can never fail passes. The same rule lives in
 > `/team-ui` Phase 4 and is mirrored here so the two cannot drift. If the spec's own
 > header states a tier, carry it forward as an **assumption** and say plainly that
@@ -277,28 +277,28 @@ Run all checks against a `hud-design.md`-based document.
 - [findings]
 
 > **For a HUD design there is no Pattern Library checklist to run it against (Phase 3B has none), so Pattern Library is N/A, excluded from the dimension count.**
-> Report `Pattern Library: N/A ??no pattern library checklist for this document
+> Report `Pattern Library: N/A — no pattern library checklist for this document
 > type`.
 >
-> For a UX spec, this dimension does have a checklist ??it is checked against
+> For a UX spec, this dimension does have a checklist — it is checked against
 > `design/ux/interaction-patterns.md`. If that file is absent: N/A only where
-> the workflow tier does not require the library (`minimal`) ??report
-> `Pattern Library: N/A ??interaction pattern library not required at this
+> the workflow tier does not require the library (`minimal`) — report
+> `Pattern Library: N/A — interaction pattern library not required at this
 > tier`. At any tier that requires or recommends it (`standard`, `full`), report
-> `Pattern Library: NOT ASSESSED ??design/ux/interaction-patterns.md not found`
+> `Pattern Library: NOT ASSESSED — design/ux/interaction-patterns.md not found`
 > instead: the library is missing, not out of scope, and NOT ASSESSED counts it
 > against the verdict as the unresolved item it is.
 
 ### Verdict: APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED
-**Blocking issues**: [N] ??must be resolved before implementation
-**Advisory issues**: [N] ??recommended but not blocking
-**Dimensions not assessed**: [N] ??[name each, and what would make it checkable]
+**Blocking issues**: [N] — must be resolved before implementation
+**Advisory issues**: [N] — recommended but not blocking
+**Dimensions not assessed**: [N] — [name each, and what would make it checkable]
 
 [For APPROVED]: This spec is ready for handoff to `/team-ui` Phase 2
 (Visual Design).
 
 [For NOT ASSESSED]: [N] of the four review dimensions could not be evaluated:
-[name them]. The spec may well be sound ??this review cannot say either way for
+[name them]. The spec may well be sound — this review cannot say either way for
 those dimensions. [For each: the one input that would make it checkable.]
 Handoff to `/team-ui` is not recommended on this result.
 
@@ -313,21 +313,20 @@ Recommend returning to `/ux-design` to rework [sections].
 
 ## Phase 5: Collaborative Protocol
 
-This skill is READ-ONLY ??it never edits or writes files. It reports findings only.
+This skill is READ-ONLY — it never edits or writes files. It reports findings only.
 
 After delivering the verdict:
 - For **APPROVED**: suggest running `/team-ui` to begin implementation coordination
 - For **NOT ASSESSED**: name the missing input per dimension and offer to help
   produce it (`/ux-design accessibility` for an uncommitted tier, the GDD path
   for absent UI requirements). Do not re-run the review against the same missing
-  inputs and report a different verdict ??only new inputs change this one
+  inputs and report a different verdict — only new inputs change this one
 - For **NEEDS REVISION**: offer to help fix specific gaps ("Would you like me to
-  help draft the missing error state?") ??but do not auto-fix; wait for user
+  help draft the missing error state?") — but do not auto-fix; wait for user
   instruction
 - For **MAJOR REVISION NEEDED**: suggest returning to `/ux-design` with the
   specific sections to rework
 
-Never block the user from proceeding ??the verdict is advisory. Document risks,
+Never block the user from proceeding — the verdict is advisory. Document risks,
 present findings, let the user decide whether to proceed despite concerns. A user
 who chooses to proceed with a NEEDS REVISION spec takes on the documented risk.
-

@@ -8,38 +8,38 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` ??`project.yaml` ??default `collaborative`). Every `AskUserQuestion` call and
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
 every file write follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 # Patch Notes
 
-## Provenance check ??before reading any history
+## Provenance check — before reading any history
 
 **Confirm the history you are about to read belongs to THIS game.** Run this
 before Phase 2 and stop if it fails.
 
 1. Sample the recent log: `git log --oneline -20`. **If it is empty or git is
-   unavailable, skip this check** ??there is nothing to classify, and Phase 2's
+   unavailable, skip this check** — there is nothing to classify, and Phase 2's
    no-changelog-data branch is the right stop.
 2. **Classify every commit in the range, one at a time**, into exactly one of:
-   - **Game** ??changes the game the player plays: mechanics, content, balance,
+   - **Game** — changes the game the player plays: mechanics, content, balance,
      art, audio, UI, a bug in any of those.
-   - **Framework / maintenance** ??changes Claude Code Game Studios itself or the project's tooling:
+   - **Framework / maintenance** — changes Claude Code Game Studios itself or the project's tooling:
      subjects naming skills, hooks, agents, the test plan, CI, the framework's
      own docs. **Excluded from player-facing notes, but not a reason to stop.**
-   - **Unclear** ??treat as framework. A commit you cannot confidently place is
+   - **Unclear** — treat as framework. A commit you cannot confidently place is
      not one to write player copy from.
 3. Then decide from the counts:
-   - **At least one Game commit** ??proceed, using **only** those. Say how many
+   - **At least one Game commit** → proceed, using **only** those. Say how many
      of how many you used, so the reader can see the filter ran.
-   - **Zero Game commits** ??stop, using the message below, and give the count (0 of how many) so the reader can see the filter ran.
+   - **Zero Game commits** → stop, using the message below, and give the count (0 of how many) so the reader can see the filter ran.
 
 > **Filter per commit; do not stop on a repo that merely contains maintenance
 > work.** Every project built on this framework accumulates commits touching
-> hooks, CI and skills ??the game repo *is* the framework repo, so a repo-level
+> hooks, CI and skills — the game repo *is* the framework repo, so a repo-level
 > stop fires on virtually every real project. The danger is not that such
 > commits *exist*; it is that they get **rendered as player-facing copy**.
 > Excluding them addresses that exactly, and a repo-level stop does not.
@@ -47,16 +47,16 @@ before Phase 2 and stop if it fails.
 Corroborate before you proceed, cheaply: the Game commits should name systems
 that appear in `design/` and the code root (`src/`, `Assets/` or `Source/`). If
 they name a product those directories
-never mention, that is the real wrong-history signal ??stop.
+never mention, that is the real wrong-history signal — stop.
 
 If **no** commit in the range is this game's, say so and stop:
 
 > "The git history in this repo does not appear to belong to [game]: 0 of the [N]
 > recent commits are Game commits. The recent
 > commits describe [what they actually describe]. I cannot generate release notes
-> from it ??point me at the right history, or supply the change list directly."
+> from it — point me at the right history, or supply the change list directly."
 
-Verdict: **BLOCKED** ??stop here without generating notes.
+Verdict: **BLOCKED** — stop here without generating notes.
 
 **Why this is a hard stop, not a warning.** Framework-internal commits rendered
 as player copy read as real changes: a session-hook timeout becomes *"Fixed an
@@ -69,7 +69,7 @@ reader cannot tell the difference; only this check can.
 ## Phase 1: Parse Arguments
 
 - `version`: the release version to generate notes for (e.g., `1.2.0`)
-- `--style`: output style ??`brief` (bullet points), `detailed` (with context), `full` (with developer commentary). Default: `detailed`.
+- `--style`: output style — `brief` (bullet points), `detailed` (with context), `full` (with developer commentary). Default: `detailed`.
 
 If no version is provided, ask the user before proceeding.
 
@@ -88,13 +88,13 @@ If no version is provided, ask the user before proceeding.
 > "No changelog data found for [version]. Run `/write-changelog [version]` first to generate the
 > internal changelog, then re-run `/patch-notes [version]`."
 
-Verdict: **BLOCKED** ??stop here without generating notes.
+Verdict: **BLOCKED** — stop here without generating notes.
 
 ---
 
 ## Phase 2b: Detect Tone Guide and Template
 
-**Tone guide detection** ??before drafting notes, check for writing style guidance:
+**Tone guide detection** — before drafting notes, check for writing style guidance:
 
 1. Check `.agent/docs/technical-preferences.md` for any "tone", "voice", or "style"
    fields or sections.
@@ -106,16 +106,16 @@ Verdict: **BLOCKED** ??stop here without generating notes.
    player-friendly, non-technical language; enthusiastic but not hyperbolic;
    focus on what the player experiences, not what the developer changed.
 
-**Template detection** ??check whether a patch notes template exists:
+**Template detection** — check whether a patch notes template exists:
 
 1. Glob for `docs/patch-notes-template.md` and `.agent/docs/templates/patch-notes-template.md`.
 2. If found at either location, read it and use it as the output structure for Phase 4
    instead of the built-in style templates (Brief / Detailed / Full). Fill in the
    template's sections with the categorized data, mapping each category to the
-   template section that means the same (New Content ??its new-features section,
-   Bug Fixes ??its fixes section); a category with no matching section goes under
+   template section that means the same (New Content → its new-features section,
+   Bug Fixes → its fixes section); a category with no matching section goes under
    the closest one, never dropped. Keep the template's header and footer text
-   as written. Say in the output which template was used ??and, when `--style`
+   as written. Say in the output which template was used — and, when `--style`
    was passed, that the template replaced it.
 3. If not found, use the built-in style templates as defined in Phase 4.
 
@@ -134,11 +134,11 @@ Categorize all changes into player-facing categories:
 
 Translate developer language to player language:
 
-- "Refactored damage calculation pipeline" ??"Improved hit detection accuracy"
-- "Fixed null reference in inventory manager" ??"Fixed a crash when opening inventory"
-- "Reduced GC allocations in combat loop" ??"Improved combat performance"
+- "Refactored damage calculation pipeline" → "Improved hit detection accuracy"
+- "Fixed null reference in inventory manager" → "Fixed a crash when opening inventory"
+- "Reduced GC allocations in combat loop" → "Improved combat performance"
 - Remove purely internal changes that don't affect players
-- Preserve specific numbers for balance changes (damage: 50 ??45)
+- Preserve specific numbers for balance changes (damage: 50 → 45)
 
 ---
 
@@ -146,14 +146,14 @@ Translate developer language to player language:
 
 ### Brief Style
 ```markdown
-# Patch [Version] ??[Title]
+# Patch [Version] — [Title]
 
 **New**
 - [Feature 1]
 - [Feature 2]
 
 **Changes**
-- [Balance/mechanic change with before ??after values]
+- [Balance/mechanic change with before → after values]
 
 **Fixes**
 - [Bug fix 1]
@@ -165,7 +165,7 @@ Translate developer language to player language:
 
 ### Detailed Style
 ```markdown
-# Patch [Version] ??[Title]
+# Patch [Version] — [Title]
 *[Date]*
 
 ## Highlights
@@ -209,7 +209,7 @@ Includes everything from Detailed, plus:
 ```markdown
 ## Developer Commentary
 ### [Topic]
-> [Developer insight into a major change ??why it was made, what was considered,
+> [Developer insight into a major change — why it was made, what was considered,
 > what the team learned. Written in first-person team voice.]
 ```
 
@@ -241,9 +241,8 @@ If no, write nothing.
 
 ## Phase 7: Next Steps
 
-Verdict: **COMPLETE** ??patch notes generated and saved. (If the write was
-declined: Verdict: **COMPLETE** ??patch notes generated and shown, not saved.)
+Verdict: **COMPLETE** — patch notes generated and saved. (If the write was
+declined: Verdict: **COMPLETE** — patch notes generated and shown, not saved.)
 
 - Run `/release-checklist` to verify all other release gates are met before publishing.
 - Share the patch notes draft with the community-manager for tone review before posting publicly.
-

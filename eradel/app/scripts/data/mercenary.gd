@@ -5,6 +5,11 @@ extends Resource
 
 enum Status { READY, ON_EXPEDITION, MISSING, DEAD }
 
+## 편성 위치값 종류: 전열 / 중열 / 후열 (열마다 최대 ROW_SLOTS 명 배치 가능)
+enum Row { FRONT, MID, BACK }
+const ROW_NAMES: Array[String] = ["전열", "중열", "후열"]
+const ROW_SLOTS: int = 3
+
 @export var merc_name: String = "이름 없음"
 @export var category: String = "전사"
 @export var job: String = "검사"
@@ -14,6 +19,8 @@ enum Status { READY, ON_EXPEDITION, MISSING, DEAD }
 @export var attack: int = 10
 
 @export var hp: int = 80
+## 던전 편성 위치값 (0=전열, 1=중열, 2=후열). 생성 시 랜덤 부여되며 이후 변경 불가.
+@export var row: int = Row.FRONT
 ## 다키스트 던전 스트레스 수치 (0 ~ 100, 100 도달 시 고통/붕괴 상태 진입 위험)
 @export var stress: int = 0
 ## 대장간 강화 무기 레벨 (1 ~ 5)
@@ -35,6 +42,8 @@ static func create_random(grade: String, rng: RandomNumberGenerator) -> Mercenar
 	m.category = JobDb.random_category(rng)
 	m.job = JobDb.random_job(rng, m.category)
 	m.merc_name = JobDb.random_name(rng)
+	# 위치값은 생성 시 랜덤 부여 (저장 데이터에 포함)
+	m.row = rng.randi_range(Row.FRONT, Row.BACK)
 	var range_lv: Array = JobDb.GRADE_LEVEL.get(grade, [1, 3])
 	m.level = rng.randi_range(range_lv[0], range_lv[1])
 	var grade_mult := 1.0
@@ -46,6 +55,11 @@ static func create_random(grade: String, rng: RandomNumberGenerator) -> Mercenar
 	m.attack = int((6 + m.level * 3) * grade_mult)
 	m.hp = m.max_hp
 	return m
+
+
+## 위치값(전열/중열/후열)의 표시 이름을 반환한다.
+func row_text() -> String:
+	return ROW_NAMES[clampi(row, Row.FRONT, Row.BACK)]
 
 
 func is_available() -> bool:
@@ -87,6 +101,7 @@ func to_dict() -> Dictionary:
 		"max_hp": max_hp,
 		"attack": attack,
 		"hp": hp,
+		"row": row,
 		"stress": stress,
 		"weapon_level": weapon_level,
 		"armor_level": armor_level,
@@ -108,6 +123,8 @@ static func from_dict(data: Dictionary) -> Mercenary:
 	m.max_hp = int(data.get("max_hp", 80))
 	m.attack = int(data.get("attack", 10))
 	m.hp = int(data.get("hp", m.max_hp))
+	# 구버전 저장 데이터엔 위치값이 없으므로 이름 해시로 안정적으로 부여
+	m.row = clampi(int(data.get("row", absi(m.merc_name.hash()) % 3)), Row.FRONT, Row.BACK)
 	m.stress = int(data.get("stress", 0))
 	m.weapon_level = int(data.get("weapon_level", 1))
 	m.armor_level = int(data.get("armor_level", 1))

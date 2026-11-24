@@ -8,15 +8,12 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys automation,workflow,system_overrides` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-
-
 # Consistency Check
 
 Detects cross-document inconsistencies by comparing all GDDs against the
 entity registry (`design/registry/entities.yaml`). Uses a grep-first approach:
 reads the registry once, then targets only the GDD sections that mention
-registered names ??no full document reads unless a conflict needs investigation.
+registered names — no full document reads unless a conflict needs investigation.
 
 **This skill is the write-time safety net.** It catches what `/design-system`'s
 per-section checks may have missed and what `/review-all-gdds`'s holistic review
@@ -33,25 +30,25 @@ catches too late.
 ---
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 **`workflow`** (see `.agent/docs/workflow-modes.md`), applied per GDD at its
-**effective** tier ??the `system_overrides` row for that GDD's system (its
+**effective** tier — the `system_overrides` row for that GDD's system (its
 filename stem) when the block lists one, else the project value:
-- `full` ??full entity-registry cross-check against all GDD sections.
-- `standard` ??cross-check against the required sections only. The report's
+- `full` — full entity-registry cross-check against all GDD sections.
+- `standard` — cross-check against the required sections only. The report's
   Scope line says so, and each value stated for a registered name outside those
   sections is listed as not checked at this tier (Phase 3 applies this).
-- `minimal` ??not meaningful (no GDDs to check).
+- `minimal` — not meaningful (no GDDs to check).
 
 ## Phase 1: Parse Arguments and Load Registry
 
 **Modes:**
-- No argument / `full` ??check all registered entries against all GDDs
-- `since-last-review` ??check only GDDs modified since the last review report
-- `entity:<name>` ??check one specific entity across all GDDs
-- `item:<name>` ??check one specific item across all GDDs
+- No argument / `full` — check all registered entries against all GDDs
+- `since-last-review` — check only GDDs modified since the last review report
+- `entity:<name>` — check one specific entity across all GDDs
+- `item:<name>` — check one specific item across all GDDs
 
 **Load the registry:**
 
@@ -60,17 +57,17 @@ Read path="design/registry/entities.yaml"
 ```
 
 If the file does not exist or has no entries:
-> "Entity registry is empty. Run `/design-system` to write GDDs ??the registry
+> "Entity registry is empty. Run `/design-system` to write GDDs — the registry
 > is populated automatically after each GDD is completed. Nothing to check yet."
 
-Verdict: **NOT ASSESSED ??entity registry empty**. Stop: nothing was compared,
+Verdict: **NOT ASSESSED — entity registry empty**. Stop: nothing was compared,
 so there is no PASS to give and nothing to write.
 
 Build four lookup tables from the registry:
-- **entity_map**: `{ name ??{ source, attributes, referenced_by } }`
-- **item_map**: `{ name ??{ source, value_gold, weight, ... } }`
-- **formula_map**: `{ name ??{ source, variables, output_range } }`
-- **constant_map**: `{ name ??{ source, value, unit } }`
+- **entity_map**: `{ name → { source, attributes, referenced_by } }`
+- **item_map**: `{ name → { source, value_gold, weight, ... } }`
+- **formula_map**: `{ name → { source, variables, output_range } }`
+- **constant_map**: `{ name → { source, value, unit } }`
 
 Count total registered entries. Report:
 ```
@@ -79,7 +76,7 @@ Scope: [full | since-last-review | entity:name]
 ```
 
 For `entity:<name>` or `item:<name>`, if the registry has no entry by that name
-the verdict is **NOT ASSESSED ??`<name>` is not in the registry**: list the
+the verdict is **NOT ASSESSED — `<name>` is not in the registry**: list the
 closest registered names and stop. Checking an unregistered name compares
 nothing, and that is not a PASS.
 
@@ -104,9 +101,9 @@ git log --name-only --pretty=format: -- design/gdd/ | grep "\.md$" | sort -u
 Limit to GDDs modified since the most recent `design/gdd/gdd-cross-review-*.md`
 file's creation date.
 
-Report the in-scope GDD list before scanning. **If the list is empty** ??no system
-GDDs exist, or `since-last-review` found none changed ??the verdict is
-**NOT ASSESSED ??no GDDs in scope**: say which filter produced zero, and stop.
+Report the in-scope GDD list before scanning. **If the list is empty** — no system
+GDDs exist, or `since-last-review` found none changed — the verdict is
+**NOT ASSESSED — no GDDs in scope**: say which filter produced zero, and stop.
 A scan of nothing finds no conflicts, and that is not a PASS.
 
 ---
@@ -114,11 +111,11 @@ A scan of nothing finds no conflicts, and that is not a PASS.
 ## Phase 3: Grep-First Conflict Scan
 
 For each registered entry, grep every in-scope GDD for the entry's name.
-Do NOT do full reads ??extract only the matching lines and their immediate
+Do NOT do full reads — extract only the matching lines and their immediate
 context (-C 3 lines).
 
-This is the core optimization: instead of reading 10 GDDs 횞 400 lines each
-(4,000 lines), you grep 50 entity names 횞 10 GDDs (50 targeted searches,
+This is the core optimization: instead of reading 10 GDDs × 400 lines each
+(4,000 lines), you grep 50 entity names × 10 GDDs (50 targeted searches,
 each returning ~10 lines on a hit).
 
 **In a GDD whose effective tier is `standard`, compare only hits under a
@@ -127,7 +124,7 @@ replaces the project tier for that GDD in either direction (a `full` row makes
 every section compared). Grep each such GDD once for `^## ` to get its headings
 and line numbers, and file every name hit under the nearest heading above it:
 only hits under Overview, Detailed Rules / Detailed Design, Formulas, Edge
-Cases, Dependencies or Acceptance Criteria are compared ??plus Tuning Knobs when
+Cases, Dependencies or Acceptance Criteria are compared — plus Tuning Knobs when
 `project.yaml` sets `workflow_overrides.tuning_knobs: true` (read that flag
 once; it only ever adds the section). Any other hit (Tuning Knobs without the
 flag, Player Fantasy, any other section) raises no finding and is not logged;
@@ -151,9 +148,9 @@ For each GDD hit, extract the values mentioned near the entity name:
 Compare extracted values against the registry entry.
 
 **Conflict detection:**
-- Registry says `[entity_name].[attribute] = [value_A]`. GDD says `[entity_name] has [value_B]`. ??**CONFLICT**
-- Registry says `[item_name].[attribute] = [value_A]`. GDD says `[item_name] is [value_B]`. ??**CONFLICT**
-- GDD mentions `[entity_name]` but doesn't specify the attribute. ??**NOTE** (no conflict, just unverifiable)
+- Registry says `[entity_name].[attribute] = [value_A]`. GDD says `[entity_name] has [value_B]`. → **CONFLICT**
+- Registry says `[item_name].[attribute] = [value_A]`. GDD says `[item_name] is [value_B]`. → **CONFLICT**
+- GDD mentions `[entity_name]` but doesn't specify the attribute. → **NOTE** (no conflict, just unverifiable)
 
 ### 3b: Item Scan
 
@@ -172,8 +169,8 @@ For each formula in formula_map, grep all GDDs for the formula name. Extract:
 - output range or cap values mentioned
 
 Compare against registry entry:
-- Different variable names ??**CONFLICT**
-- Output range stated differently ??**CONFLICT**
+- Different variable names → **CONFLICT**
+- Output range stated differently → **CONFLICT**
 
 ### 3d: Constant Scan
 
@@ -181,7 +178,7 @@ For each constant in constant_map, grep all GDDs for the constant name. Extract:
 - Any numeric value mentioned near the constant name
 
 Compare against registry value:
-- Different number ??**CONFLICT**
+- Different number → **CONFLICT**
 
 ---
 
@@ -199,7 +196,7 @@ Read it by section: find the conflicting section's heading with the Grep tool
 (pattern `^#`, content mode) and Read that range with offset and limit.
 
 Confirm the conflict with full context. Determine:
-1. **Which GDD is correct?** Check the `source:` field in the registry ??the
+1. **Which GDD is correct?** Check the `source:` field in the registry — the
    source GDD is the authoritative owner. Any other GDD that contradicts it
    is the one that needs updating.
 2. **Is the registry itself out of date?** If the source GDD was updated after
@@ -209,11 +206,11 @@ Confirm the conflict with full context. Determine:
    then fix all other GDDs.
 
 For each conflict, classify:
-- **?뵶 CONFLICT** ??same named entity/item/formula/constant with different values
+- **🔴 CONFLICT** — same named entity/item/formula/constant with different values
   in different GDDs. Must resolve before architecture begins.
-- **?좑툘 STALE REGISTRY** ??source GDD value changed but registry not updated.
+- **⚠️ STALE REGISTRY** — source GDD value changed but registry not updated.
   Registry needs updating; other GDDs may be correct already.
-- **?뱄툘 UNVERIFIABLE** ??entity mentioned but no comparable attribute stated.
+- **ℹ️ UNVERIFIABLE** — entity mentioned but no comparable attribute stated.
   Not a conflict; just noting the reference.
 
 ---
@@ -225,39 +222,39 @@ For each conflict, classify:
 Date: [date]
 Registry entries checked: [N entities, N items, N formulas, N constants]
 GDDs scanned: [N] ([list names])
-Scope: [all GDD sections | required sections only ??workflow: standard | per GDD ??name each GDD whose effective tier differs, and its tier]
-Not checked at this tier: [each value stated outside the required sections (name, GDD, section) ??or "none"; omit when every GDD is at `full`]
+Scope: [all GDD sections | required sections only — workflow: standard | per GDD — name each GDD whose effective tier differs, and its tier]
+Not checked at this tier: [each value stated outside the required sections (name, GDD, section) — or "none"; omit when every GDD is at `full`]
 
 ---
 
 ### Conflicts Found (must resolve before architecture)
 
-?뵶 [Entity/Item/Formula/Constant Name]
+🔴 [Entity/Item/Formula/Constant Name]
    Registry (source: [gdd]): [attribute] = [value]
    Conflict in [other_gdd].md: [attribute] = [different_value]
-   ??Resolution needed: [which doc to change and to what]
+   → Resolution needed: [which doc to change and to what]
 
 ---
 
 ### Stale Registry Entries (registry behind the GDD)
 
-?좑툘 [Entry Name]
+⚠️ [Entry Name]
    Registry says: [value] (written [date])
    Source GDD now says: [new value]
-   ??Update registry entry to match source GDD, then check referenced_by docs.
+   → Update registry entry to match source GDD, then check referenced_by docs.
 
 ---
 
 ### Unverifiable References (no conflict, informational)
 
-?뱄툘 [gdd].md mentions [entity_name] but states no comparable attributes.
+ℹ️ [gdd].md mentions [entity_name] but states no comparable attributes.
    No conflict detected. No action required.
 
 ---
 
 ### Clean Entries (no issues found)
 
-??[N] registry entries verified across all GDDs with no conflicts.
+✅ [N] registry entries verified across all GDDs with no conflicts.
 
 ---
 
@@ -265,11 +262,11 @@ Verdict: PASS | CONFLICTS FOUND | NOT ASSESSED
 ```
 
 **Verdict:**
-- **CONFLICTS FOUND** ??one or more conflicts detected. List resolution steps.
-- **NOT ASSESSED** ??nothing was compared: the entity registry is empty or the
+- **CONFLICTS FOUND** — one or more conflicts detected. List resolution steps.
+- **NOT ASSESSED** — nothing was compared: the entity registry is empty or the
   named entity is not in it (Phase 1), or no GDDs were in scope (Phase 2). Say
   which.
-- **PASS** ??no conflicts. Registry and GDDs agree on all checked values, across at least one GDD.
+- **PASS** — no conflicts. Registry and GDDs agree on all checked values, across at least one GDD.
 
 ---
 
@@ -305,24 +302,24 @@ other entries to the user rather than fixing them unasked. If the script is
 missing or prints nothing, say the registry check did not run, then re-read the
 entries you wrote against the rules in the file's header.
 
-After writing: Verdict: **COMPLETE** ??consistency check finished.
-If conflicts remain unresolved: Verdict: **BLOCKED** ??[N] conflicts need manual resolution before architecture begins.
+After writing: Verdict: **COMPLETE** — consistency check finished.
+If conflicts remain unresolved: Verdict: **BLOCKED** — [N] conflicts need manual resolution before architecture begins.
 
 ### 6b: Append to Reflexion Log
 
-If any ?뵶 CONFLICT entries were found (regardless of whether they were resolved),
+If any 🔴 CONFLICT entries were found (regardless of whether they were resolved),
 ask: "May I append [N] entries to `docs/consistency-failures.md` (creating it if
 absent)?" On yes, append an entry for each conflict; on no, say the conflicts
 were not logged.
 
 ```markdown
-### [YYYY-MM-DD] ??/consistency-check ???뵶 CONFLICT
+### [YYYY-MM-DD] — /consistency-check — 🔴 CONFLICT
 **Domain**: [system domain(s) involved]
 **Documents involved**: [source GDD] vs [conflicting GDD]
-**What happened**: [specific conflict ??entity name, attribute, differing values]
-**Resolution**: [how it was fixed, or "Unresolved ??manual action needed"]
+**What happened**: [specific conflict — entity name, attribute, differing values]
+**Resolution**: [how it was fixed, or "Unresolved — manual action needed"]
 **Pattern**: [generalised lesson, e.g. "Item values defined in combat GDD were not
-referenced in economy GDD before authoring ??always check entities.yaml first"]
+referenced in economy GDD before authoring — always check entities.yaml first"]
 ```
 
 If `docs/consistency-failures.md` does not exist, create it with this header before appending:
@@ -337,7 +334,7 @@ If `docs/consistency-failures.md` does not exist, create it with this header bef
 |------|-------|-------|---------------|--------|
 ```
 
-Then append the new conflict entries. Never skip logging on your own ??a missing file is not a reason to lose conflict history; only the user's "no" is.
+Then append the new conflict entries. Never skip logging on your own — a missing file is not a reason to lose conflict history; only the user's "no" is.
 
 ---
 
@@ -349,7 +346,7 @@ Silently append to `production/session-state/active.md` (create the file if it d
 <!-- CONSISTENCY-CHECK: [date] | GDDs checked: [N] | Conflicts found: [N] | Log: docs/consistency-failures.md -->
 ```
 
-> **Point at `docs/consistency-failures.md` ??the file Phase 6 actually appends
+> **Point at `docs/consistency-failures.md` — the file Phase 6 actually appends
 > to.** A breadcrumb is a pointer left for a future session to follow. One that
 > names a file nothing writes sends that session looking for conflict history it
 > will never find, and nothing errors along the way. Never invent a report
@@ -357,13 +354,13 @@ Silently append to `production/session-state/active.md` (create the file if it d
 
 Then close with an `AskUserQuestion` widget:
 
-- **Prompt**: "Consistency check complete ??[N] conflicts found. What next?"
+- **Prompt**: "Consistency check complete — [N] conflicts found. What next?"
 - **Options**:
   - `[A] Fix the highest-priority conflict now`
   - `[B] Run /design-review on the most conflicted GDD`
   - `[C] Stop here`
 
-In collaborative and guided modes, never end the skill with plain text ??always
+In collaborative and guided modes, never end the skill with plain text — always
 close with this widget. In autonomous mode, print the findings and recommended
 next step, then record via `log_decision` (no widget).
 
@@ -378,4 +375,3 @@ next step, then record via `log_decision` (no widget).
 - **If STALE REGISTRY**: Update the registry (Phase 6), then re-run to verify.
 - Run `/consistency-check` after writing each new GDD to catch issues early,
   not at architecture time.
-

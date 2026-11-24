@@ -71,8 +71,7 @@ func _rebuild() -> void:
 	body.size_flags_vertical = SIZE_EXPAND_FILL
 	content.add_child(body)
 
-	body.add_child(_build_party())
-	body.add_child(_build_available())
+	body.add_child(_build_formation())
 
 	# 하단 푸터: 힌트 문구 및 던전 입장 액션 버튼
 	var footer := HBoxContainer.new()
@@ -104,43 +103,58 @@ func _footer_hint() -> String:
 	return "파티 %d명 편성됨. 입장하면 그 날의 원정이 시작됩니다." % GameState.party.size()
 
 
-## 현재 출정 파티 목록 패널 생성 (최대 4인)
-func _build_party() -> Control:
+## 던전 입장 전 편성 보드: 전열/중열/후열 3열 × 열당 3슬롯. 용병은 자신의 위치값 열에만 배치할 수 있다.
+func _build_formation() -> Control:
 	var panel := UiKit.panel()
 	panel.size_flags_horizontal = SIZE_EXPAND_FILL
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 6)
 	panel.add_child(v)
-	v.add_child(UiKit.label("파티 구성 (%d/%d)" % [GameState.party.size(), GameState.MAX_PARTY], 11, UiKit.TEXT2))
-	if GameState.party.is_empty():
-		v.add_child(UiKit.label("비어있음 — 오른쪽에서 용병을 추가하세요.", 12, UiKit.TEXT3))
-	for m in GameState.party:
-		v.add_child(_slot(m, true))
+	v.add_child(UiKit.label("진형 편성 (%d/%d) — 입장 후에는 위치를 바꿀 수 없습니다" % [GameState.party.size(), GameState.MAX_PARTY], 11, UiKit.TEXT2))
+	var cols := HBoxContainer.new()
+	cols.add_theme_constant_override("separation", 10)
+	cols.size_flags_vertical = SIZE_EXPAND_FILL
+	v.add_child(cols)
+	for r in Mercenary.ROW_NAMES.size():
+		cols.add_child(_build_row_column(r))
 	return panel
 
 
-## 출정 가능한 대기 용병 목록 스크롤 패널 생성
-func _build_available() -> Control:
-	var panel := UiKit.panel()
-	panel.size_flags_horizontal = SIZE_EXPAND_FILL
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 6)
-	panel.add_child(v)
-	v.add_child(UiKit.label("대기 용병", 11, UiKit.TEXT2))
-	var avail := GameState.available_mercs()
-	if avail.is_empty():
-		v.add_child(UiKit.label("대기 중인 용병이 없습니다.", 12, UiKit.TEXT3))
+## 한 열(전열/중열/후열) 컬럼: 편성된 용병 슬롯 3칸 + 해당 열 소속 대기 용병 목록
+func _build_row_column(row: int) -> Control:
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 4)
+	col.add_child(UiKit.label("▍%s" % Mercenary.ROW_NAMES[row], 13, UiKit.GOLD))
+	var placed: Array[Mercenary] = []
+	for m in GameState.party:
+		if m.row == row:
+			placed.append(m)
+	for i in Mercenary.ROW_SLOTS:
+		if i < placed.size():
+			col.add_child(_slot(placed[i], true))
+		else:
+			var empty := UiKit.panel(UiKit.BG, UiKit.BORDER, 6)
+			empty.custom_minimum_size = Vector2(0, 40)
+			empty.add_child(UiKit.label("빈 슬롯", 11, UiKit.TEXT3))
+			col.add_child(empty)
+	col.add_child(UiKit.label("대기 용병 (%s)" % Mercenary.ROW_NAMES[row], 11, UiKit.TEXT2))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	v.add_child(scroll)
+	col.add_child(scroll)
 	var list := VBoxContainer.new()
 	list.size_flags_horizontal = SIZE_EXPAND_FILL
 	list.add_theme_constant_override("separation", 4)
 	scroll.add_child(list)
-	for m in avail:
-		list.add_child(_slot(m, false))
-	return panel
+	var any := false
+	for m in GameState.available_mercs():
+		if m.row == row:
+			any = true
+			list.add_child(_slot(m, false))
+	if not any:
+		list.add_child(UiKit.label("없음", 11, UiKit.TEXT3))
+	return col
 
 
 ## 단일 용병 슬롯 UI 카드 생성: UiKit.merc_card 공용 위젯으로 통합
@@ -156,7 +170,7 @@ func _slot(m: Mercenary, in_party: bool) -> Control:
 		"show_penalties": true,
 		"action_text": "빼기" if in_party else "추가",
 		"action_color": UiKit.RED if in_party else UiKit.GOLD,
-		"action_disabled": false if in_party else (GameState.party.size() >= GameState.MAX_PARTY),
+		"action_disabled": false if in_party else (GameState.party.size() >= GameState.MAX_PARTY or GameState.party_row_count(m.row) >= Mercenary.ROW_SLOTS),
 		"on_action": func(target: Mercenary):
 			if in_party:
 				GameState.remove_from_party(target)

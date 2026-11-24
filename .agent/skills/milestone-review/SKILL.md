@@ -1,6 +1,6 @@
 ---
 name: milestone-review
-description: "Milestone progress review ??completeness, quality metrics, risk, go/no-go recommendation. At checkpoints or before a deadline."
+description: "Milestone progress review — completeness, quality metrics, risk, go/no-go recommendation. At checkpoints or before a deadline."
 argument-hint: "[milestone-name|current] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.agent/skills/milestone-review/../../hooks/yaml-helper.sh" resolve_config *)
@@ -8,39 +8,39 @@ model: sonnet
 ---
 
 > **Config Resolution (Antigravity / Codex):** If `project.yaml` exists, run `bash .agent/hooks/yaml-helper.sh resolve_config --keys review_mode,automation,workflow` (via Git Bash on Windows); otherwise use defaults in `.agent/docs/config-resolution.md`.
-
-Resolved above ??use as-is; `--review` overrides `review_mode` for this run. No
-block ??defaults in `.agent/docs/config-resolution.md`.
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.agent/docs/config-resolution.md`.
 
 # Milestone Review
 
 
 
-## Insufficient input ??check this before producing any report
+## Insufficient input — check this before producing any report
 
-**If the inputs this skill needs do not exist, the answer is "could not run" ??not a filled-in report.** Check first, and stop if the check fails.
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
 
 1. List the inputs this skill reads (data files, prior reports, profiler output,
    test results, registries, source code).
-2. For each, record `FOUND` or `ABSENT` ??not "assumed present".
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
 3. If any input required for a section is ABSENT, that section is
-   **`NOT ASSESSED ??NO DATA`**. Do not estimate it, do not infer it from an
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
    adjacent artifact, and do not leave a mandated cell to be filled by whoever
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
-   **`NOT ASSESSED ??NO DATA`** as the whole verdict, naming what was missing and
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
    which skill produces it.
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
 specific: a report whose verdict enum has no "could not run" state produces
-**false clean passes** ??an asset audit returning COMPLIANT on a project with no
+**false clean passes** — an asset audit returning COMPLIANT on a project with no
 assets and no standards, or a performance profile reporting ">99% headroom against
 a 16.67ms budget" with zero profiler data and no budget ever set.
 
 **Absence of evidence is never evidence of absence.** A scan that finds no
 matches because there are no files to scan has not verified anything. Say which of
-the two happened ??a reader cannot tell from a green result.
+the two happened — a reader cannot tell from a green result.
 
 ---
 
@@ -48,11 +48,11 @@ the two happened ??a reader cannot tell from a green result.
 
 Extract the milestone name (`current` or a specific name).
 
-See `.agent/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.agent/docs/director-gates/[gate-id].md` ??the spawned agent reads its own gate file; do not read it in the parent session.
+See `.agent/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.agent/docs/director-gates/[gate-id].md` — the spawned agent reads its own gate file; do not read it in the parent session.
 
 
 Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
-(collaborative asks always 쨌 guided major-only 쨌 autonomous logs and proceeds;
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
 `automation_always_ask` categories always prompt).
 
 ---
@@ -62,7 +62,7 @@ Every `AskUserQuestion` call follows `.agent/docs/automation-modes.md`
 Read the milestone definition from `production/milestones/` if it exists. If the
 argument is `current`, use the most recently modified milestone file.
 
-> **No skill writes `production/milestones/`** ??definitions are authored by hand
+> **No skill writes `production/milestones/`** — definitions are authored by hand
 > from `.agent/docs/templates/milestone-definition.md`, so most projects have
 > none. When the directory is absent or empty, say so and review against the
 > sprint reports alone; do not fabricate a definition. Take care with `current`:
@@ -80,19 +80,19 @@ Grep pattern="^## (Sprint Goal|Capacity|Tasks|Carryover|Risks|Progress|Burndown 
 ```
 
 > **These alternates are the headings `/sprint-plan` emits** (`## Sprint Goal`,
-> not `## Goal`) ??not what a milestone review might expect. A pattern that
+> not `## Goal`) — not what a milestone review might expect. A pattern that
 > matches only one real heading still returns a non-zero count, so the
 > zero-match escape hatch below never fires and the review aggregates a fraction
 > of each report while reporting full coverage.
 
 Full-read a single sprint report when its scanned sections point outside
-themselves, or when it matched nothing ??a zero-match report predates the
+themselves, or when it matched nothing — a zero-match report predates the
 template and must be read, never silently dropped from the milestone's history.
 Report any sprint that contributed nothing: a milestone summary that quietly
 omits a sprint understates the work and the slippage both.
 
-**Blocked stories** ??the Blocked table and the blocked story count passed to
-PR-MILESTONE ??are not in the sprint reports' scanned sections. Read them where
+**Blocked stories** — the Blocked table and the blocked story count passed to
+PR-MILESTONE — are not in the sprint reports' scanned sections. Read them where
 they are recorded: the `status: blocked` stories in `production/sprint-status.yaml`
 (with their `blocker` field) and, for stories outside that sprint, one grep:
 
@@ -103,15 +103,15 @@ Grep pattern="^> \*\*Status\*\*: Blocked|BLOCKED:" glob="production/epics/**/sto
 Each blocked story goes in the Blocked table under the feature its epic folder
 implements, with its blocker (the yaml `blocker` field or the story's `BLOCKED:`
 note). With no story files and no `sprint-status.yaml`, the Blocked table and the
-blocked story count are `NOT ASSESSED ??NO DATA`, not zero.
+blocked story count are `NOT ASSESSED — NO DATA`, not zero.
 
 ---
 
 ## Phase 2: Scan Codebase Health
 
 - Scan for `TODO`, `FIXME`, `HACK` markers that indicate incomplete work
-- Count open bugs by severity for Quality Metrics from `production/qa/bugs/` (one grep of the `**Severity**` and `**Status**` lines, as `/bug-triage` does); with no bug files, the bug lines are `NOT ASSESSED ??NO DATA`, not zero
-- Check the risk register at `production/risk-register/` if it exists (hand-authored from `.agent/docs/templates/risk-register-entry.md`; no skill writes it, so absence is normal ??note it rather than skipping risk assessment silently)
+- Count open bugs by severity for Quality Metrics from `production/qa/bugs/` (one grep of the `**Severity**` and `**Status**` lines, as `/bug-triage` does); with no bug files, the bug lines are `NOT ASSESSED — NO DATA`, not zero
+- Check the risk register at `production/risk-register/` if it exists (hand-authored from `.agent/docs/templates/risk-register-entry.md`; no skill writes it, so absence is normal — note it rather than skipping risk assessment silently)
 
 ---
 
@@ -140,7 +140,7 @@ Only a feature whose Status is `Complete` goes here or counts toward the complet
 
 ### Blocked
 A started feature whose stories are Blocked goes here, not under Partially
-Complete ??name the blocker, so the review says why it stalled, not only that
+Complete — name the blocker, so the review says why it stalled, not only that
 the count moved.
 
 | Feature | Blocked Stories | Blocker | Next Action / Owner |
@@ -201,10 +201,10 @@ the count moved.
 
 ## Phase 3b: Producer Risk Assessment
 
-**Review mode check** ??apply before spawning PR-MILESTONE:
-- `solo` ??skip. Note: "PR-MILESTONE skipped ??Solo mode." Present the Go/No-Go section without a producer verdict.
-- `lean` ??skip (not a PHASE-GATE). Note: "PR-MILESTONE skipped ??Lean mode." Present the Go/No-Go section without a producer verdict.
-- `full` ??spawn as normal.
+**Review mode check** — apply before spawning PR-MILESTONE:
+- `solo` → skip. Note: "PR-MILESTONE skipped — Solo mode." Present the Go/No-Go section without a producer verdict.
+- `lean` → skip (not a PHASE-GATE). Note: "PR-MILESTONE skipped — Lean mode." Present the Go/No-Go section without a producer verdict.
+- `full` → spawn as normal.
 
 Before generating the Go/No-Go recommendation, spawn `producer` via `Agent` using gate **PR-MILESTONE** (`.agent/docs/director-gates/pr-milestone.md`).
 
@@ -215,18 +215,18 @@ Present the producer's assessment inline within the Go/No-Go section. The produc
 If OFF TRACK, use `AskUserQuestion` before generating the recommendation:
 - Prompt: "Producer verdict: OFF TRACK. The milestone is in jeopardy. This review will recommend NO-GO. How do you want to proceed?"
 - Options:
-  - `[A] Accept NO-GO ??generate the full review with that recommendation`
-  - `[B] Override to CONDITIONAL GO ??I'll document the accepted risks myself`
-  - `[C] Stop ??I want to address blockers before generating the review`
+  - `[A] Accept NO-GO — generate the full review with that recommendation`
+  - `[B] Override to CONDITIONAL GO — I'll document the accepted risks myself`
+  - `[C] Stop — I want to address blockers before generating the review`
 
 If AT RISK, use `AskUserQuestion`:
 - Prompt: "Producer verdict: AT RISK. Milestone may slip. How should the Go/No-Go section be framed?"
 - Options:
-  - `[A] CONDITIONAL GO ??include producer's conditions in the review`
-  - `[B] NO-GO ??conditions cannot be met in time`
-  - `[C] GO ??I accept the risk and want to proceed`
+  - `[A] CONDITIONAL GO — include producer's conditions in the review`
+  - `[B] NO-GO — conditions cannot be met in time`
+  - `[C] GO — I accept the risk and want to proceed`
 
-If NOT ASSESSED: name the missing input ??it is not ON TRACK, and never recommend GO on it. Supply the input and re-run PR-MILESTONE, or recommend NOT ASSESSED ??or CONDITIONAL GO / NO-GO where the review's own findings call for one (the rank in `.agent/docs/director-gates.md`).
+If NOT ASSESSED: name the missing input — it is not ON TRACK, and never recommend GO on it. Supply the input and re-run PR-MILESTONE, or recommend NOT ASSESSED — or CONDITIONAL GO / NO-GO where the review's own findings call for one (the rank in `.agent/docs/director-gates.md`).
 
 Do not issue a GO against an OFF TRACK verdict; issue CONDITIONAL GO only if the user explicitly selects [B] above.
 
@@ -238,9 +238,9 @@ Present the review to the user.
 
 Ask: "May I write this to `production/milestones/[milestone-name]-review.md`?"
 
-If yes, write the file, creating the directory if needed. Verdict: **COMPLETE** ??milestone review saved.
+If yes, write the file, creating the directory if needed. Verdict: **COMPLETE** — milestone review saved.
 
-If no, stop here. Verdict: **BLOCKED** ??user declined write.
+If no, stop here. Verdict: **BLOCKED** — user declined write.
 
 ---
 
@@ -248,4 +248,3 @@ If no, stop here. Verdict: **BLOCKED** ??user declined write.
 
 - Run `/gate-check` for a formal phase gate verdict if this milestone marks a development phase boundary.
 - Run `/sprint-plan` to adjust the next sprint based on the scope recommendations above (at `workflow: minimal`, which has no sprints, adjust the brief's build order instead).
-
