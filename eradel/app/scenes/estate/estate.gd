@@ -750,13 +750,19 @@ func _populate_lodge_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 	var center_col: VBoxContainer = ui["center"]
 	var rv: VBoxContainer = ui["right"]
 
+	# 던전 입장 전 화면과 동일한 진형 규칙(열당 3명)을 숙소에서도 미리 보여주는 열별 인원 요약
+	var row_parts: PackedStringArray = []
+	for r in Mercenary.ROW_NAMES.size():
+		row_parts.append("%s %d/%d" % [Mercenary.ROW_NAMES[r], GameState.party_row_count(r), Mercenary.ROW_SLOTS])
+	pv.add_child(UiKit.label("진형: " + "  ·  ".join(row_parts), 11, UiKit.GOLD2))
+
 	pv.add_child(UiKit.merc_roster_list(GameState.party, {
 		"empty_text": "원정 파티가 비어 있습니다.\n우측 대기 로스터에서 영웅을 편성하세요.",
 		"card_opts_fn": func(m: Mercenary, idx: int) -> Dictionary:
 			return {
 				"border_color": UiKit.BORDER2,
 				"portrait_size": 36,
-				"title_prefix": "%d. " % (idx + 1),
+				"title_prefix": "[%s] " % Mercenary.ROW_NAMES[m.row],
 				"color_name_by_grade": true,
 				"action_text": "제외",
 				"action_color": UiKit.RED,
@@ -783,17 +789,21 @@ func _populate_lodge_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 	var available_mercs := GameState.available_mercs()
 	rv.add_child(UiKit.merc_roster_list(available_mercs, {
 		"empty_text": "대기 중인 다른 영웅이 없습니다.",
-		"card_opts": {
-			"portrait_size": 38,
-			"color_name_by_grade": true,
-			"action_text": "편성",
-			"action_color": UiKit.GOLD,
-			"action_disabled": (GameState.party.size() >= GameState.MAX_PARTY),
-			"action_min_size": Vector2(50, 32),
-			"on_action": func(target: Mercenary):
-				GameState.add_to_party(target)
-				_open_large_building_popup(def),
-		},
+		# 용병은 자신의 열에만 편성 가능하므로 열 이름을 표시하고, 해당 열이 가득 차면 버튼을 비활성화한다
+		"card_opts_fn": func(m: Mercenary, _idx: int) -> Dictionary:
+			var row_full := GameState.party_row_count(m.row) >= Mercenary.ROW_SLOTS
+			return {
+				"portrait_size": 38,
+				"color_name_by_grade": true,
+				"title_prefix": "[%s] " % Mercenary.ROW_NAMES[m.row],
+				"action_text": "열 가득" if row_full else "편성",
+				"action_color": UiKit.GOLD,
+				"action_disabled": GameState.party.size() >= GameState.MAX_PARTY or row_full,
+				"action_min_size": Vector2(50, 32),
+				"on_action": func(target: Mercenary):
+					GameState.add_to_party(target)
+					_open_large_building_popup(def),
+			},
 	}))
 
 
@@ -1579,11 +1589,11 @@ func _populate_dungeon_popup(vbox: VBoxContainer, def: Dictionary) -> void:
 	pv.add_child(UiKit.merc_roster_list(GameState.party, {
 		"empty_text": "출진 파티가 비어 있습니다!\n영웅숙소에서 원정대를 편성하세요.",
 		"empty_color": UiKit.RED,
-		"card_opts_fn": func(_m: Mercenary, idx: int) -> Dictionary:
+		"card_opts_fn": func(m: Mercenary, _idx: int) -> Dictionary:
 			return {
 				"border_color": UiKit.BORDER2,
 				"portrait_size": 36,
-				"title_prefix": "%d. " % (idx + 1),
+				"title_prefix": "[%s] " % Mercenary.ROW_NAMES[m.row],
 				"color_name_by_grade": true,
 			},
 	}))
