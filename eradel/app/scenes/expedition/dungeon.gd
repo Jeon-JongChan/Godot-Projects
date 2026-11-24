@@ -14,6 +14,8 @@ enum BattleState { ROUND_START, ALLY_TURN, ALLY_ACTING, MONSTER_TURN, FINISHED }
 
 ## 던전 1회 원정 당 돌파해야 하는 총 구역(회랑) 수
 const MAX_STAGE: int = 4
+## 갈림길 선택 후 목적지까지 걸어가는 연출 시간(초)
+const WALK_SEC: float = 2.0
 
 ## 목적지 종류 (몬스터/보물/이벤트/상점). 마지막 단계는 보스 고정.
 const DEST_TYPES: Array[String] = ["monster", "treasure", "event", "shop"]
@@ -40,7 +42,12 @@ var _phase: String = "map"
 var _map_overlay: Control = null
 var _dest_choices: Array[String] = []
 var _dest_selected: int = -1
-var _dest_marker: Label = null
+## 갈림길에서 고른 목적지를 복도에 보여주는 월드 오브젝트(상자·포털·상인·몬스터 실루엣)
+var _marker: DungeonEncounterMarker = null
+## 이동 중 영웅들이 걷는 듯 위아래로 흔들리는 트윈 목록
+var _walk_bobs: Array[Tween] = []
+## 이동 중 미리 뽑아 둔 조우 몬스터를 전투가 그대로 쓰는지 여부(실루엣과 실제 적을 일치시킨다)
+var _encounter_ready: bool = false
 var _shop_panel: Control = null
 
 # ── 횃불 광원(Torchlight) 시스템 (0 ~ 100) ──
@@ -771,17 +778,28 @@ func _start_walk(type: String) -> void:
 	_top_bar.update_torchlight(_torchlight)
 	_add_log("%s 방향으로 통로를 따라 이동한다..." % DEST_NAME[type])
 
-	_dest_marker = UiKit.label(DEST_GLYPH[type], 72, Color("ffd9a0"))
-	_dest_marker.position = Vector2(1250, 120)
-	_stage_content.add_child(_dest_marker)
+	# 몬스터/보스는 이동 중에 적을 미리 정해 두어, 복도 끝 실루엣이 실제로 만나는 적과 같게 한다
+	var mob_tex: Texture2D = null
+	if type == "monster" or type == "boss":
+		_monsters_data = _generate_stage_monsters(_current_stage)
+		_encounter_ready = true
+		var first_name: String = str(_monsters_data[0].get("name", "")) if not _monsters_data.is_empty() else ""
+		mob_tex = UiKit.get_cached_texture(BattleUnitScene.mob_sprite_path(first_name))
+
+	_clear_marker()
+	_marker = DungeonEncounterMarker.new()
+	_marker.setup(type, mob_tex)
+	_stage_content.add_child(_marker)
+	_stage_content.move_child(_marker, 1)  # 배경 바로 위, 유닛 아래
+	_marker.approach(WALK_SEC)
 
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(_dest_marker, "position:x", 800.0, 1.8)
 	for i in _party_units.size():
 		var u = _party_units[i]
 		if is_instance_valid(u):
 			var dx := 110.0 if i == 0 else 40.0
-			tw.tween_property(u, "position:x", u.base_position.x + dx, 1.8)
+			tw.tween_property(u, "position:x", u.base_position.x + dx, WALK_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_start_walk_bob()
 	await tw.finished
 	if _finished:
 		return
@@ -791,39 +809,74 @@ func _start_walk(type: String) -> void:
 ## 목적지 도착: 종류에 따라 전투 / 보물 / 이벤트 / 상점 처리로 분기한다.
 func _arrive(type: String) -> void:
 	_phase = "node"
+	_stop_walk_bob()
 	var back := create_tween().set_parallel(true)
 	for u in _party_units:
 		if is_instance_valid(u):
 			back.tween_property(u, "position", u.base_position, 0.3)
 	match type:
 		"monster", "boss":
-			_clear_marker()
+			_clear_marker(0.18)
 			_start_battle()
 		"treasure":
 			var gold := GameState.rng().randi_range(40, 90) + 20 * _current_stage
 			_base_gold += gold
 			_add_log("★ 보물 상자를 발견했다! +%dG" % gold)
-			_finish_node_after(1.2)
+			_finish_node_after(_marker.play_arrival() + 0.5 if _marker != null else 1.2)
 		"event":
+			if _marker != null:
+				_marker.play_arrival()
 			_run_event()
 			_finish_node_after(1.6)
 		"shop":
 			_open_shop()
 
 
-## 마커 정리
-func _clear_marker() -> void:
-	if _dest_marker != null and is_instance_valid(_dest_marker):
-		_dest_marker.queue_free()
-	_dest_marker = null
+## 마커를 서서히 지운다.
+func _clear_marker(fade_sec: float = 0.3) -> void:
+	if _marker != null and is_instance_valid(_marker):
+		_marker.dismiss(fade_sec)
+	_marker = null
+
+
+## 이동 중 영웅들이 발걸음에 맞춰 위아래로 살짝 흔들리게 한다(유닛마다 박자가 조금씩 다르다).
+func _start_walk_bob() -> void:
+	_stop_walk_bob()
+	for i in _party_units.size():
+		var u = _party_units[i]
+		if not is_instance_valid(u):
+			continue
+		var step := 0.13 + 0.012 * i
+		var bt := create_tween().set_loops()
+		bt.tween_property(u, "position:y", u.base_position.y - 4.0, step).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		bt.tween_property(u, "position:y", u.base_position.y, step).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		_walk_bobs.append(bt)
+
+
+## 걸음 흔들림을 멈추고 유닛을 원래 높이로 되돌린다.
+func _stop_walk_bob() -> void:
+	for bt in _walk_bobs:
+		if bt != null and bt.is_valid():
+			bt.kill()
+	_walk_bobs.clear()
+	for u in _party_units:
+		if is_instance_valid(u):
+			u.position.y = u.base_position.y
 
 
 ## 몬스터/보스 목적지 전투 개시: 기존 턴제 전투 로직 재사용.
 func _start_battle() -> void:
 	_phase = "battle"
 	_round = 0
-	_monsters_data = _generate_stage_monsters(_current_stage)
+	if not _encounter_ready:
+		_monsters_data = _generate_stage_monsters(_current_stage)
+	_encounter_ready = false
 	_spawn_stage_monsters()
+	# 어둠 속 실루엣이 걷히며 적이 모습을 드러내는 느낌으로 서서히 나타난다
+	for mu in _monster_units:
+		if is_instance_valid(mu):
+			mu.modulate.a = 0.0
+			create_tween().tween_property(mu, "modulate:a", 1.0, 0.25)
 	_reset_round_flags()
 	_add_log("몬스터 %d마리와 조우했다!" % _monsters_data.size())
 	_start_next_round()
@@ -877,14 +930,14 @@ func _heal_party(ratio: float) -> void:
 func _open_shop() -> void:
 	if _shop_panel != null and is_instance_valid(_shop_panel):
 		_shop_panel.queue_free()
-	_shop_panel = PanelContainer.new()
-	_shop_panel.position = Vector2(820, 70)
+	_shop_panel = UiKit.panel(Color(0.07, 0.06, 0.05, 0.94), UiKit.GOLD, 12)
+	_shop_panel.position = Vector2(905, 24)
 	_shop_panel.custom_minimum_size = Vector2(340, 0)
 	_stage_content.add_child(_shop_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
 	_shop_panel.add_child(v)
-	var gold_lbl := UiKit.label("🏪 떠돌이 상인 — 보유 %dG" % _base_gold, 14, Color("ffd700"))
+	var gold_lbl := UiKit.label("떠돌이 상인 — 보유 %dG" % _base_gold, 14, Color("ffd700"))
 	v.add_child(gold_lbl)
 	var offers := [
 		{"name": "붕대 세트 (파티 HP +25%)", "cost": 40, "kind": "heal"},

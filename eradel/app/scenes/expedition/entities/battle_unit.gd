@@ -565,13 +565,17 @@ func _draw_placeholder() -> void:
 		_draw_ally_silhouette(base_color)
 	else:
 		# 고해상도 다키스트 던전 풍 4종 몬스터 정적 도트 스프라이트 배분
-		var mob_keys := ["mob_skeleton", "mob_cultist", "mob_eldritch", "mob_wraith"]
-		var mob_key: String = mob_keys[absi(unit_name.hash()) % mob_keys.size()]
-		var m_tex := _get_cached_tex("res://assets/sprites/characters/%s.png" % mob_key)
+		var m_tex := _get_cached_tex(mob_sprite_path(unit_name))
 		if m_tex != null:
 			_attach_crisp_sprite(m_tex, false)
 			return
 		_draw_monster_silhouette(base_color)
+
+
+## 몬스터 이름으로 4종 몬스터 스프라이트 경로를 고른다(전투 유닛과 갈림길 실루엣이 같은 그림을 쓰도록 공유).
+static func mob_sprite_path(mob_name: String) -> String:
+	var mob_keys := ["mob_skeleton", "mob_cultist", "mob_eldritch", "mob_wraith"]
+	return "res://assets/sprites/characters/%s.png" % mob_keys[absi(mob_name.hash()) % mob_keys.size()]
 
 
 func _get_cached_tex(path: String) -> Texture2D:
