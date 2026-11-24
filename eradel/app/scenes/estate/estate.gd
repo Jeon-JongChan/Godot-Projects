@@ -72,10 +72,10 @@ func _ready() -> void:
 	_build_hud()
 
 	# 5. [옵저버] GameState 시그널 구독 — 상태가 바뀌면 자동으로 HUD 와 건물 배지가 갱신된다
-	GameState.resources_changed.connect(_on_state_updated)
-	GameState.stress_changed.connect(_on_state_updated)
-	GameState.party_changed.connect(_on_state_updated)
-	GameState.roster_changed.connect(_on_state_updated)
+	GameState.resources_changed.connect(_on_resources_changed)
+	GameState.stress_changed.connect(_on_stress_changed)
+	GameState.party_changed.connect(_on_roster_or_party_changed)
+	GameState.roster_changed.connect(_on_roster_or_party_changed)
 	GameState.game_over.connect(_on_game_over)
 	var dc := get_node_or_null("/root/DebugConsole")
 	if dc != null and dc.has_signal("cheat_applied"):
@@ -245,49 +245,14 @@ func _zoom_out_and_return() -> void:
 	)
 
 
-# ── 상단 HUD 및 하단 노란색 창 1칸 스크롤바 빌드 ──
+# ── 상단 HUD 및 하단 노란색 창 1칸 스크롤바 빌드 (한 번만 호출. 값이 바뀌는 상단바·로스터 덱은 시그널로 각자 갱신) ──
 func _build_hud() -> void:
-	for c in _hud_layer.get_children():
-		if c != _active_modal and c != _atmosphere_overlay:
-			c.queue_free()
 	if is_instance_valid(_atmosphere_overlay):
 		_hud_layer.move_child(_atmosphere_overlay, 0)
 
-	# 1. 상단바 (다키스트 던전 스타일 고딕 문장 엠블럼 + 영지 타이틀 및 실시간 자원 칩)
-	var top_bar := PanelContainer.new()
-	top_bar.custom_minimum_size = Vector2(VIEWPORT_WIDTH, 48)
-	top_bar.set_anchors_preset(PRESET_TOP_WIDE)
-	top_bar.add_theme_stylebox_override("panel", UiKit.style(Color("0c0a08"), UiKit.BORDER2, 0, 2, 16, 6))
-	_hud_layer.add_child(top_bar)
-	_top_bar_holder = top_bar
-
-	var top_h := HBoxContainer.new()
-	top_h.add_theme_constant_override("separation", 14)
-	top_bar.add_child(top_h)
-
-	# 고딕 문장 도트 아이콘 & 영지 타이틀
-	top_h.add_child(UiKit.icon_rect("res://assets/sprites/ui/skill_guard.png", 26))
-	var title_box := VBoxContainer.new()
-	title_box.add_theme_constant_override("separation", 1)
-	title_box.add_child(UiKit.title("THE ERADEL ESTATE", 15, UiKit.GOLD2))
-	title_box.add_child(UiKit.label("제 %d일차 · %s (행동력 %d/%d)" % [GameState.day, GameState.season(), GameState.action_points, GameState.max_action_points], 11, UiKit.TEXT2))
-	top_h.add_child(title_box)
-
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = SIZE_EXPAND_FILL
-	top_h.add_child(spacer)
-
-	# 다키스트 던전 스타일 도트 아이콘 자원/지표 카운터 바
-	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_gold.png", "%d G" % GameState.gold, UiKit.GOLD))
-	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ruby.png", "마나석 %d" % GameState.manastone, UiKit.BLUE))
-	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ore.png", "철광석 %d" % GameState.iron_ore, UiKit.TEXT2))
-	top_h.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD2))
-	var act_col := UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GREEN
-	top_h.add_child(UiKit.chip("균열 활성 %d%%" % GameState.dungeon_activity, act_col))
-	top_h.add_child(UiKit.chip("스트레스 %d/100" % GameState.total_stress(), GameState.stress_color()))
-
-	# 2. 우측 상단 다키스트 던전 스타일 접이식 영웅 로스터 덱 (Hero Roster Dock)
-	_build_roster_dock()
+	# 1~2. 상단바와 우측 영웅 로스터 덱 (이후 상태 변동 시 각각 따로 다시 그린다)
+	_rebuild_top_bar()
+	_rebuild_roster_dock()
 
 	# 3. 화면 양 끝단 카메라 스크롤 화살표 버튼
 	var btn_left := Button.new()
@@ -393,8 +358,50 @@ func _build_hud() -> void:
 	_update_scroll_position()
 
 
+## 상단바(영지 타이틀·일차·자원 칩)만 새로 만든다. 자원/스트레스 변동 시 호출되며 다른 HUD 요소는 건드리지 않는다.
+func _rebuild_top_bar() -> void:
+	if is_instance_valid(_top_bar_holder):
+		_top_bar_holder.queue_free()
+	# 1. 상단바 (다키스트 던전 스타일 고딕 문장 엠블럼 + 영지 타이틀 및 실시간 자원 칩)
+	var top_bar := PanelContainer.new()
+	top_bar.custom_minimum_size = Vector2(VIEWPORT_WIDTH, 48)
+	top_bar.set_anchors_preset(PRESET_TOP_WIDE)
+	top_bar.add_theme_stylebox_override("panel", UiKit.style(Color("0c0a08"), UiKit.BORDER2, 0, 2, 16, 6))
+	_hud_layer.add_child(top_bar)
+	_top_bar_holder = top_bar
+
+	var top_h := HBoxContainer.new()
+	top_h.add_theme_constant_override("separation", 14)
+	top_bar.add_child(top_h)
+
+	# 고딕 문장 도트 아이콘 & 영지 타이틀
+	top_h.add_child(UiKit.icon_rect("res://assets/sprites/ui/skill_guard.png", 26))
+	var title_box := VBoxContainer.new()
+	title_box.add_theme_constant_override("separation", 1)
+	title_box.add_child(UiKit.title("THE ERADEL ESTATE", 15, UiKit.GOLD2))
+	title_box.add_child(UiKit.label("제 %d일차 · %s (행동력 %d/%d)" % [GameState.day, GameState.season(), GameState.action_points, GameState.max_action_points], 11, UiKit.TEXT2))
+	top_h.add_child(title_box)
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = SIZE_EXPAND_FILL
+	top_h.add_child(spacer)
+
+	# 다키스트 던전 스타일 도트 아이콘 자원/지표 카운터 바
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_gold.png", "%d G" % GameState.gold, UiKit.GOLD))
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ruby.png", "마나석 %d" % GameState.manastone, UiKit.BLUE))
+	top_h.add_child(UiKit.icon_chip("res://assets/sprites/ui/icon_ore.png", "철광석 %d" % GameState.iron_ore, UiKit.TEXT2))
+	top_h.add_child(UiKit.chip("민심 %d%%" % GameState.morale, UiKit.GOLD2))
+	var act_col := UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GREEN
+	top_h.add_child(UiKit.chip("균열 활성 %d%%" % GameState.dungeon_activity, act_col))
+	top_h.add_child(UiKit.chip("스트레스 %d/100" % GameState.total_stress(), GameState.stress_color()))
+	# 갱신 후에도 원래 렌더 순서(대기 중인 화살표 버튼보다 아래)를 유지한다
+	_hud_layer.move_child(top_bar, 1)
+
+
 ## 다키스트 던전 1 스타일의 우측 접이식 영웅 로스터 패널 (초상화, 레벨 뱃지, 10칸 스트레스 핍, 장비 수치)
-func _build_roster_dock() -> void:
+func _rebuild_roster_dock() -> void:
+	if is_instance_valid(_roster_dock_panel):
+		_roster_dock_panel.queue_free()
 	var dock_w: float = 230.0 if _roster_dock_expanded else 44.0
 	var dock_panel := PanelContainer.new()
 	dock_panel.position = Vector2(VIEWPORT_WIDTH - dock_w - 6, 56)
@@ -403,6 +410,7 @@ func _build_roster_dock() -> void:
 	dock_panel.add_theme_stylebox_override("panel", UiKit.style(Color("0c0a08ee"), UiKit.BORDER2, 8, 2, 6, 6))
 	_hud_layer.add_child(dock_panel)
 	_roster_dock_panel = dock_panel
+	_hud_layer.move_child(dock_panel, 2)
 
 	var dv := VBoxContainer.new()
 	dv.add_theme_constant_override("separation", 4)
@@ -419,7 +427,7 @@ func _build_roster_dock() -> void:
 	btn_toggle.add_theme_stylebox_override("normal", UiKit.style(UiKit.BG3, UiKit.BORDER, 4))
 	btn_toggle.pressed.connect(func():
 		_roster_dock_expanded = not _roster_dock_expanded
-		_build_hud()
+		_rebuild_roster_dock()
 	)
 	dh.add_child(btn_toggle)
 
@@ -474,10 +482,28 @@ func _handle_scrollbar_motion(global_mouse_x: float) -> void:
 	_update_scroll_position()
 
 
-## 자원/로스터/스트레스 변동 시 상단 HUD 및 마을 건물 배지 즉시 갱신
-func _on_state_updated() -> void:
-	_build_hud()
+## 자원·일차·행동력 변동: 상단바와 마을 건물 배지(말풍선)만 갱신한다.
+func _on_resources_changed() -> void:
+	_rebuild_top_bar()
 	village.rebuild()
+
+
+## 스트레스 변동: 상단바 스트레스 칩, 건물 배지, 화면 위험 연출(비네트 펄스)을 갱신한다.
+func _on_stress_changed() -> void:
+	_rebuild_top_bar()
+	village.rebuild()
+	_update_danger_atmosphere()
+
+
+## 로스터/파티 변동: 우측 영웅 로스터 덱과 마을 건물 배지만 갱신한다(상단바는 그대로).
+func _on_roster_or_party_changed() -> void:
+	_rebuild_roster_dock()
+	village.rebuild()
+	_update_danger_atmosphere()
+
+
+## 총 스트레스에 비례해 화면 위험 연출 셰이더 값(danger_pulse)을 갱신한다.
+func _update_danger_atmosphere() -> void:
 	if is_instance_valid(_atmosphere_overlay) and _atmosphere_overlay.material is ShaderMaterial:
 		(_atmosphere_overlay.material as ShaderMaterial).set_shader_parameter("danger_pulse", clampf(float(GameState.total_stress() - 50) / 50.0, 0.0, 0.85))
 
