@@ -38,6 +38,7 @@ func get_slot_meta(slot_index: int) -> Dictionary:
 			"is_empty": true,
 			"name": "빈 슬롯",
 			"saved_at": "",
+			"generation_number": 1,
 			"day": 0,
 			"gold": 0,
 			"roster_count": 0,
@@ -61,6 +62,7 @@ func get_slot_meta(slot_index: int) -> Dictionary:
 		"is_empty": false,
 		"name": str(data.get("name", "이름 없는 영지")),
 		"saved_at": str(data.get("saved_at", "")),
+		"generation_number": maxi(1, int(data.get("generation_number", 1))),
 		"day": int(data.get("day", 1)),
 		"gold": int(data.get("gold", 0)),
 		"roster_count": int(data.get("roster_count", 0)),
@@ -111,6 +113,7 @@ func save_slot(slot_index: int, save_name: String) -> bool:
 	var save_payload := {
 		"name": trimmed_name,
 		"saved_at": time_str,
+		"generation_number": int(gs.generation_number) if "generation_number" in gs else 1,
 		"day": gs.day,
 		"gold": gs.gold,
 		"roster_count": gs.roster.size(),

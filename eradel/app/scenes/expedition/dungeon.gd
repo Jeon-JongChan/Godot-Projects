@@ -19,6 +19,8 @@ const WALK_SEC: float = 2.0
 
 ## 목적지 종류 (몬스터/보물/이벤트/상점). 마지막 단계는 보스 고정.
 const DEST_TYPES: Array[String] = ["monster", "treasure", "event", "shop"]
+## 갈림길 목적지 가중치 (합계 100 — 전투 중심: 몬스터 70%, 이벤트 14%, 보물 10%, 상점 6%)
+const DEST_WEIGHTS: Dictionary = {"monster": 70, "event": 14, "treasure": 10, "shop": 6}
 const DEST_GLYPH := {"monster": "⚔", "treasure": "💰", "event": "❗", "shop": "🏪", "boss": "☠"}
 const DEST_NAME := {"monster": "몬스터", "treasure": "보물", "event": "이벤트", "shop": "상점", "boss": "심연 수호자"}
 
@@ -174,8 +176,13 @@ func _build_scene_layout() -> void:
 	bottom_hbox.add_child(right_box)
 
 
+## 3×3 (전열 3 · 중열 3 · 후열 3 = 9칸) 전투 필드 진형 좌표 상수 (석조 바닥 원근 배치)
+const ALLY_GRID_COL_X: Array[float] = [440.0, 300.0, 160.0] # [FRONT=0, MID=1, BACK=2]
+const ENEMY_GRID_COL_X: Array[float] = [740.0, 880.0, 1020.0] # [적 전열=0, 적 중열=1, 적 후열=2]
+const GRID_SLOT_Y: Array[float] = [132.0, 178.0, 224.0] # 석조 바닥 상 / 중 / 하 3단
+
+
 ## 다키스트 던전 특유의 어둡고 음산한 석조 회랑 및 원근 바닥을 그립니다.
-## 고화질 던전 전투 배경(dungeon_combat_bg.png)과 pixelfx 실시간 횃불 애니메이션을 합성합니다.
 func _build_stage_background(parent: Control) -> void:
 	var bg_canvas := DungeonCombatBackgroundCanvas.new()
 	bg_canvas.set_anchors_preset(PRESET_FULL_RECT)
@@ -183,22 +190,28 @@ func _build_stage_background(parent: Control) -> void:
 	parent.add_child(bg_canvas)
 
 
-## 아군 용병들과 적 몬스터 유닛들을 배틀 스테이지에 소환하고 배치합니다.
+## 아군 용병들과 적 몬스터 유닛들을 3×3 (전열3·중열3·후열3 = 9칸) 진형 좌표에 배치합니다.
 func _spawn_units() -> void:
 	_party_units.clear()
 	_monster_units.clear()
 
-	# 1. 아군 용병 배치 (다키스트 던전 스타일: 좌측 1열 ~ 4/5열)
-	var party_count := GameState.party.size()
-	for i in party_count:
-		var m: Mercenary = GameState.party[i]
+	# 1. 아군 용병 배치 (각 용병의 row: 전열/중열/후열 × 바닥 상/중/하 3슬롯)
+	var row_counts := [0, 0, 0]
+	for m in GameState.party:
+		var r_idx: int = clampi(m.row, Mercenary.Row.FRONT, Mercenary.Row.BACK)
+		var slot_idx: int = mini(row_counts[r_idx], 2)
+		row_counts[r_idx] += 1
+
 		var unit = BattleUnitScene.new()
 		_stage_content.add_child(unit)
 
-		var slot_x: float = 460.0 - i * 115.0
-		var slot_y: float = 165.0
+		# 뒤쪽(상단)에서 앞쪽(하단)으로 미세 원근 오프셋을 주어 겹침 없이 바닥에 배치
+		var slot_x: float = ALLY_GRID_COL_X[r_idx] + float(slot_idx - 1) * 14.0
+		var slot_y: float = GRID_SLOT_Y[slot_idx]
 		unit.position = Vector2(slot_x, slot_y)
 		unit.base_position = unit.position
+		unit.scale = Vector2(0.84, 0.84)
+		unit.z_index = slot_idx
 		unit.floating_text_pool = _ft_pool
 		unit.sfx_pool = _sfx_pool
 		unit.setup_as_mercenary(m)
@@ -209,7 +222,7 @@ func _spawn_units() -> void:
 	_spawn_stage_monsters()
 
 
-## 현재 회랑 데이터(_monsters_data)를 바탕으로 적 몬스터 유닛을 스테이지에 소환합니다.
+## 현재 회랑 데이터(_monsters_data)를 바탕으로 적 몬스터 유닛을 우측 3×3 (9칸) 진형에 소환합니다.
 func _spawn_stage_monsters() -> void:
 	for old_mon in _monster_units:
 		if is_instance_valid(old_mon):
@@ -219,15 +232,30 @@ func _spawn_stage_monsters() -> void:
 	_monster_units.clear()
 
 	var monster_count := _monsters_data.size()
+	var layout_slots: Array[Vector2i] = []
+	match monster_count:
+		1:
+			layout_slots = [Vector2i(0, 1)]
+		2:
+			layout_slots = [Vector2i(0, 1), Vector2i(1, 1)]
+		3:
+			layout_slots = [Vector2i(0, 0), Vector2i(0, 2), Vector2i(1, 1)]
+		_:
+			for idx in range(monster_count):
+				layout_slots.append(Vector2i(int(idx / 3) % 3, idx % 3))
+
 	for i in monster_count:
 		var mon: Dictionary = _monsters_data[i]
 		var unit = BattleUnitScene.new()
 		_stage_content.add_child(unit)
 
-		var slot_x: float = 680.0 + i * 115.0
-		var slot_y: float = 165.0
+		var cell: Vector2i = layout_slots[i]
+		var slot_x: float = ENEMY_GRID_COL_X[clampi(cell.x, 0, 2)] - float(cell.y - 1) * 14.0
+		var slot_y: float = GRID_SLOT_Y[clampi(cell.y, 0, 2)]
 		unit.position = Vector2(slot_x, slot_y)
 		unit.base_position = unit.position
+		unit.scale = Vector2(0.84, 0.84)
+		unit.z_index = cell.y
 		unit.floating_text_pool = _ft_pool
 		unit.sfx_pool = _sfx_pool
 		unit.setup_as_monster(mon)
@@ -454,7 +482,8 @@ func _execute_ally_attack(multiplier: float = 1.0, is_skill: bool = false) -> vo
 		multiplier,
 		is_skill,
 		GameState.party_attack_bonus(),
-		GameState.rng()
+		GameState.rng(),
+		GameState.party_crit_bonus()
 	)
 	var final_dmg: int = int(eval.get("damage", 1))
 	var is_crit: bool = eval.get("is_crit", false)
@@ -671,7 +700,10 @@ func _begin_map_select() -> void:
 	else:
 		var rng := GameState.rng()
 		for i in 3:
-			_dest_choices.append(DEST_TYPES[rng.randi_range(0, DEST_TYPES.size() - 1)])
+			_dest_choices.append(_roll_dest_type(rng))
+		# 갈림길 3개 모두 비전투로만 채워지는 현상을 방지하기 위해 최소 1개는 몬스터를 보장한다.
+		if not _dest_choices.has("monster"):
+			_dest_choices[rng.randi_range(0, 2)] = "monster"
 	_minimap.set_retreat_disabled(false)
 	_set_controls_enabled(false)
 	_top_bar.set_round_text("제 %d 구역 · 갈림길" % _current_stage)
@@ -681,6 +713,17 @@ func _begin_map_select() -> void:
 			_hero_panel.update_hero(u)
 			break
 	_build_map_overlay()
+
+
+## DEST_WEIGHTS 가중치(몬스터 70 / 이벤트 14 / 보물 10 / 상점 6)에 따라 갈림길 목적지 1개를 추첨한다.
+func _roll_dest_type(rng: RandomNumberGenerator) -> String:
+	var roll: int = rng.randi_range(1, 100)
+	var acc: int = 0
+	for key: String in ["monster", "event", "treasure", "shop"]:
+		acc += int(DEST_WEIGHTS.get(key, 0))
+		if roll <= acc:
+			return key
+	return "monster"
 
 
 ## 지도 오버레이: 좌측 깃발(현재 위치)에서 3갈래 길이 뻗고 목적지는 선택 전까지 '?'로 가려진다.
@@ -979,6 +1022,11 @@ func _end(outcome: String) -> void:
 	_minimap.refresh(_current_stage, _finished)
 	_minimap.set_retreat_disabled(true)
 	_set_controls_enabled(false)
+
+	# 최종 결과 정산 직전에 모든 파티 유닛의 생존/사망 HP를 merc_data에 확실히 동기화한다.
+	for u in _party_units:
+		if is_instance_valid(u) and u.merc_data != null:
+			u.merc_data.hp = 0 if u.is_dead else maxi(0, u.current_hp)
 
 	GameState.finalize_expedition(outcome, _base_gold)
 

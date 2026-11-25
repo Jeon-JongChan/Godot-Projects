@@ -25,6 +25,10 @@ func populate(vbox: VBoxContainer) -> void:
 
 	var rv := UiKit.modal_summary_card(center_col, "⚠ 차원 균열 침식 경보", {"title_color": UiKit.RED})
 	rv.add_child(UiKit.label("• 균열 활성도: %d%%  ·  몬스터 위협 티어: +%d단계" % [GameState.dungeon_activity, GameState.monster_tier], 11, UiKit.TEXT))
+	if GameState.endless_cycle > 0 or GameState.boss_sealed_count > 0:
+		rv.add_child(UiKit.label("• 심연 엔드리스: +%d사이클 (몬스터 ×%.1f) · 누적 봉인 %d회" % [
+			GameState.endless_cycle, GameState.endless_monster_mult(), GameState.boss_sealed_count
+		], 11, UiKit.GOLD2))
 	rv.add_child(UiKit.progress(GameState.dungeon_activity, 100, UiKit.RED if GameState.dungeon_activity >= 60 else UiKit.GOLD, 8))
 	rv.add_child(UiKit.label("• 심연 진입 시 몬스터와의 치열한 턴제 전투가 벌어집니다. 철저한 준비 후 출진하세요.", 10, UiKit.TEXT2))
 
@@ -39,18 +43,13 @@ func populate(vbox: VBoxContainer) -> void:
 	sp.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	iv.add_child(sp)
 
-	var btn_prep := UiKit.button("원정 준비 화면으로 보기 ↗", UiKit.GOLD)
-	btn_prep.custom_minimum_size = Vector2(0, 36)
+	# 편성 부족·배치 미확인 오출진 방지를 위해 항상 원정 준비 화면(expedition_prep)을 경유해 출진한다.
+	iv.add_child(UiKit.label("※ 출진 전 편성 인원과 전열·중열·후열 배치를 원정 준비 화면에서 확인하세요.", 10, UiKit.TEXT2))
+
+	var btn_prep := UiKit.gothic_button("⚔️ 원정 준비 화면으로 이동 ↗", UiKit.GOLD)
+	btn_prep.custom_minimum_size = Vector2(0, 48)
+	btn_prep.focus_mode = Control.FOCUS_ALL
 	btn_prep.pressed.connect(func():
 		estate.get_tree().change_scene_to_file(GameState.SCENE_PREP)
 	)
 	iv.add_child(btn_prep)
-
-	var btn_launch := UiKit.gothic_button("⚔️ 어둠의 균열 출진! (전투)", UiKit.RED if can_launch else UiKit.BORDER)
-	btn_launch.custom_minimum_size = Vector2(0, 46)
-	btn_launch.disabled = not can_launch
-	btn_launch.pressed.connect(func():
-		if not GameState.party.is_empty():
-			estate.get_tree().change_scene_to_file(GameState.SCENE_DUNGEON)
-	)
-	iv.add_child(btn_launch)

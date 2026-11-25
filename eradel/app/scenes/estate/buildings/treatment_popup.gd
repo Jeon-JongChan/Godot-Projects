@@ -68,12 +68,25 @@ func populate(vbox: VBoxContainer) -> void:
 		care_row.add_child(cbox)
 
 	var succ_rate := GameState.heal_success_rate()
-	iv.add_child(UiKit.label("외과 성공 확률: %d%% (치료소 Lv.%d)" % [succ_rate, GameState.building_level("치료소")], 12, UiKit.GREEN))
+	var tlv := GameState.building_level("치료소")
+	var base_rate: int = [50, 62, 74, 82, 90][clampi(tlv, 1, 5) - 1]
+	var brand_pen := GameState.brand_heal_penalty_pp()
+	var has_oath := GameState.active_curses.has("curse_faded_oath")
+	iv.add_child(UiKit.label("외과 성공 확률: %d%% (치료소 Lv.%d)" % [succ_rate, tlv], 12, UiKit.GREEN if succ_rate >= 50 else UiKit.GOLD))
+	if brand_pen > 0 or has_oath:
+		var parts: PackedStringArray = ["기본 %d%%" % base_rate]
+		if brand_pen > 0:
+			parts.append("낙인 -%d%%p" % brand_pen)
+		if has_oath:
+			parts.append("바랜 맹세 -8%%p")
+		var attr_lbl := UiKit.label("[%s%s]" % [" ".join(parts), " · 하한 10%" if succ_rate <= 10 else ""], 10, UiKit.RED.lightened(0.25))
+		attr_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		iv.add_child(attr_lbl)
 	iv.add_child(UiKit.progress(succ_rate, 100, UiKit.GREEN, 8))
 
 	iv.add_child(UiKit.divider())
 
-	var treat_cost := GameState.TREAT_PENALTY_COST
+	var treat_cost := GameState.treat_penalty_cost()
 	if _selected_treatment_merc != null and _selected_treatment_pen != "":
 		iv.add_child(UiKit.title("대상: %s" % _selected_treatment_merc.merc_name, 13, UiKit.WHITE))
 		iv.add_child(UiKit.label("치료 후유증: %s" % _selected_treatment_pen, 12, UiKit.RED))
@@ -81,7 +94,8 @@ func populate(vbox: VBoxContainer) -> void:
 
 		iv.add_child(UiKit.divider())
 		var has_g := GameState.can_afford(treat_cost)
-		iv.add_child(UiKit.label("필요 비용: %d G (보유: %d)" % [treat_cost, GameState.gold], 12, UiKit.GOLD if has_g else UiKit.RED))
+		var surcharge_txt := " [불신의 낙인 +20G]" if GameState.brand_stacks >= 3 else ""
+		iv.add_child(UiKit.label("필요 비용: %d G%s (보유: %d)" % [treat_cost, surcharge_txt, GameState.gold], 12, UiKit.GOLD if has_g else UiKit.RED))
 
 		var sp := Control.new()
 		sp.size_flags_vertical = Control.SIZE_EXPAND_FILL

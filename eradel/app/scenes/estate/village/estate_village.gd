@@ -103,11 +103,13 @@ func _create_building_node(def: Dictionary) -> Control:
 	var b_lbl := UiKit.label(bubble_text, 11, UiKit.GOLD2 if not is_dungeon else Color("ff8098"))
 	b_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bubble.add_child(b_lbl)
-	bubble.position = Vector2((r.size.x - 130) * 0.5, -18)
+	# 2행 상단 상태 스트립(y=48..76)에 최상단 건물 말풍선이 가려지지 않도록 최소 절대 Y=82를 보장한다.
+	var base_by: float = maxf(-18.0, 82.0 - r.position.y)
+	bubble.position = Vector2((r.size.x - 130) * 0.5, base_by)
 	bubble.custom_minimum_size = Vector2(130, 24)
 	root.add_child(bubble)
 	_floating_bubbles.append(bubble)
-	_bubble_base_y.append(-18.0)
+	_bubble_base_y.append(base_by)
 
 	# 3. 건물 하단 마을 명패 배지 ([경량화] 공유 StyleBox 캐시 사용)
 	var plate := PanelContainer.new()
@@ -186,13 +188,14 @@ func _bubble_text(def: Dictionary) -> String:
 		"warehouse":
 			return "📦 마나석 %d개" % GameState.manastone
 		"blacksmith":
-			return "⚒️ 공격력 +%d" % GameState.party_attack_bonus()
+			return "⚒️ 공격력 +%d" % GameState.blacksmith_attack_bonus()
 		"magic":
 			return "🔮 활성도 %d%%" % GameState.dungeon_activity
 		"training":
 			return "🎯 영웅 특훈"
 		"memorial":
-			return "🏛️ 위령비 (%d위)" % GameState.death_log.size()
+			var unres := GameState.unresolved_relic_count()
+			return ("🕯️ 미처리 유품 %d!" % unres) if unres > 0 else ("🏛️ 위령비 (%d위)" % GameState.death_log.size())
 		"dungeon":
 			return "⚔️ 원정 출진!"
 	return def.icon + " " + def.name

@@ -6,6 +6,10 @@ extends RefCounted
 ## 게임 규칙(수치)은 아래 카탈로그에만 존재하므로 UI 코드에서 밸런스 값을 찾을 필요가 없다.
 
 const MAX_MERC_LEVEL := 10
+## 착취 낙인 6스택 이상(타락한 영주) 시 회복량이 50% 반감되는 영지 회복 커맨드 ID 목록
+const RECOVERY_COMMAND_IDS: Array[String] = ["honor", "relief", "pray", "incense", "festival"]
+## 출진 가능 용병이 0명일 때 무한 ATM 악용을 막기 위해 차단하는 골드 생산 커맨드 ID 목록
+const GOLD_INCOME_COMMAND_IDS: Array[String] = ["tax"]
 
 var id: String
 var title: String
@@ -30,8 +34,11 @@ func _init(p_id: String, p_title: String, p_desc: String, cost: Dictionary, p_ef
 	target = p_target
 
 
-## 비용·대상 조건을 만족하는지 검사한다.
+## 비용·대상 조건 및 비상 구제 ATM 방지 조건을 만족하는지 검사한다.
 func can_execute() -> bool:
+	# 출진 가능 용병 0명 상태에서는 수익 커맨드(긴급 징세 등)를 차단해 비상 휴식 무한 ATM을 막는다.
+	if GOLD_INCOME_COMMAND_IDS.has(id) and GameState.ready_merc_count() == 0:
+		return false
 	if not GameState.can_afford(gold, mana) or GameState.action_points < ap:
 		return false
 	if target != null:
@@ -69,17 +76,30 @@ func cost_text() -> String:
 	return " · ".join(parts) if not parts.is_empty() else "무료"
 
 
+## 착취 낙인 6스택 이상(타락한 영주) 여부에 따라 회복 커맨드의 실제 민심·스트레스 회복량을 보정한다.
+static func _corrupt_recovery_amount(amount: int) -> int:
+	if GameState.brand_stacks >= 6:
+		return int(floor(float(amount) * 0.5))
+	return amount
+
+
 func _apply_effects() -> void:
 	var roster_touched := false
+	var is_recovery := RECOVERY_COMMAND_IDS.has(id)
 	for k in effects:
-		var v: int = effects[k]
+		var v: int = int(effects[k])
 		match k:
 			"gold": GameState.add_gold(v)
 			"mana": GameState.add_manastone(v)
-			"morale": GameState.morale += v
+			"morale":
+				var delta_m: int = _corrupt_recovery_amount(v) if (is_recovery and v > 0) else v
+				GameState.morale += delta_m
 			"activity": GameState.dungeon_activity += v
 			"monster_tier": GameState.monster_tier += v
-			"stress": GameState.add_resolvable_stress(v)
+			"stress":
+				# 해소 스트레스 감소(음수)만 회복으로 취급해 6스택 시 50% 반감한다.
+				var delta_s: int = -_corrupt_recovery_amount(-v) if (is_recovery and v < 0) else v
+				GameState.add_resolvable_stress(delta_s)
 			"heal_ready":
 				# 대기 중인 생존 용병만 회복 (사망·실종자는 제외)
 				for m in GameState.roster:
@@ -254,9 +274,11 @@ static func catalog(building_type: String) -> Array[EstateCommand]:
 		"memorial":
 			var mlv := _lv("기념관")
 			var gain := 8 + mlv * 2
-			out.append(EstateCommand.new("honor", "🕯️ 영령 추모 헌화 의식", "영지를 위해 싸운 영웅들을 기리며 민심을 +%d%% 회복하고 해소가능 스트레스를 %d 완화합니다." % [gain, gain],
+			var eff_gain := _corrupt_recovery_amount(gain)
+			var corrupt_tag := "\n[타락한 영주: 회복량 -50%]" if GameState.brand_stacks >= 6 else ""
+			out.append(EstateCommand.new("honor", "🕯️ 영령 추모 헌화 의식", "영지를 위해 싸운 영웅들을 기리며 민심을 +%d%% 회복하고 해소가능 스트레스를 %d 완화합니다.%s" % [eff_gain, eff_gain, corrupt_tag],
 				{"gold": 50}, {"morale": gain, "stress": -gain},
-				"영령 추모 헌화 의식을 거행하여 민심이 +%d%% 오르고 스트레스가 감소했습니다!" % gain))
+				"영령 추모 헌화 의식을 거행하여 민심이 +%d%% 오르고 스트레스가 %d 감소했습니다!" % [eff_gain, eff_gain]))
 	return out
 
 

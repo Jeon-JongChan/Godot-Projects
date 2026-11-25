@@ -58,21 +58,28 @@ class SkillMultiplierHandler extends Handler:
 		ctx["damage"] = int(round(float(ctx.get("damage", 0)) * mult))
 
 
-## 4단계: 치명타 확률을 판정하고 치명타 배율(아군 1.5x, 적군 1.4x)을 적용한다 (Mercenary CRIT % 반영).
+## 4단계: 치명타 확률을 판정하고 치명타 배율(아군 1.5x, 적군 1.4x)을 적용한다 (Mercenary CRIT % + 원정 축복 반영).
 class CriticalHitHandler extends Handler:
 	func _process(ctx: Dictionary) -> void:
 		var rng: RandomNumberGenerator = ctx.get("rng")
-		var is_ally: bool = ctx.get("is_ally", false)
-		var is_skill: bool = ctx.get("is_skill", false)
+		var is_ally: bool = bool(ctx.get("is_ally", false))
+		var is_skill: bool = bool(ctx.get("is_skill", false))
 		var attacker: Variant = ctx.get("attacker_merc")
-		var is_crit := false
-		if rng != null:
+		var party_crit_bonus: float = float(ctx.get("party_crit_bonus", 0.0)) if is_ally else 0.0
+
+		# rng 유무와 무관하게 최종 치명타율을 먼저 산출·기록하여 결정론적 테스트 및 UI 검증을 보장한다.
+		var crit_pct: float = 10.0
+		if is_ally:
 			if attacker is Mercenary:
-				var crit_pct: float = (attacker as Mercenary).get_crit() + (10.0 if is_skill else 0.0)
-				is_crit = (rng.randf_range(0.0, 100.0) <= crit_pct)
+				crit_pct = (attacker as Mercenary).get_crit() + (10.0 if is_skill else 0.0) + party_crit_bonus
 			else:
-				var crit_chance: int = (30 if is_skill else 12) if is_ally else 10
-				is_crit = (rng.randi_range(1, 100) <= crit_chance)
+				crit_pct = float(30 if is_skill else 12) + party_crit_bonus
+		crit_pct = clampf(crit_pct, 0.0, 100.0)
+		ctx["crit_pct"] = crit_pct
+
+		var is_crit := false
+		if rng != null and crit_pct > 0.0:
+			is_crit = (rng.randf_range(0.0, 100.0) <= crit_pct)
 		ctx["is_crit"] = is_crit
 		if is_crit:
 			var crit_mult: float = 1.5 if is_ally else 1.4
@@ -113,8 +120,8 @@ static func create_default() -> DamagePipeline:
 	return DamagePipeline.new()
 
 
-## 공격자와 피격자 Mercenary 6대 스탯(DMG/CRIT/PROT)을 결합해 최종 피해를 계산한다.
-func resolve_attack(attacker_merc: Mercenary, defender_merc: Mercenary, fallback_attack: int = 10, multiplier: float = 1.0, is_skill: bool = false, party_bonus: int = 0, rng: RandomNumberGenerator = null) -> Dictionary:
+## 공격자와 피격자 Mercenary 6대 스탯(DMG/CRIT/PROT) 및 원정 축복 치명타 보너스를 결합해 최종 피해를 계산한다.
+func resolve_attack(attacker_merc: Mercenary, defender_merc: Mercenary, fallback_attack: int = 10, multiplier: float = 1.0, is_skill: bool = false, party_bonus: int = 0, rng: RandomNumberGenerator = null, party_crit_bonus: float = 0.0) -> Dictionary:
 	return evaluate({
 		"rng": rng,
 		"attacker_merc": attacker_merc,
@@ -123,6 +130,7 @@ func resolve_attack(attacker_merc: Mercenary, defender_merc: Mercenary, fallback
 		"spread": 6 if attacker_merc != null else 5,
 		"is_ally": (attacker_merc != null),
 		"party_bonus": party_bonus,
+		"party_crit_bonus": party_crit_bonus,
 		"multiplier": multiplier,
 		"is_skill": is_skill,
 	})

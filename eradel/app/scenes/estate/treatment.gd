@@ -33,7 +33,17 @@ func _rebuild() -> void:
 	content.add_theme_constant_override("separation", 8)
 	margin.add_child(content)
 
-	content.add_child(UiKit.label("\"상처는 낫지만, 흉터는 남는다\"  ·  성공률 %d%% (치료소 Lv.%d)" % [GameState.heal_success_rate(), GameState.buildings["치료소"]], 12, UiKit.TEXT2))
+	var tlv := GameState.building_level("치료소")
+	var succ := GameState.heal_success_rate()
+	var base_r: int = [50, 62, 74, 82, 90][clampi(tlv, 1, 5) - 1]
+	content.add_child(UiKit.label("\"상처는 낫지만, 흉터는 남는다\"  ·  성공률 %d%% (치료소 Lv.%d)" % [succ, tlv], 12, UiKit.TEXT2))
+	if GameState.brand_heal_penalty_pp() > 0 or GameState.active_curses.has("curse_faded_oath"):
+		var sub := UiKit.label("귀인: 기본 %d%% - 낙인 %d%%p%s" % [
+			base_r, GameState.brand_heal_penalty_pp(),
+			" - 바랜 맹세 8%p" if GameState.active_curses.has("curse_faded_oath") else ""
+		], 11, UiKit.RED.lightened(0.25))
+		sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		content.add_child(sub)
 	if _last_msg != "":
 		content.add_child(UiKit.label(_last_msg, 12, UiKit.GOLD))
 
@@ -76,7 +86,7 @@ func _merc_card(m: Mercenary) -> Control:
 
 
 func _penalty_row(m: Mercenary, penalty: String) -> Control:
-	var cost := GameState.TREAT_PENALTY_COST
+	var cost := GameState.treat_penalty_cost()
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", 8)
 	var p := UiKit.panel(UiKit.BG3, UiKit.RED.darkened(0.3), 6)

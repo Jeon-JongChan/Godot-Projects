@@ -3,6 +3,16 @@
 extends Control
 
 var _root: MarginContainer
+## 5명 미만 편성 출발 시 표시되는 확인 팝업 오버레이
+var _confirm_overlay: Control = null
+
+
+## ESC 입력 시 5명 미만 출발 확인 팝업을 닫는다.
+func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(_confirm_overlay):
+		if event.is_action_pressed("ui_cancel") or (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE):
+			get_viewport().set_input_as_handled()
+			_close_confirm_popup()
 
 
 ## 화면 진입 시 초기화: 고딕 배경 구성 및 파티/로스터 상태 변경 시그널 구독
@@ -73,16 +83,27 @@ func _rebuild() -> void:
 
 	body.add_child(_build_formation())
 
-	# 하단 푸터: 힌트 문구 및 던전 입장 액션 버튼
+	# 하단 푸터: 힌트 문구 및 던전 입장(일반 / 심층 보스) 액션 버튼
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 10)
 	var hint := UiKit.label(_footer_hint(), 12, UiKit.TEXT2)
 	hint.size_flags_horizontal = SIZE_EXPAND_FILL
 	footer.add_child(hint)
+
+	var boss_unlocked := GameState.can_enter_boss_expedition()
+	var btn_boss := UiKit.primary_button("👑 심층 보스 입장 ↗", UiKit.GOLD)
+	btn_boss.custom_minimum_size = Vector2(180, 44)
+	btn_boss.focus_mode = Control.FOCUS_ALL
+	btn_boss.disabled = GameState.party.is_empty() or not boss_unlocked
+	btn_boss.tooltip_text = "" if boss_unlocked else "해금 조건: 균열 활성도 30% 이하 또는 10일차 이상"
+	btn_boss.pressed.connect(func(): _request_enter(true))
+	footer.add_child(btn_boss)
+
 	var enter := UiKit.primary_button("던전 입장 ↗", UiKit.GREEN)
 	enter.custom_minimum_size = Vector2(160, 44)
+	enter.focus_mode = Control.FOCUS_ALL
 	enter.disabled = GameState.party.is_empty()
-	enter.pressed.connect(_on_enter)
+	enter.pressed.connect(func(): _request_enter(false))
 	footer.add_child(enter)
 	content.add_child(footer)
 
@@ -179,8 +200,97 @@ func _slot(m: Mercenary, in_party: bool) -> Control:
 	})
 
 
-## 던전 입장 실행: 파티원 상태를 '원정 중(ON_EXPEDITION)'으로 전환 후 던전 씬으로 전환
-func _on_enter() -> void:
-	for m in GameState.party:
-		m.status = Mercenary.Status.ON_EXPEDITION
-	get_tree().change_scene_to_file(GameState.SCENE_DUNGEON)
+## 던전 입장 요청: 5명 미만 편성 시 안내 확인 팝업을 띄우고, 5명 편성 완료 시 즉시 출진한다.
+func _request_enter(boss_mode: bool) -> void:
+	if GameState.party.is_empty():
+		return
+	if GameState.party.size() < GameState.MAX_PARTY:
+		_show_understaffed_confirm(boss_mode)
+		return
+	_on_enter(boss_mode)
+
+
+## 편성 인원이 5명 미만일 때 표시하는 출발 확인 팝업 ("인원이 5명 미만입니다. 이대로 출발하시겠습니까?").
+func _show_understaffed_confirm(boss_mode: bool) -> void:
+	_close_confirm_popup()
+	var overlay := Control.new()
+	overlay.set_anchors_preset(PRESET_FULL_RECT)
+	add_child(overlay)
+	_confirm_overlay = overlay
+
+	var dim := ColorRect.new()
+	dim.color = Color(0.0, 0.0, 0.0, 0.68)
+	dim.set_anchors_preset(PRESET_FULL_RECT)
+	dim.gui_input.connect(func(ev: InputEvent):
+		if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
+			get_viewport().set_input_as_handled()
+			_close_confirm_popup()
+	)
+	overlay.add_child(dim)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(PRESET_FULL_RECT)
+	center.mouse_filter = MOUSE_FILTER_PASS
+	overlay.add_child(center)
+
+	var card := UiKit.panel(UiKit.BG, UiKit.GOLD, 10)
+	card.custom_minimum_size = Vector2(460, 0)
+	card.mouse_filter = MOUSE_FILTER_STOP
+	center.add_child(card)
+
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 16)
+	card.add_child(v)
+
+	# 상단 헤더: ⚠ 안내 + [X] 닫기
+	var head := HBoxContainer.new()
+	var title_lbl := UiKit.title("⚠ 안내", 17, UiKit.GOLD2)
+	title_lbl.size_flags_horizontal = SIZE_EXPAND_FILL
+	head.add_child(title_lbl)
+	var btn_x := UiKit.button("✕", UiKit.BORDER2)
+	btn_x.custom_minimum_size = Vector2(34, 30)
+	btn_x.focus_mode = Control.FOCUS_ALL
+	btn_x.pressed.connect(_close_confirm_popup)
+	head.add_child(btn_x)
+	v.add_child(head)
+
+	v.add_child(UiKit.divider())
+
+	var msg := UiKit.label("인원이 5명 미만입니다. (현재 %d / %d명)\n이대로 출발하시겠습니까?" % [GameState.party.size(), GameState.MAX_PARTY], 15, UiKit.WHITE)
+	msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(msg)
+
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 18)
+	v.add_child(btn_row)
+
+	var btn_cancel := UiKit.button("취소", UiKit.BORDER2)
+	btn_cancel.custom_minimum_size = Vector2(140, 44)
+	btn_cancel.focus_mode = Control.FOCUS_ALL
+	btn_cancel.pressed.connect(_close_confirm_popup)
+	btn_row.add_child(btn_cancel)
+
+	var btn_go := UiKit.primary_button("출발", UiKit.GOLD if boss_mode else UiKit.GREEN)
+	btn_go.custom_minimum_size = Vector2(140, 44)
+	btn_go.focus_mode = Control.FOCUS_ALL
+	btn_go.pressed.connect(func():
+		_close_confirm_popup()
+		_on_enter(boss_mode)
+	)
+	btn_row.add_child(btn_go)
+
+	btn_cancel.grab_focus()
+
+
+## 5명 미만 확인 팝업을 닫는다.
+func _close_confirm_popup() -> void:
+	if is_instance_valid(_confirm_overlay):
+		_confirm_overlay.queue_free()
+	_confirm_overlay = null
+
+
+## 던전 입장 실행: GameState.start_expedition() 단일 진입점으로 파티 상태를 전환하고 던전 씬으로 이동한다.
+func _on_enter(boss_mode: bool = false) -> void:
+	if GameState.start_expedition(boss_mode):
+		get_tree().change_scene_to_file(GameState.SCENE_DUNGEON)

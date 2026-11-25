@@ -6,6 +6,7 @@ extends Control
 var _buttons: Array[Button] = []
 var _active_popup: Control = null
 var _slot_full_alert: Control = null
+var _difficulty_dialog: Control = null
 
 var _save_manager: Node:
 	get:
@@ -127,25 +128,107 @@ func _setup_focus_neighbors() -> void:
 		_buttons[i].focus_neighbor_bottom = next_btn.get_path()
 
 
-## ① New Game: 빈 슬롯 1개 자동 선택 후 새 게임 시작
+## ① New Game: 빈 슬롯 확인 후 난이도 선택 다이얼로그를 열어 새 게임을 시작한다.
 func _on_new_game() -> void:
-	if _active_popup != null:
+	if _active_popup != null or _difficulty_dialog != null:
 		return
 
 	var sm = _save_manager
-	var gs = _game_state
 	var empty_slot: int = sm.get_first_empty_slot() if sm != null else -1
 	if empty_slot != -1:
-		# 빈 슬롯이 있으면 즉시 새 게임 초기화 후 저장 및 씬 전환
-		if gs != null:
-			gs.new_game()
-		if sm != null:
-			sm.save_slot(empty_slot, "영주 #%d" % empty_slot)
-		if gs != null:
-			get_tree().change_scene_to_file(gs.SCENE_ESTATE)
+		_show_difficulty_dialog(empty_slot)
 	else:
 		# 모든 슬롯(3개)이 차 있는 경우: 안내 팝업 후 Load 팝업으로 유도
 		_show_slots_full_dialog()
+
+
+## 새 게임 난이도(보통 / 어려움 / 악몽) 선택 모달을 표시한다 (OQ-1).
+func _show_difficulty_dialog(empty_slot: int) -> void:
+	if is_instance_valid(_difficulty_dialog):
+		_difficulty_dialog.queue_free()
+
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.72)
+	dim.set_anchors_preset(PRESET_FULL_RECT)
+	add_child(dim)
+	_difficulty_dialog = dim
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(PRESET_FULL_RECT)
+	dim.add_child(center)
+
+	var box := UiKit.panel(UiKit.BG, UiKit.GOLD, 12)
+	box.custom_minimum_size = Vector2(520, 0)
+	center.add_child(box)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	box.add_child(vbox)
+
+	var t := UiKit.title("통치 난이도 선택", 20, UiKit.GOLD2)
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(t)
+
+	var desc := UiKit.label("난이도에 따라 원혼 착취 낙인 디버프 배율이 달라집니다.\n선택한 난이도는 세대 교체 이후에도 유지됩니다.", 12, UiKit.TEXT2)
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(desc)
+
+	var diffs := [
+		{"id": "normal", "label": "보통 (1.0x) — 표준 에라델 통치", "color": UiKit.GREEN},
+		{"id": "hard", "label": "어려움 (1.5x) — 가혹한 낙인 압박", "color": UiKit.GOLD},
+		{"id": "nightmare", "label": "악몽 (2.0x) — 극한의 도덕적 부채", "color": UiKit.RED},
+	]
+	var first_btn: Button = null
+	for d in diffs:
+		var did: String = str(d["id"])
+		var btn := UiKit.gothic_button(str(d["label"]), d["color"])
+		btn.custom_minimum_size = Vector2(0, 42)
+		btn.focus_mode = Control.FOCUS_ALL
+		var chosen: String = did
+		btn.pressed.connect(func():
+			_close_difficulty_dialog()
+			var gs = _game_state
+			var sm = _save_manager
+			if gs != null:
+				gs.new_game(chosen)
+			if sm != null:
+				sm.save_slot(empty_slot, "영주 #%d" % empty_slot)
+			if gs != null:
+				get_tree().change_scene_to_file(gs.SCENE_ESTATE)
+		)
+		vbox.add_child(btn)
+		if first_btn == null:
+			first_btn = btn
+
+	var cancel_btn := UiKit.button("취소 (ESC)", UiKit.BORDER2)
+	cancel_btn.custom_minimum_size = Vector2(0, 36)
+	cancel_btn.focus_mode = Control.FOCUS_ALL
+	cancel_btn.pressed.connect(func():
+		_close_difficulty_dialog()
+		if not _buttons.is_empty():
+			_buttons[0].grab_focus()
+	)
+	vbox.add_child(cancel_btn)
+
+	if first_btn != null:
+		first_btn.grab_focus()
+
+
+## 난이도 선택 모달을 닫는다.
+func _close_difficulty_dialog() -> void:
+	if is_instance_valid(_difficulty_dialog):
+		_difficulty_dialog.queue_free()
+	_difficulty_dialog = null
+
+
+## ESC 입력 시 난이도 선택 다이얼로그를 닫는다.
+func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(_difficulty_dialog):
+		if event.is_action_pressed("ui_cancel") or (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE):
+			get_viewport().set_input_as_handled()
+			_close_difficulty_dialog()
+			if not _buttons.is_empty():
+				_buttons[0].grab_focus()
 
 
 ## ② Load: Load 팝업 열기

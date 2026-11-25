@@ -183,8 +183,8 @@ func refresh_slots() -> void:
 			edit.modulate = Color(1, 1, 1, 1)
 			v_btn.disabled = false
 			x_btn.disabled = false
-			info_lbl.text = "진행: %d일차  |  보유 금화: %dG  |  용병단: %d명  |  저장: %s" % [
-				int(meta.get("day", 1)), int(meta.get("gold", 0)), int(meta.get("roster_count", 0)), str(meta.get("saved_at", ""))
+			info_lbl.text = "제 %d대 · %d일차  |  보유 금화: %dG  |  용병단: %d명  |  저장: %s" % [
+				int(meta.get("generation_number", 1)), int(meta.get("day", 1)), int(meta.get("gold", 0)), int(meta.get("roster_count", 0)), str(meta.get("saved_at", ""))
 			]
 
 

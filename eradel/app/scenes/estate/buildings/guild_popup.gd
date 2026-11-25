@@ -25,10 +25,21 @@ func populate(vbox: VBoxContainer) -> void:
 				"action_color": UiKit.RED,
 				"action_min_size": Vector2(44, 28),
 				"on_action": func(target: Mercenary):
-					if GameState.dismiss_merc(target):
-						notice = "[%s] %s (%s Lv.%d) 용병을 해고했습니다." % [target.grade, target.merc_name, target.job, target.level]
-						estate.village.rebuild()
-						rebuild(),
+					var has_pen := target.penalties.size() > 0
+					var m_loss := (8 if GameState.brand_stacks >= 3 else 3) if has_pen else 0
+					var warn_body := "대상: [%s] %s (%s Lv.%d)\n" % [target.grade, target.merc_name, target.job, target.level]
+					if has_pen:
+						if GameState.brand_stacks >= 3:
+							warn_body += "부상 용병 유기: 민심 -8 (기본 -3 + 불신의 낙인 -5)\n예상 민심: %d%% → %d%%" % [GameState.morale, maxi(0, GameState.morale - m_loss)]
+						else:
+							warn_body += "부상 용병 유기: 민심 -3\n예상 민심: %d%% → %d%%" % [GameState.morale, maxi(0, GameState.morale - m_loss)]
+					else:
+						warn_body += "건강한 용병 해고: 민심 변동 없음"
+					estate.open_confirm_modal("용병 해고 확인", warn_body, "해고 확정", UiKit.RED, func():
+						if GameState.dismiss_merc(target):
+							notice = "[%s] %s 용병을 해고했습니다.%s" % [target.grade, target.merc_name, " (부상 유기: 민심 -%d)" % m_loss if m_loss > 0 else ""]
+							rebuild()
+					),
 			},
 	}))
 
@@ -66,7 +77,7 @@ func populate(vbox: VBoxContainer) -> void:
 
 		scv.add_child(UiKit.label(info.icon, 20, col))
 		scv.add_child(UiKit.title("%s 봉인서" % gr, 13, col.lightened(0.2)))
-		scv.add_child(UiKit.label("%dG · ⚡1" % JobDb.RECRUIT_COST[gr], 11, UiKit.GOLD2 if is_sel else UiKit.TEXT2))
+		scv.add_child(UiKit.label("%dG · ⚡1" % GameState.recruit_cost(gr), 11, UiKit.GOLD2 if is_sel else UiKit.TEXT2))
 
 		var cur_gr: String = gr
 		scard.gui_input.connect(func(ev: InputEvent):
@@ -83,7 +94,8 @@ func populate(vbox: VBoxContainer) -> void:
 			break
 
 	var sel_col: Color = JobDb.grade_color(_selected_guild_grade)
-	var sel_cost: int = JobDb.RECRUIT_COST[_selected_guild_grade]
+	var base_cost: int = int(JobDb.RECRUIT_COST.get(_selected_guild_grade, 50))
+	var sel_cost: int = GameState.recruit_cost(_selected_guild_grade)
 	var bonus_hp: int = GameState.guild_recruit_hp_bonus()
 	var guild_lv: int = GameState.building_level("용병모집소")
 
@@ -93,6 +105,8 @@ func populate(vbox: VBoxContainer) -> void:
 	iv.add_child(UiKit.divider())
 	iv.add_child(UiKit.label("FACILITY BONUS:", 11, UiKit.GOLD))
 	iv.add_child(UiKit.label("• 용병모집소 Lv.%d 특권:\n  신규 합류 용병 체력 +%d 보너스" % [guild_lv, bonus_hp], 12, UiKit.GREEN))
+	if GameState.active_curses.has("curse_ashen_blood"):
+		iv.add_child(UiKit.label("• [잿빛 혈흔] 신규 모집 최대 HP -10%", 11, UiKit.RED.lightened(0.2)))
 
 	iv.add_child(UiKit.divider())
 	iv.add_child(UiKit.label("REQUIRED RESOURCES:", 11, UiKit.GOLD))
@@ -105,6 +119,19 @@ func populate(vbox: VBoxContainer) -> void:
 	if not has_gold:
 		g_txt += " [골드 부족!]"
 	iv.add_child(UiKit.label(g_txt, 12, UiKit.GOLD if has_gold else UiKit.RED))
+	var brand_pct := GameState.brand_recruit_penalty_pct()
+	var morale_pct := GameState.morale_cost_mod_pct()
+	if brand_pct != 0.0 or morale_pct != 0.0:
+		var cost_parts: PackedStringArray = ["기본 %dG" % base_cost]
+		if brand_pct > 0.0:
+			cost_parts.append("낙인 +%.0f%%" % brand_pct)
+		if morale_pct < 0.0:
+			cost_parts.append("민심 고양 %.0f%%" % morale_pct)
+		elif morale_pct > 0.0:
+			cost_parts.append("민심 붕괴 +%.0f%%" % morale_pct)
+		var attr_c := UiKit.label("산출: %s" % " · ".join(cost_parts), 10, UiKit.TEXT2)
+		attr_c.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		iv.add_child(attr_c)
 
 	var ap_txt := "ACTION POINT: 1 AP (보유: %d)" % GameState.action_points
 	if not has_ap:

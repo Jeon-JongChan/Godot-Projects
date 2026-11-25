@@ -83,7 +83,7 @@ func _rebuild() -> void:
 
 ## 등급별 용병 모집 카드 UI 생성: 등급명, 소모 금화, 모집 실행 버튼
 func _recruit_card(grade: String) -> Control:
-	var cost: int = JobDb.RECRUIT_COST[grade]
+	var cost: int = GameState.recruit_cost(grade)
 	var color := JobDb.grade_color(grade)
 	var p := UiKit.panel(UiKit.BG3, color)
 	p.size_flags_horizontal = SIZE_EXPAND_FILL
